@@ -10,18 +10,18 @@ import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
+
 import android.widget.Button;
 
 
-import ir.parsiod.NavigationInTheBuilding.beacon.BLEdevice;
+
 import ir.parsiod.NavigationInTheBuilding.beacon.BeaconDiscovered;
 
 public class MainActivity extends AppCompatActivity {
 
     private BeaconDiscovered beaconDiscovered;
 
-    Button bottom;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,20 +47,31 @@ public class MainActivity extends AppCompatActivity {
                 });
                 builder.show();
             }
+            if (this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("This app needs READ STORAGE access");
+                builder.setMessage("Please grant READ STORAGE so this app can detect beacons in the background.");
+                builder.setPositiveButton(android.R.string.ok, null);
+                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+                    @TargetApi(23)
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                22);
+                    }
+
+                });
+                builder.show();
+            }
         }
 
 
         beaconDiscovered = new BeaconDiscovered(this);
 
-        bottom = findViewById(R.id.bottom);
-        bottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                beaconDiscovered.startMonitoring();
-                BLEdevice a =   beaconDiscovered.getDiscoveredDevices().get(0);
-               Log.e("beacon", a.getMac());
-            }
-        });
+
+
+        beaconDiscovered.startMonitoring();
 
     }
 
@@ -89,6 +100,18 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 return;
+
+
+            }
+            case 22:{
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("tagRequest", "coarse location permission granted");
+                } else {
+
+                }
+                return;
+
+
             }
         }
     }

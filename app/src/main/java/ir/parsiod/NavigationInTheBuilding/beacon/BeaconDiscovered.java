@@ -1,6 +1,8 @@
 package ir.parsiod.NavigationInTheBuilding.beacon;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class BeaconDiscovered {
+public class BeaconDiscovered implements BeaconConsumer {
     private  static  final String ALTBEACON_LAYOUT="m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25";
     private static  final  long PERIOD_TIME_BETWEEN = 150l;
 
@@ -31,21 +33,24 @@ public class BeaconDiscovered {
     private Region beaconRegion;
     Context context;
 
-    public BeaconDiscovered(Context context) {
+    public BeaconDiscovered(final Context context) {
         this.context =context;
         discoveredDevices = new ArrayList<>();
         //setting of beacons Manager
         beaconManager = BeaconManager.getInstanceForApplication(context);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(ALTBEACON_LAYOUT));
-       // beaconManager.bind((BeaconConsumer) this);
+        beaconManager.bind(this);
+
         //set between scan period
         beaconManager.setForegroundBetweenScanPeriod(PERIOD_TIME_BETWEEN);
 
 
     }
 
+
+
     public void unbind(){
-      //  beaconManager.unbind((BeaconConsumer) context);
+        beaconManager.unbind(this);
     }
 
 
@@ -66,7 +71,7 @@ public class BeaconDiscovered {
 
                 if (beacons.size() > 0) {
 
-                    // Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  "+beacons.size());
+                    // Log.i("beacon", "didRangeBeaconsInRegion called with beacon count:  "+beacons.size());
 
 
                     //covert collection<beacon> to list<beacon> for access to beacons
@@ -86,7 +91,7 @@ public class BeaconDiscovered {
                                 ){
                                     discoveredDevices.get(j).InsertRssi(beacon.getRssi());
 
-                                    Log.e("beacon","minor: "+discoveredDevices.get(j).getMinor()+" add rssi="+ beacon.getRssi());
+                                    Log.i("beacon","minor: "+discoveredDevices.get(j).getMac()+" add rssi="+ beacon.getRssi());
                                     flag =true;
 
 
@@ -97,14 +102,14 @@ public class BeaconDiscovered {
                             if(!flag){
 
 
-                                Log.e("beacon","add minor="+ beacon.getId3().toString());
+                                Log.i("beacon","add minor="+ beacon.getId3().toString());
                                 BLEdevice blEdevice = new BLEdevice();
                                 blEdevice.setUUID(beacon.getId1().toString());
                                 blEdevice.setMajor(beacon.getId2().toString());
                                 blEdevice.setMinor(beacon.getId3().toString());
                                 blEdevice.InsertRssi(beacon.getRssi());
                                 blEdevice.setMac(beacon.getBluetoothAddress());
-
+                                Log.i("beacon","mac"+blEdevice.getMac());
                                 discoveredDevices.add(blEdevice);
 
 
@@ -152,7 +157,7 @@ public class BeaconDiscovered {
         try {
 
             //set uuid of beacons and their major for better discovering
-            beaconRegion = new Region("beacon", Identifier.parse("23a01af0-232a-4518-9c0e-323fb773f5ef"),Identifier.parse("1"),null);
+            beaconRegion = new Region("beacon", Identifier.parse("23a01af0-232a-4518-9c0e-323fb773f5ef"),null,null);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
             beaconManager.addRangeNotifier(rangeNotifier);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
@@ -193,6 +198,33 @@ public class BeaconDiscovered {
 
 
 
+    }
+
+
+    @Override
+    public void onBeaconServiceConnect() {
+
+        try {
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+
+            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+
+        } catch (RemoteException e) {   }
+    }
+
+    @Override
+    public Context getApplicationContext() {
+        return context;
+    }
+
+    @Override
+    public void unbindService(ServiceConnection serviceConnection) {
+
+    }
+
+    @Override
+    public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
+        return true;
     }
 
 
