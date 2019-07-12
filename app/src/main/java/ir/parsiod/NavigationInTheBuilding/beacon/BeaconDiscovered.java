@@ -18,9 +18,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Created by seyedalian on 11/6/2019.
+ */
+
 public class BeaconDiscovered implements BeaconConsumer {
     private  static  final String ALTBEACON_LAYOUT="m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25";
-    private static  final  long PERIOD_TIME_BETWEEN = 150l;
+    private static  final  long PERIOD_TIME_BETWEEN = 300l;
 
 
     private ArrayList<BLEdevice> discoveredDevices;

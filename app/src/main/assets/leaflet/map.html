@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My test Map - Leaflet</title>
+    <link rel="stylesheet" href="css/leaflet.css"/>
+    <link rel="stylesheet" href="leaflet.usermarker.css"/>
+    <link rel="stylesheet" href="css/easy-button.css">
+    <link rel="stylesheet" href="css/leaflet-slider.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+</head>
+
+<body>
+<div id="map" style="width: 100%; height: 100% ; position : absolute;"></div>
+<script src="js/leaflet.js"></script>
+<script src="leaflet.usermarker.js"></script>
+<script src='Leaflet.Marker.SlideTo.js'></script>
+<script src="js/leaflet-slider.js" type="text/javascript"></script>
+<script src="js/path-transform-modified.js" type="text/javascript"></script>
+<script src="js/easy-button.js" type="text/javascript"></script>
+<script src="js/grid-toolbar.js" type="text/javascript"></script>
+<script src="js/leaflet.rotatedMarker.js"></script>
+<script type="text/javascript">
+
+
+
+
+
+
+
+    var map = L.map('map', {
+        crs: L.CRS.Simple,
+        minZoom: -5
+    });
+
+    var isMarkersShown = false;
+    //var lastLocation = [null,null];
+    //var isRelocating = false;
+    //var bounds = [[-1520, -1790], [1520, 1790]];
+    //var bounds = [[-2593, -3200], [2593, 3200]];
+    //var bounds = [[-1044, -988], [1044, 988]];
+    //var bounds = [[-1541, -958], [1541, 958]];
+    //var bounds = [[-5746, -4192], [4192, 1800]];
+    //var image = L.imageOverlay('img/daneshkadehMapDotted.png', bounds).addTo(map);
+    //var image = L.imageOverlay('img/test-map.png', bounds).addTo(map);
+    //var image = L.imageOverlay('img/daneshkadehFullMapRevised.png', bounds).addTo(map);
+
+    var arbitraryMarkersLayer = L.featureGroup().addTo(map);
+    map.setView([0, 0], -2);
+    latlng = [420, -265];
+    var marker = L.userMarker(latlng, {pulsing: true, accuracy: 200});
+    marker.addTo(map);
+
+
+
+    marker.setRotationOrigin("center center");
+    marker.setRotationAngle(180);
+
+    map.on('click', function (e) {
+        console.log(e.latlng.lat + "," + e.latlng.lng);
+        var retVar = e.latlng.lat + "," + e.latlng.lng;
+        //Android.sendToAndroid(retVar);
+    });
+    // marker.on('click', function marketOnClick(e) {
+    //     marker._popup.setContent("<b>x = " + e.latlng.lat + "</b><br><b>y = " + e.latlng.lng + "</b>");
+    //     console.log(e.latlng.lat + "," + e.latlng.lng);
+    // });
+
+
+    /*var grid = new L.GridToolbar(latlng, 1,
+        {
+            mode: 'indoor',
+            scale: false,
+            rotate: false,
+            width: 62,//32
+            height: 40
+        }//20
+    ).addTo(map);*/
+
+
+    /*  L.easyButton('fa-gbp', function () {
+          console.log('A');
+      }).addTo(map);*/
+
+    var window_length = 4;
+    var h_locations = [];
+    var accuracy_limit = 200;
+    for (var i = 0; i < window_length; i++) {
+        h_locations.push([null, null])
+    }
+
+    function addMap(image, width, height){
+        var bound0 = height / 2;
+        var bound1 = width / 2;
+        var bounds = [[-1*bound0, -1*bound1], [bound0, bound1]];
+        L.imageOverlay(image, bounds).addTo(map);
+    
+    }
+
+
+
+    function addBeacon(arg) {
+        console.log("addBeacon " + arg);
+        var pattern = /(.*),(.*)/;
+        var match = pattern.exec(arg);
+        var lat = match[1];
+        var lng = match[2];
+        var beacon = L.marker([lat, lng], {opacity: 0.5});
+        beacon.setIcon(new L.icon({iconUrl:"img/bluedot2.png"}));
+        beacon.addTo(map);
+    }
+
+
+
+    function moveMarker(arg) {
+        var pattern = /(.*),(.*)/;
+        var match = pattern.exec(arg);
+        var x = match[1];
+        var y = match[2];
+
+
+        latlng = marker.getLatLng()
+        lat = latlng.lat
+        lng = latlng.lng
+        movDist = Math.sqrt(Math.pow(lat - x, 2) + Math.pow(lng - y,2))
+
+        if (movDist > 20){
+           marker.slideTo([x, y], {
+                 duration: movDist*6,
+                 keepAtCenter: false
+               });
+        //    changeAccuracy(movDist);
+        }else{
+           marker.slideTo([x, y], {
+           duration: 100,
+           keepAtCenter: false
+           });
+        }
+
+        // marker.slideTo([x, y], {
+        //     duration: 100,
+        //     keepAtCenter: false
+        // });
+    }
+
+    function rotateMarker(arg){
+        var pattern = /(.*)/;
+        var match = pattern.exec(arg);
+        var h = match[1];
+        marker.setRotationAngle(h);
+    }
+
+    function changeAccuracy(accuracy) {
+        if (accuracy > accuracy_limit) {
+            marker.setAccuracy(accuracy);
+        } else {
+            marker.setAccuracy(accuracy_limit);
+        }
+    }
+
+
+    function addMarker(x, y) {
+        isMarkersShown = true;
+        var arbitraryMarker = L.marker([x, y]);
+        arbitraryMarker.addTo(arbitraryMarkersLayer);
+        arbitraryMarker.on('click', function markerOnClick(e) {
+            var retVar = e.latlng.lat + "," + e.latlng.lng;
+            console.log(e.latlng.lat + "," + e.latlng.lng);
+            Android.sendToAndroid(retVar);
+            marker.openPopup();
+        });
+    }
+
+    function toggleMarkers(){
+        if (isMarkersShown){
+            map.removeLayer(arbitraryMarkersLayer);
+            isMarkersShown = false;
+        }else{
+            map.addLayer(arbitraryMarkersLayer);
+            isMarkersShown = true;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>

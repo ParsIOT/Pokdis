@@ -1,5 +1,7 @@
 package ir.parsiod.NavigationInTheBuilding.beacon;
-
+/**
+ * Created by seyedalian on 11/6/2019.
+ */
 
 public class RssiList {
     private  int MAX_RSSI_LIST_SIZE =6;

@@ -1,12 +1,18 @@
 package ir.parsiod.NavigationInTheBuilding.beacon;
 
+import ir.parsiod.NavigationInTheBuilding.Constants.Constants;
+
+/**
+ * Created by seyedalian on 11/6/2019.
+ */
+
 public class BLEdevice {
-    private static final int MAX_RSSI_LIST_SIZE =6;
+
     private String name;
     private String UUID;
     private String major;
     private String minor;
-    private RssiList data = new RssiList(MAX_RSSI_LIST_SIZE);
+    private RssiList data = new RssiList(Constants.MAX_RSSI_LIST_SIZE);
     private String mac;
 
 
@@ -15,7 +21,7 @@ public class BLEdevice {
     private int rss;
 
     public boolean canThatCanRemoveThisDivice(){
-        if(data.getCountOfZero() ==MAX_RSSI_LIST_SIZE){
+        if(data.getCountOfZero() ==Constants.MAX_RSSI_LIST_SIZE){
             return true;
         }
         return false;
