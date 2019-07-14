@@ -43,9 +43,9 @@
 
 .leaflet-usermarker,
 .leaflet-usermarker-small {
-    width: 34px;
-    height: 34px;
-    background: url(img/bluedot.png);
+    width: 10px;
+    height: 10px;
+    background: url(img/bluedot3.png);
     background-size: 100%;
 }
 .leaflet-usermarker-small {

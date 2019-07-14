@@ -123,23 +123,23 @@
         lng = latlng.lng
         movDist = Math.sqrt(Math.pow(lat - x, 2) + Math.pow(lng - y,2))
 
-        if (movDist > 20){
-           marker.slideTo([x, y], {
-                 duration: movDist*6,
-                 keepAtCenter: false
-               });
+      //  if (movDist > 20){
+     //      marker.slideTo([x, y], {
+      //           duration: movDist*6,
+       //         keepAtCenter: false
+        //       });
         //    changeAccuracy(movDist);
-        }else{
-           marker.slideTo([x, y], {
-           duration: 100,
-           keepAtCenter: false
-           });
-        }
+        //}else{
+          // marker.slideTo([x, y], {
+          // duration: 100,
+          // keepAtCenter: false
+          // });
+        //}
 
-        // marker.slideTo([x, y], {
-        //     duration: 100,
-        //     keepAtCenter: false
-        // });
+         marker.slideTo([x, y], {
+             duration: 100,
+            keepAtCenter: false
+         });
     }
 
     function rotateMarker(arg){
@@ -183,11 +183,62 @@
 
 
 
+    function makePopup(arg,text){
+        var pattern = /(.*),(.*)/;
+        var match = pattern.exec(arg);
+        var x = match[1];
+        var y = match[2];
+
+	latlng = marker.getLatLng()
+	var popup = L.popup()
+		    .setLatLng([x,y])
+		    .setContent(text)
+		   
+		    .openOn(map);
+
+
+
+	}
+
+	function makePopupOnMarker(text){
+		marker.bindPopup(text).openPopup();
+
+	}
 
 
 
 
+function drawLine(arg1,arg2){
+	   var pattern = /(.*),(.*)/;
+        var match = pattern.exec(arg1);
+        var x = match[1];
+        var y = match[2];
+ 	    match = pattern.exec(arg2);
+        var x2 = match[1];
+        var y2 = match[2];
 
+     var polylineOptions = {
+               color: 'blue',
+               weight: 7,
+               opacity: 0.6,
+		dashArray: '6,16'
+             };
+
+
+	var latlngs = Array();
+
+	//Get latlng from first marker
+	latlngs.push([x,y]);
+
+	//Get latlng from first marker
+	latlngs.push([x2,y2]);
+	var polyline = L.polyline(latlngs, polylineOptions).addTo(map);
+
+	// zoom the map to the polyline
+	map.fitBounds(polyline.getBounds());
+
+
+	}
 
 
 

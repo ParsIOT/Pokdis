@@ -76,6 +76,20 @@ public class WebViewManager {
         }, 1000);
     }
 
+    public void drawLine(String location1,String location2){
+        final String js_location = String.format("javascript:drawLine(\"%s\",\"%s\")", location1,location2);
+        //  webView.loadUrl(js_location);
+        if (context != null) {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    webView.loadUrl(js_location);
+                }
+            });
+        }
+
+    }
+
     public void updateLocation(String location) {
         final String js_location = String.format("javascript:moveMarker(\'%s\')", location);
       //  webView.loadUrl(js_location);

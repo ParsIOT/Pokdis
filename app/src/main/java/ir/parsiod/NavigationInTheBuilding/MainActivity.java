@@ -12,11 +12,14 @@ import android.location.LocationManager;
 import android.os.Build;
 
 
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -114,14 +117,24 @@ public class MainActivity extends AppCompatActivity {
 
         beaconDiscovered = new BeaconDiscovered(this);
 
-
-
-
-        beaconDiscovered.startMonitoring();
         initViews();
 
+        try{
+            beaconDiscovered.startMonitoring();
+            updateLocation();
+        }catch (RuntimeException e){
 
+        }
 
+      /* new Handler().postDelayed(new Runnable() {
+           @Override
+           public void run() {
+               webViewManager.drawLine("-540,988","-1236,1044");
+               webViewManager.drawLine("-528.1111068725586,-167.8888931274414","815.8888931274414,-183.8888931274414");
+               webViewManager.drawLine("-512.0555534362793,-135.9444465637207","-532.0555534362793,936.0555534362793");
+
+           }
+       },5000);*/
     }
 
     @Override
@@ -145,21 +158,23 @@ public class MainActivity extends AppCompatActivity {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                String nearMac = beaconDiscovered.getDiscoveredDevices().get(0).getMac();
-                LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
-                Double [] location = locationOfBeacon.beaconCoordinates.get(nearMac);
-                String loc = location[0]+","+location[1];
-                webViewManager.updateLocation(loc);
+                String location = beaconDiscovered.getNearLoacationToString();
+                if(location!=null){
+
+                    webViewManager.updateLocation(location);
+                }
             }
-        },3000,300);
+        },6000,Constants.PERIOD_OF_GET_TOP_BEACON);
 
 
 
     }
 
     private void initViews() {
-        webView = findViewById(R.id.webView);
         //init webView
+        webView = findViewById(R.id.webView);
+
+
         webViewManager = new WebViewManager(webView);
         webViewManager.setupManager(this, ScanModeEnum.track, new OnWebViewClickListener() {
             @Override

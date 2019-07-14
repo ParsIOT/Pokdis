@@ -3,8 +3,10 @@ package ir.parsiod.NavigationInTheBuilding.beacon;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.Location;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -18,17 +20,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ir.parsiod.NavigationInTheBuilding.Constants.Constants;
+
 /**
  * Created by seyedalian on 11/6/2019.
  */
 
 public class BeaconDiscovered implements BeaconConsumer {
-    private  static  final String ALTBEACON_LAYOUT="m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25";
-    private static  final  long PERIOD_TIME_BETWEEN = 300l;
 
 
     private ArrayList<BLEdevice> discoveredDevices;
     private BeaconManager beaconManager = null;
+
+    private BLEdevice proposedBeacon=null;
+
+
 
     public ArrayList<BLEdevice> getDiscoveredDevices() {
         return discoveredDevices;
@@ -42,11 +48,11 @@ public class BeaconDiscovered implements BeaconConsumer {
         discoveredDevices = new ArrayList<>();
         //setting of beacons Manager
         beaconManager = BeaconManager.getInstanceForApplication(context);
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(ALTBEACON_LAYOUT));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(Constants.ALTBEACON_LAYOUT));
         beaconManager.bind(this);
 
         //set between scan period
-        beaconManager.setForegroundBetweenScanPeriod(PERIOD_TIME_BETWEEN);
+        beaconManager.setForegroundBetweenScanPeriod(Constants.PERIOD_TIME_BETWEEN_SCAN);
 
 
     }
@@ -149,6 +155,23 @@ public class BeaconDiscovered implements BeaconConsumer {
 
 
 
+                        /*if(proposedBeacon == null){
+                            proposedBeacon = discoveredDevices.get(0);
+                            Toast.makeText(context,"proposedBeacon Minor"+proposedBeacon.getMinor(),Toast.LENGTH_SHORT);
+                        }else {
+                            if(!discoveredDevices.get(0).getMac().equals(proposedBeacon.getMac()))
+                                if( discoveredDevices.get(1).getMac().equals(proposedBeacon.getMac())){
+                                   proposedBeacon = discoveredDevices.get(1);
+                                    Toast.makeText(context,"proposedBeacon Minor"+proposedBeacon.getMinor(),Toast.LENGTH_SHORT);
+                                }else if(!discoveredDevices.get(1).getMac().equals(proposedBeacon.getMac())){
+                                    proposedBeacon = discoveredDevices.get(0);
+                                    Toast.makeText(context,"proposedBeacon Minor"+proposedBeacon.getMinor(),Toast.LENGTH_SHORT);
+                                }
+                        }*/
+
+                        proposedBeacon = discoveredDevices.get(0);
+
+
 
 
                     }
@@ -161,7 +184,7 @@ public class BeaconDiscovered implements BeaconConsumer {
         try {
 
             //set uuid of beacons and their major for better discovering
-            beaconRegion = new Region("beacon", Identifier.parse("23a01af0-232a-4518-9c0e-323fb773f5ef"),null,null);
+            beaconRegion = new Region("beacon", Identifier.parse(Constants.COMMON_UUID_BEACON),null,null);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
             beaconManager.addRangeNotifier(rangeNotifier);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
@@ -193,7 +216,7 @@ public class BeaconDiscovered implements BeaconConsumer {
 
         try {
 
-            beaconRegion = new Region("beacon",Identifier.parse("23a01af0-232a-4518-9c0e-323fb773f5ef"),Identifier.parse("1"),null);
+            beaconRegion = new Region("beacon",Identifier.parse(Constants.COMMON_UUID_BEACON),Identifier.parse(Constants.COMMON_MAJOR_BEACON),null);
             beaconManager.stopRangingBeaconsInRegion(beaconRegion);
 
             beaconManager.stopRangingBeaconsInRegion(beaconRegion);
@@ -231,5 +254,52 @@ public class BeaconDiscovered implements BeaconConsumer {
         return true;
     }
 
+    public BLEdevice getProposedBeacon() {
+        return proposedBeacon;
+    }
+
+    public String getNearLoacationToString(){
+       try {
+          /*   if(discoveredDevices.get(0).getRssiAvg()
+                    -discoveredDevices.get(1).getRssiAvg()<4){
+                String nearMac1 = discoveredDevices.get(0).getMac();
+                LocationOfBeacon locationOfBeacon1 = new LocationOfBeacon();
+                Double [] location1 = locationOfBeacon1.beaconCoordinates.get(nearMac1);
+                String nearMac2 = discoveredDevices.get(1).getMac();
+                LocationOfBeacon locationOfBeacon2 = new LocationOfBeacon();
+                Double [] location2 = locationOfBeacon2.beaconCoordinates.get(nearMac2);
+                if(location1 != null){
+                    String loc = ((location1[0]+location2[0])/2)+","+((location1[1]+location2[1])/2);
+                    return loc;
+                }
+
+
+            }else {
+                String nearMac = discoveredDevices.get(0).getMac();
+                LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
+                Double [] location = locationOfBeacon.beaconCoordinates.get(nearMac);
+                if(location != null){
+                    String loc = location[0]+","+location[1];
+                    return loc;
+                }
+            }*/
+
+
+           String nearMac = discoveredDevices.get(0).getMac();
+           LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
+           Double [] location = locationOfBeacon.beaconCoordinates.get(nearMac);
+           if(location != null){
+               String loc = location[0]+","+location[1];
+               return loc;
+           }
+
+
+        }catch (RuntimeException e){
+
+        }
+
+
+        return null;
+    }
 
 }
