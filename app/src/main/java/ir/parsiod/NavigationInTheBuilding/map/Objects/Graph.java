@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public   class Graph {
+    public List<Edge> getEdges() {
+        return edges;
+    }
+
     private List<Edge> edges ;
 
     public Graph() {
@@ -12,20 +16,29 @@ public   class Graph {
 
     public void addEdge(String ver1, String ver2){
         edges.add(new Edge().setVertexs(ver1,ver2));
+        edges.size();
 
     }
 
     public Edge findNearEdge(String point){
 
         if(edges.size()>0){
-            Edge near = edges.get(0);
-            for(int i=1;i<edges.size();i++){
-                if(near.distanceFromTheLine(point)
+            Edge near =null;
+            float min =152555;
+
+            for(int i=0;i<edges.size();i++){
+                Edge A=edges.get(i);
+                A.toString();
+                if(min
                         >edges.get(i).distanceFromTheLine(point)){
-                    near = edges.get(i);
+                    min = edges.get(i).distanceFromTheLine(point);
+
+                    near =edges.get(i);
                 }
 
             }
+
+
             return near;
         }
 

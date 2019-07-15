@@ -38,6 +38,8 @@ import ir.parsiod.NavigationInTheBuilding.Listeners.OnWebViewClickListener;
 import ir.parsiod.NavigationInTheBuilding.beacon.BeaconDiscovered;
 import ir.parsiod.NavigationInTheBuilding.beacon.LocationOfBeacon;
 import ir.parsiod.NavigationInTheBuilding.map.MapDetail;
+import ir.parsiod.NavigationInTheBuilding.map.ObjectLocation;
+import ir.parsiod.NavigationInTheBuilding.map.Objects.Edge;
 import ir.parsiod.NavigationInTheBuilding.map.WebViewManager;
 
 /**
@@ -135,6 +137,24 @@ public class MainActivity extends AppCompatActivity {
 
            }
        },5000);*/
+  /*    new Handler().postDelayed(new Runnable() {
+           @Override
+           public void run() {
+               String loc ="1376.777687072754,369.8886947631836";
+               webViewManager.updateLocation(loc);
+
+               ObjectLocation objectLocation = new ObjectLocation();
+             Edge nearEdge= objectLocation.getObjects().get(0).getGraph().findNearEdge(loc);
+             float []f =nearEdge.pointOnLineImage(loc);
+             webViewManager.drawLine(f[0]+","+f[1],loc);
+
+             String a =f[0]+","+f[1]+"|"+loc;
+             a.toString();
+
+
+
+           }
+       },5000);*/
     }
 
     @Override
@@ -155,18 +175,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateLocation() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                String location = beaconDiscovered.getNearLoacationToString();
-                if(location!=null){
+        try {
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    String location = beaconDiscovered.getNearLoacationToString();
+                    if(location!=null){
 
-                    webViewManager.updateLocation(location);
+                        webViewManager.updateLocation(location);
+                    }
                 }
-            }
-        },6000,Constants.PERIOD_OF_GET_TOP_BEACON);
+            },6000,Constants.PERIOD_OF_GET_TOP_BEACON);
 
 
+        }catch (RuntimeException e){
+
+        }
 
     }
 
@@ -184,14 +208,15 @@ public class MainActivity extends AppCompatActivity {
         });
         MapDetail mapDetail = new MapDetail();
         mapDetail.setMapName("map");
-        mapDetail.setMapPath("img/test-map.png");
+        mapDetail.setMapPath("map.png");
         List<Integer> dimensions = new ArrayList<Integer>();
-        dimensions.add(3600);
-        dimensions.add(3400);
+        dimensions.add(1206);
+        dimensions.add(1151);
         mapDetail.setMapDimensions(dimensions);
         webViewManager.addMap(mapDetail);
 
         Log.e("map",mapDetail.toString());
+
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);

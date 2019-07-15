@@ -168,7 +168,7 @@ public class BeaconDiscovered implements BeaconConsumer {
                                     Toast.makeText(context,"proposedBeacon Minor"+proposedBeacon.getMinor(),Toast.LENGTH_SHORT);
                                 }
                         }*/
-
+                        if(discoveredDevices.get(0).getRssiAvg()>=-56)
                         proposedBeacon = discoveredDevices.get(0);
 
 
@@ -285,13 +285,15 @@ public class BeaconDiscovered implements BeaconConsumer {
             }*/
 
 
-           String nearMac = discoveredDevices.get(0).getMac();
-           LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
-           Double [] location = locationOfBeacon.beaconCoordinates.get(nearMac);
-           if(location != null){
-               String loc = location[0]+","+location[1];
-               return loc;
-           }
+         if(proposedBeacon!=null){
+             String nearMac = proposedBeacon.getMac();
+             LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
+             Double [] location = locationOfBeacon.beaconCoordinates.get(nearMac);
+             if(location != null){
+                 String loc = location[0]+","+location[1];
+                 return loc;
+             }
+         }
 
 
         }catch (RuntimeException e){

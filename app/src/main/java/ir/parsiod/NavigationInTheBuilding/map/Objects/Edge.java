@@ -19,6 +19,8 @@ public class Edge{
         vertex1[0] =Float.valueOf(verte1[0]);
         vertex1[1]=Float.valueOf(verte1[1]);
 
+
+
         vertex2[0] =Float.valueOf(verte2[0]);
         vertex2[0]=Float.valueOf(verte2[1]);
         //line is y+mx+c =0
@@ -27,14 +29,19 @@ public class Edge{
 
             c = m*vertex1[0] - vertex2[1];
         }
-        return edge;
+
+
+        return this;
     }
 
 
     public float distanceFromTheLine (String point){
         String [] loc = point.split(",");
 
-        Float [] locOfPoint=new Float[2];
+        float [] locOfPoint=new float[2];
+        locOfPoint[0] = Float.valueOf(loc[0]);
+        locOfPoint[1] = Float.valueOf(loc[1]);
+
 
         float distance = (float) ((m*locOfPoint[0]+locOfPoint[1]+c)/Math.pow(Math.pow(m,2)+1,1/2));
 
@@ -47,6 +54,8 @@ public class Edge{
 
         String [] loc = point.split(",");
         Float [] locOfPoint=new Float[2];
+        locOfPoint[0] = Float.valueOf(loc[0]);
+        locOfPoint[1] = Float.valueOf(loc[1]);
 
         float k = (float) ((m*locOfPoint[0] + locOfPoint[1] +c)/(Math.pow(m,2)+1));
 
@@ -59,4 +68,9 @@ public class Edge{
     }
 
 
+
+    @Override
+    public String toString() {
+      return vertex1[0]+","+vertex1[1]+"|"+  vertex2[0]+","+vertex2[1];
+    }
 }
