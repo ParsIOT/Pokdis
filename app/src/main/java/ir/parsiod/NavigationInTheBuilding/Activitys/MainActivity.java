@@ -1,4 +1,4 @@
-package ir.parsiod.NavigationInTheBuilding;
+package ir.parsiod.NavigationInTheBuilding.Activitys;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -18,8 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import android.webkit.ConsoleMessage;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -35,8 +33,8 @@ import java.util.TimerTask;
 import ir.parsiod.NavigationInTheBuilding.Constants.Constants;
 import ir.parsiod.NavigationInTheBuilding.Enums.ScanModeEnum;
 import ir.parsiod.NavigationInTheBuilding.Listeners.OnWebViewClickListener;
+import ir.parsiod.NavigationInTheBuilding.R;
 import ir.parsiod.NavigationInTheBuilding.beacon.BeaconDiscovered;
-import ir.parsiod.NavigationInTheBuilding.beacon.LocationOfBeacon;
 import ir.parsiod.NavigationInTheBuilding.map.ConstOfMap;
 import ir.parsiod.NavigationInTheBuilding.map.MapDetail;
 import ir.parsiod.NavigationInTheBuilding.map.ObjectLocation;
@@ -131,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-     new Handler().postDelayed(new Runnable() {
+ /*    new Handler().postDelayed(new Runnable() {
            @Override
            public void run() {
 
@@ -150,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
            }
        },4000);
 
-
+*/
 
 
     }
@@ -267,8 +265,10 @@ public class MainActivity extends AppCompatActivity {
                     strPath.toString();
                     String [] path = strPath.split(",");
 
-                       webViewManager.drawLine(point,constOfMap.vertexOfGraph.get(vertex1));
+                    webViewManager.drawLine(point,constOfMap.vertexOfGraph.get(vertex1));
                      webViewManager.drawLine(webViewManager.getLoctionOfMarker(),constOfMap.vertexOfGraph.get(vertex2));
+                    // webViewManager.drawLine(point1P,constOfMap.vertexOfGraph.get(vertex1));
+                    // webViewManager.drawLine(point2P,constOfMap.vertexOfGraph.get(vertex2));
                     String lastVertex = path[0];
                     for (int i=1;i<path.length;i++){
                         webViewManager.drawLine(constOfMap.vertexOfGraph.get(lastVertex)

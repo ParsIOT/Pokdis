@@ -39,7 +39,7 @@ public class Edge{
         if(v1.x-v2.x!=0){
             m = (v2.y-v1.y)/(v2.x-v1.x);//line slope
 
-            c = v1.y-(m*v1.x) ;
+            c = (m*v1.x)-v1.y ;
         }
 
 
@@ -66,17 +66,18 @@ public class Edge{
     }
 
     public String pointOnLineImage(String point){
+        float a = -m;
 
         String [] loc = point.split(",");
         Float [] locOfPoint=new Float[2];
         locOfPoint[0] = Float.valueOf(loc[0]);
         locOfPoint[1] = Float.valueOf(loc[1]);
 
-        float k = (float) ((m*locOfPoint[0] + locOfPoint[1] +c)/(Math.pow(m,2)+1));
+        float k = (float) ((a*locOfPoint[0] + locOfPoint[1] +c)/(Math.pow(a,2)+1));
 
         float [] pointOnLine= new float[2];
 
-        pointOnLine[0] = locOfPoint[0]- m*k;
+        pointOnLine[0] = locOfPoint[0]- a*k;
         pointOnLine[1] = locOfPoint[1]-k;
 
         String tpoint =pointOnLine[0]+","+pointOnLine[1];
