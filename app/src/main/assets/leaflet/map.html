@@ -158,7 +158,11 @@
     }
 
 
-    function addMarker(x, y) {
+    function addMarker(arg) {
+        var pattern = /(.*),(.*)/;
+            var match = pattern.exec(arg);
+            var x = match[1];
+            var y = match[2];
         isMarkersShown = true;
         var arbitraryMarker = L.marker([x, y]);
         arbitraryMarker.addTo(arbitraryMarkersLayer);

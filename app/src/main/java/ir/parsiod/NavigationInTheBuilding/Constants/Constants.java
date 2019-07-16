@@ -21,4 +21,8 @@ public class Constants {
 
 
     public static final long PERIOD_OF_GET_TOP_BEACON = 1000l;
+
+
+
+
 }

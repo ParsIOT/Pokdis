@@ -1,33 +1,45 @@
 package ir.parsiod.NavigationInTheBuilding.map.Objects;
 
 public class Edge{
-    float[] vertex1  ;
-    float[] vertex2 ;
+    Vertex v1;
+    Vertex v2;
+
     float m=0;
+
+    public Vertex getV1() {
+        return v1;
+    }
+
+    public Vertex getV2() {
+        return v2;
+    }
+
+
     float c =0;
 
     public Edge() {
-        this.vertex1  =new float[2];
-        this.vertex2 =new float[2];
+        v1 = new Vertex();
+        v2 = new Vertex();
     }
 
-    public Edge setVertexs(String ver1, String ver2){
-        Edge edge = new Edge();
+    public Edge setVertexs(String ver1,String tag1, String ver2,String tag2){
+
         String [] verte1 = ver1.split(",");
         String [] verte2 = ver2.split(",");
 
-        vertex1[0] =Float.valueOf(verte1[0]);
-        vertex1[1]=Float.valueOf(verte1[1]);
+        v1.x =Float.valueOf(verte1[0]);
+        v1.y=Float.valueOf(verte1[1]);
+        v1.tag =tag1;
 
 
-
-        vertex2[0] =Float.valueOf(verte2[0]);
-        vertex2[0]=Float.valueOf(verte2[1]);
+        v2.x =Float.valueOf(verte2[0]);
+        v2.y=Float.valueOf(verte2[1]);
+        v2.tag =tag2;
         //line is y+mx+c =0
-        if(vertex1[0]-vertex2[0]!=0){
-            m = (vertex2[1]-vertex1[1])/(vertex1[0]-vertex2[0]);//line slope
+        if(v1.x-v2.x!=0){
+            m = (v2.y-v1.y)/(v2.x-v1.x);//line slope
 
-            c = m*vertex1[0] - vertex2[1];
+            c = v1.y-(m*v1.x) ;
         }
 
 
@@ -36,21 +48,24 @@ public class Edge{
 
 
     public float distanceFromTheLine (String point){
-        String [] loc = point.split(",");
+     /*   String [] loc = point.split(",");
 
         float [] locOfPoint=new float[2];
         locOfPoint[0] = Float.valueOf(loc[0]);
         locOfPoint[1] = Float.valueOf(loc[1]);
 
 
-        float distance = (float) ((m*locOfPoint[0]+locOfPoint[1]+c)/Math.pow(Math.pow(m,2)+1,1/2));
-
+        float distance = (float) ( Math.abs(m*locOfPoint[0]+locOfPoint[1]+c)/Math.sqrt(Math.pow(m,2)+1));
+*/      Vertex  center = new Vertex();
+        center.x = (v1.x+v2.x)/2;
+        center.y=   (v1.y+v2.y)/2;
+        float distance = center.distanceFromThis(point);
         return distance;
 
 
     }
 
-    public float [] pointOnLineImage(String point){
+    public String pointOnLineImage(String point){
 
         String [] loc = point.split(",");
         Float [] locOfPoint=new Float[2];
@@ -64,13 +79,51 @@ public class Edge{
         pointOnLine[0] = locOfPoint[0]- m*k;
         pointOnLine[1] = locOfPoint[1]-k;
 
-        return pointOnLine;
+        String tpoint =pointOnLine[0]+","+pointOnLine[1];
+
+        return tpoint;
     }
 
+    public String nearVertex(String point){
+       if(checkOnLine(point)){
+          if(v1.distanceFromThis(point)>v2.distanceFromThis(point)){
+            return v2.tag;
+          }else {
+              return v1.tag;
+          }
+
+       }else {
+           point = pointOnLineImage(point);
+           if(v1.distanceFromThis(point)>v2.distanceFromThis(point)){
+               return v2.tag;
+           }else {
+               return v1.tag;
+           }
+
+
+       }
+
+    }
+
+    public Boolean checkOnLine(String point){
+        String [] loc = point.split(",");
+        Float [] locOfPoint=new Float[2];
+        locOfPoint[0] = Float.valueOf(loc[0]);
+        locOfPoint[1] = Float.valueOf(loc[1]);
+
+        int a = (int) (locOfPoint[1]+m*locOfPoint[0]+c);
+
+        if(a==0){
+            return true;
+        }
+
+        return false;
+    }
 
 
     @Override
     public String toString() {
-      return vertex1[0]+","+vertex1[1]+"|"+  vertex2[0]+","+vertex2[1];
+
+        return v1.tag+"|"+ v2.tag;
     }
 }

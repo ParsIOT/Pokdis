@@ -39,6 +39,7 @@ public class RssiList {
     public int getCountOfZero() {
         return countOfZero;
     }
+
     public int average(){
         if(countOfZero == MAX_RSSI_LIST_SIZE){
             return 0;
@@ -49,6 +50,38 @@ public class RssiList {
             sum+=rssi[i];
         }
         return sum/n;
+    }
+ /*   public int average(){
+        if(countOfZero == MAX_RSSI_LIST_SIZE){
+            return 0;
+        }
+        int sum=0;
+        sortRssi();
+        int n = MAX_RSSI_LIST_SIZE - countOfZero;
+        if(n%2==0){
+            int m = n/2;
+            int avg = (rssi[m-1]+rssi[m])/2;
+            return avg;
+
+        }else {
+            int m = n/2;
+            return rssi[m];
+
+        }
+
+    }*/
+
+    void sortRssi(){
+        for(int i=0;i<MAX_RSSI_LIST_SIZE;i++){
+            for(int j=0;j<MAX_RSSI_LIST_SIZE;j++){
+                if(rssi[i]>rssi[j]){
+                    int temp = rssi[i];
+                    rssi[i]=rssi[j];
+                    rssi[j]=temp;
+                }
+            }
+        }
+
     }
 
 

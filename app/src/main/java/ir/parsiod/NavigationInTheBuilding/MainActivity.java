@@ -37,6 +37,7 @@ import ir.parsiod.NavigationInTheBuilding.Enums.ScanModeEnum;
 import ir.parsiod.NavigationInTheBuilding.Listeners.OnWebViewClickListener;
 import ir.parsiod.NavigationInTheBuilding.beacon.BeaconDiscovered;
 import ir.parsiod.NavigationInTheBuilding.beacon.LocationOfBeacon;
+import ir.parsiod.NavigationInTheBuilding.map.ConstOfMap;
 import ir.parsiod.NavigationInTheBuilding.map.MapDetail;
 import ir.parsiod.NavigationInTheBuilding.map.ObjectLocation;
 import ir.parsiod.NavigationInTheBuilding.map.Objects.Edge;
@@ -49,6 +50,7 @@ import ir.parsiod.NavigationInTheBuilding.map.WebViewManager;
 public class MainActivity extends AppCompatActivity {
 
     private BeaconDiscovered beaconDiscovered;
+
 
     WebView webView;
     WebViewManager webViewManager;
@@ -122,39 +124,35 @@ public class MainActivity extends AppCompatActivity {
         initViews();
 
         try{
-            beaconDiscovered.startMonitoring();
-            updateLocation();
+           // beaconDiscovered.startMonitoring();
+          //  updateLocation();
         }catch (RuntimeException e){
 
         }
 
-      /* new Handler().postDelayed(new Runnable() {
+
+     new Handler().postDelayed(new Runnable() {
            @Override
            public void run() {
-               webViewManager.drawLine("-540,988","-1236,1044");
-               webViewManager.drawLine("-528.1111068725586,-167.8888931274414","815.8888931274414,-183.8888931274414");
-               webViewManager.drawLine("-512.0555534362793,-135.9444465637207","-532.0555534362793,936.0555534362793");
 
-           }
-       },5000);*/
-  /*    new Handler().postDelayed(new Runnable() {
+
+               webViewManager.updateLocation("322,-123");
+              String a = webViewManager.getLoctionOfMarker();
+              a.toString();
+                   new Handler().postDelayed(new Runnable() {
            @Override
            public void run() {
-               String loc ="1376.777687072754,369.8886947631836";
-               webViewManager.updateLocation(loc);
-
-               ObjectLocation objectLocation = new ObjectLocation();
-             Edge nearEdge= objectLocation.getObjects().get(0).getGraph().findNearEdge(loc);
-             float []f =nearEdge.pointOnLineImage(loc);
-             webViewManager.drawLine(f[0]+","+f[1],loc);
-
-             String a =f[0]+","+f[1]+"|"+loc;
-             a.toString();
 
 
-
+               pathToPoint("-388.0555534362793,-176.83333337306976");
            }
-       },5000);*/
+       },2000);
+           }
+       },4000);
+
+
+
+
     }
 
     @Override
@@ -221,6 +219,8 @@ public class MainActivity extends AppCompatActivity {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
+
+
     }
 
 
@@ -231,14 +231,75 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    void pathToPoint (final String point){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+
+
+
+
+
+                ObjectLocation location =new ObjectLocation();
+                ConstOfMap constOfMap = new ConstOfMap();
+
+
+                try {
+
+
+
+
+
+
+
+                    Edge nearEdge1=  location.graph.findNearEdge(point);
+                    Edge nearEdge2=  location.graph.findNearEdge(webViewManager.getLoctionOfMarker());
+
+                    String point1P = nearEdge1.pointOnLineImage(point);
+                    String point2P = nearEdge2.pointOnLineImage(webViewManager.getLoctionOfMarker());
+
+
+                    String vertex1 = nearEdge1.nearVertex(point1P);
+                    String vertex2 = nearEdge2.nearVertex(point2P);
+
+                    String strPath = location.graph.getPathBetween(vertex1,vertex2);
+                    strPath.toString();
+                    String [] path = strPath.split(",");
+
+                       webViewManager.drawLine(point,constOfMap.vertexOfGraph.get(vertex1));
+                     webViewManager.drawLine(webViewManager.getLoctionOfMarker(),constOfMap.vertexOfGraph.get(vertex2));
+                    String lastVertex = path[0];
+                    for (int i=1;i<path.length;i++){
+                        webViewManager.drawLine(constOfMap.vertexOfGraph.get(lastVertex)
+                                ,constOfMap.vertexOfGraph.get(path[i]));
+                        lastVertex = path[i];
+                    }
+                    //webViewManager.drawLine(point,constOfMap.vertexOfGraph.get(path[path.length]));
+                    String.valueOf(path.length).toString();
+                    if(path.length!=0){
+                        webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex2)
+                                ,constOfMap.vertexOfGraph.get(lastVertex));
+                        webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex1)
+                                ,constOfMap.vertexOfGraph.get(path[0]));
+                    }else if(path[0]==""){
+                        webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex1)
+                                ,constOfMap.vertexOfGraph.get(vertex2));
+                    }
+
+                }catch (RuntimeException e){
+                    Log.e("error",e.toString());
+                }
+            }
+        },2000);
+    }
 
 
 
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case Constants.REQUEST_CODE_ACCESS_COARSE_LOCATION: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {

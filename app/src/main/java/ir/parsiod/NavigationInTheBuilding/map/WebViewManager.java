@@ -33,6 +33,7 @@ public class WebViewManager {
     private ScanModeEnum scanMode;
     private OnWebViewClickListener onWebViewClickListener;
 
+    private String loctionOfMarker="-381,416";
 
     public WebViewManager(WebView webView) {
         this.webView = webView;
@@ -76,6 +77,18 @@ public class WebViewManager {
         }, 1000);
     }
 
+    public void addMarker(final String point){
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                webView.loadUrl(String.format(Locale.getDefault(), "javascript:addMap(\"%s\")",point));
+
+            }
+        }, 1000);
+    }
+
+
     public void drawLine(String location1,String location2){
         final String js_location = String.format("javascript:drawLine(\"%s\",\"%s\")", location1,location2);
         //  webView.loadUrl(js_location);
@@ -91,6 +104,7 @@ public class WebViewManager {
     }
 
     public void updateLocation(String location) {
+        loctionOfMarker = location;
         final String js_location = String.format("javascript:moveMarker(\'%s\')", location);
       //  webView.loadUrl(js_location);
         if (context != null) {
@@ -103,6 +117,9 @@ public class WebViewManager {
         }
     }
 
+    public String getLoctionOfMarker() {
+        return loctionOfMarker;
+    }
 
     public void addLearnLocations(List<String> locations) {
         for (String l : locations) {
