@@ -26,7 +26,7 @@ public   class Graph {
     constOfMap = new ConstOfMap();
 
     }
-
+//ADD WITH KEY OF HASH IN constOfMap
     public void addEdge(String ver1, String ver2){
         edges.add(new Edge().setVertexs(constOfMap.vertexOfGraph.get(ver1),ver1
                 ,constOfMap.vertexOfGraph.get(ver2),ver2));
@@ -39,7 +39,7 @@ public   class Graph {
         }
 
     }
-
+//search in edges list for find near edge
     public Edge findNearEdge(String point){
 
         if(edges.size()>0){
@@ -70,25 +70,20 @@ public   class Graph {
         return  null;
     }
 
+    //getPathBetween to vertex on
    public String  getPathBetween(String ver1,String ver2){
         nearPath ="";
 
         makePaths();
-       for(int i = 0; i < size; i++)
-           for (int j = 0; j < size; j++){
-              String a= String.valueOf(vertex[i][j]);
-              a.toString();
-           }
 
-
-       path(Integer.valueOf(ver1),Integer.valueOf(ver2));
+        path(Integer.valueOf(ver1),Integer.valueOf(ver2));
 
        return nearPath;
 
    }
 
-   private void path (int q,int r)
-    {
+//work on nearPath String
+   private void path (int q,int r) {
 
         if (path[ q ][ r ] !=0){
         path (q, path[q] [r]);
@@ -103,9 +98,8 @@ public   class Graph {
    }
     }
 
-
-   private void makePaths ()//floyd algorithm
-    {
+    //floyd algorithm
+   private void makePaths () {
         makeVertex();
 
         path = new int[size][size];
@@ -123,6 +117,7 @@ public   class Graph {
                         vertex[i][j] = vertex[i][k] + vertex[k][j]; }
     }
 
+    //make a matrix for floyd algorithm
     private void makeVertex(){
       size = constOfMap.vertexOfGraph.size();
         size++;
@@ -136,7 +131,6 @@ public   class Graph {
             }
         }
 
-        lEdges.toString();
         String [] edge = lEdges.split(",");
         for(int i=0;i<edges.size();i++){
             String [] ver = edge[i].split("-");

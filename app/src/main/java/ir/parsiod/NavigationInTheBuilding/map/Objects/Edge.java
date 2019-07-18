@@ -46,7 +46,7 @@ public class Edge{
         return this;
     }
 
-
+//for find near EDGE
     public float distanceFromTheLine (String point){
      /*   String [] loc = point.split(",");
 
@@ -65,6 +65,7 @@ public class Edge{
 
     }
 
+    //TODO THIS FUNCTION NOT TRUE WORKING
     public String pointOnLineImage(String point){
         float a = -m;
 
@@ -85,6 +86,7 @@ public class Edge{
         return tpoint;
     }
 
+    //NEAR VERTEX ON A edge
     public String nearVertex(String point){
        if(checkOnLine(point)){
           if(v1.distanceFromThis(point)>v2.distanceFromThis(point)){
@@ -105,7 +107,7 @@ public class Edge{
        }
 
     }
-
+//check a point is on line or not
     public Boolean checkOnLine(String point){
         String [] loc = point.split(",");
         Float [] locOfPoint=new Float[2];

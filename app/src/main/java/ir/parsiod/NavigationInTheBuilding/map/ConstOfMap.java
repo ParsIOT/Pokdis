@@ -6,7 +6,7 @@ public class ConstOfMap {
 
     public HashMap<String,String > vertexOfGraph;
 
-
+// vertex location on map
     public ConstOfMap() {
         vertexOfGraph = new HashMap<String, String>() {{
                                 //index as 1

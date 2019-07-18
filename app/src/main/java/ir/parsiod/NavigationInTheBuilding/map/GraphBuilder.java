@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ir.parsiod.NavigationInTheBuilding.map.Objects.Graph;
-import ir.parsiod.NavigationInTheBuilding.map.Objects.Objects;
 
-public class ObjectLocation {
+
+public class GraphBuilder {
    public Graph graph;
 
-    public ObjectLocation() {
+    public GraphBuilder() {
 
 
          graph = new Graph();

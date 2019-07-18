@@ -39,7 +39,7 @@ import ir.parsiod.NavigationInTheBuilding.R;
 import ir.parsiod.NavigationInTheBuilding.beacon.BeaconDiscovered;
 import ir.parsiod.NavigationInTheBuilding.map.ConstOfMap;
 import ir.parsiod.NavigationInTheBuilding.map.MapDetail;
-import ir.parsiod.NavigationInTheBuilding.map.ObjectLocation;
+import ir.parsiod.NavigationInTheBuilding.map.GraphBuilder;
 import ir.parsiod.NavigationInTheBuilding.map.Objects.Edge;
 import ir.parsiod.NavigationInTheBuilding.map.WebViewManager;
 
@@ -58,9 +58,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //Permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Android M Permission check
+            //  ACCESS_COARSE_LOCATION Permission check
             if (this.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("This app needs location access");
@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 });
                 builder.show();
             }else {
+                // Enable location services
                 LocationManager locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
                 if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
+            //get READ STORAGE Permission for altbeacon
             if (this.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("This app needs READ STORAGE Permission");
@@ -127,41 +129,23 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
 
+        //get location from albeacon
         try{
-            //beaconDiscovered.startMonitoring();
-          //  updateLocation();
+            beaconDiscovered.startMonitoring();
+            updateLocation();
         }catch (RuntimeException e){
 
         }
 
 
- /*    new Handler().postDelayed(new Runnable() {
-           @Override
-           public void run() {
 
 
-               webViewManager.updateLocation("322,-123");
-              String a = webViewManager.getLoctionOfMarker();
-              a.toString();
-                   new Handler().postDelayed(new Runnable() {
-           @Override
-           public void run() {
-
-
-               pathToPoint("-388.0555534362793,-176.83333337306976");
-           }
-       },2000);
-           }
-       },4000);
-
-*/
-
-
+    //get information from SalesListActivity
         final String locationMarker = getIntent().getStringExtra("locationMarker");
         String itemName = getIntent().getStringExtra("itemName");
         String itemID = getIntent().getStringExtra("itemID");
 
-
+        //if from SalesListActivity
         if(locationMarker!=null && itemName!=null){
             pathToPoint(locationMarker);
             webViewManager.addMarker(locationMarker,"محصول"+itemName +"<br>"+"اضافه کردن به سبد خرید");
@@ -179,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-
+        //check BLUETOOTH is enable on any start program
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             Toast.makeText(this,"Device does not support Bluetooth",Toast.LENGTH_SHORT);
@@ -195,6 +179,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateLocation() {
+        // for move marker to near beacon
+
         try {
             new Timer().schedule(new TimerTask() {
                 @Override
@@ -214,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //initViews
     private void initViews() {
         //init webView
         webView = findViewById(R.id.webView);
@@ -249,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //for unbind beaconDiscovered
        if(beaconDiscovered!=null){
            try {
                beaconDiscovered.unbind();
@@ -259,7 +247,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // a function for draw line between marker and point
+    //note: location of marker is  in webViewManager
+    //read TODO
     void pathToPoint (final String point){
+
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -269,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                ObjectLocation location =new ObjectLocation();
+                GraphBuilder location =new GraphBuilder();
                 ConstOfMap constOfMap = new ConstOfMap();
 
 
@@ -284,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
                     Edge nearEdge1=  location.graph.findNearEdge(point);
                     Edge nearEdge2=  location.graph.findNearEdge(webViewManager.getLoctionOfMarker());
 
+
                     String point1P = nearEdge1.pointOnLineImage(point);
                     String point2P = nearEdge2.pointOnLineImage(webViewManager.getLoctionOfMarker());
 
@@ -297,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
 
                     webViewManager.drawLine(point,constOfMap.vertexOfGraph.get(vertex1));
                      webViewManager.drawLine(webViewManager.getLoctionOfMarker(),constOfMap.vertexOfGraph.get(vertex2));
+                     //TODO AFTER YOU GET NEAR POINT ON LINE ON COMMENT THIS COMMENT :)
                     // webViewManager.drawLine(point1P,constOfMap.vertexOfGraph.get(vertex1));
                     // webViewManager.drawLine(point2P,constOfMap.vertexOfGraph.get(vertex2));
                     String lastVertex = path[0];
