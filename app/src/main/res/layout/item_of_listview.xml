@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    android:background="@drawable/shap_of_item"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/itemImage"
+        android:layout_weight="2"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/nameOfItem"
+            android:text="name"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:textSize="25sp"
+            android:textColor="@android:color/black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/descriptionOfItem"
+            android:text="description"
+            android:layout_weight="3"
+
+            android:textSize="25sp"
+            android:textColor="@android:color/black"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="3">
+
+            <ImageView
+                android:id="@+id/goToMap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                app:srcCompat="@drawable/map" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/priceOfItem"
+                android:text="price"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="25sp"
+                android:textColor="@android:color/black"/>
+
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/add_to_cart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            app:srcCompat="@drawable/add_to_cart" />
+
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

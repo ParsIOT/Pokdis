@@ -6,10 +6,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.util.List;
@@ -32,6 +35,7 @@ public class WebViewManager {
     private Context context;
     private ScanModeEnum scanMode;
     private OnWebViewClickListener onWebViewClickListener;
+    private String tagToJS;
 
     private String loctionOfMarker="-381,416";
 
@@ -77,12 +81,12 @@ public class WebViewManager {
         }, 1000);
     }
 
-    public void addMarker(final String point){
+    public void addMarker(final String point, final String text ){
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                webView.loadUrl(String.format(Locale.getDefault(), "javascript:addMap(\"%s\")",point));
+                webView.loadUrl(String.format(Locale.getDefault(), "javascript:addMarker(\"%s\",\"%s\")",point,text));
 
             }
         }, 1000);
@@ -145,6 +149,25 @@ public class WebViewManager {
         }
     }
 
+
+    public void addPopup(final String point, final String text){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                webView.loadUrl(String.format(Locale.getDefault(), "javascript:makePopup(\"%s\",\"%s\")",point,text));
+
+            }
+        }, 1000);
+    }
+
+    public String getTagToJS() {
+        return tagToJS;
+    }
+
+    public void setTagToJS(String tagToJS) {
+        this.tagToJS = tagToJS;
+    }
+
     public void setOnClickListener(OnWebViewClickListener onClickListener) {
         this.onWebViewClickListener = onClickListener;
     }
@@ -158,7 +181,7 @@ public class WebViewManager {
 
         @JavascriptInterface
         public void sendToAndroid(String text) {
-            Log.d(TAG, "sendToAndroid: " + text);
+            Log.d("TAG", "sendToAndroid: " + text);
             onWebViewClickListener.onWebViewClick(text);
         }
 
@@ -166,6 +189,15 @@ public class WebViewManager {
         public String getFromAndroid() {
             return "This is from android.";
         }
+
+        @JavascriptInterface
+        public String getTagFromAndroid(){return tagToJS;}
+
+        @JavascriptInterface
+        public void addIdToList(String text){//TODO ADD ID OF ITEM FROM JS TO CART LIST
+            Toast.makeText(context,"+",Toast.LENGTH_SHORT);
+            Log.e("tag",text);
+             }
 
         @JavascriptInterface
         public void startMap() {
@@ -177,6 +209,7 @@ public class WebViewManager {
 //            startActivity(mIntent);
         }
     }
+
 
 
 }

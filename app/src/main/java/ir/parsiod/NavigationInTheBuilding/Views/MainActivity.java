@@ -1,4 +1,4 @@
-package ir.parsiod.NavigationInTheBuilding.Activitys;
+package ir.parsiod.NavigationInTheBuilding.Views;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -18,6 +18,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -114,15 +116,19 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
+
+
+
+
         }
 
 
-        beaconDiscovered = new BeaconDiscovered(this);
+       // beaconDiscovered = new BeaconDiscovered(this);
 
         initViews();
 
         try{
-           // beaconDiscovered.startMonitoring();
+            //beaconDiscovered.startMonitoring();
           //  updateLocation();
         }catch (RuntimeException e){
 
@@ -151,7 +157,25 @@ public class MainActivity extends AppCompatActivity {
 */
 
 
+        final String locationMarker = getIntent().getStringExtra("locationMarker");
+        String itemName = getIntent().getStringExtra("itemName");
+        String itemID = getIntent().getStringExtra("itemID");
+
+
+        if(locationMarker!=null && itemName!=null){
+            pathToPoint(locationMarker);
+            webViewManager.addMarker(locationMarker,"محصول"+itemName +"<br>"+"اضافه کردن به سبد خرید");
+
+            webViewManager.setTagToJS(itemID);
+
+
+        }
+
+
     }
+
+
+
 
     @Override
     protected void onResume() {
@@ -225,7 +249,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        beaconDiscovered.unbind();
+       if(beaconDiscovered!=null){
+           try {
+               beaconDiscovered.unbind();
+           }catch (RuntimeException e){
+               Log.e("error",e.toString());
+           }
+       }
     }
 
 
@@ -282,7 +312,8 @@ public class MainActivity extends AppCompatActivity {
                                 ,constOfMap.vertexOfGraph.get(lastVertex));
                         webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex1)
                                 ,constOfMap.vertexOfGraph.get(path[0]));
-                    }else if(path[0]==""){
+                    }
+                    if(path[0]==""){
                         webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex1)
                                 ,constOfMap.vertexOfGraph.get(vertex2));
                     }
@@ -291,12 +322,45 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("error",e.toString());
                 }
             }
-        },2000);
+        },1000);
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuItem search = menu.add("search").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
 
 
+
+                startActivity(new Intent(MainActivity.this,SalesListActivity.class));
+
+
+                return false;
+            }
+        });
+        search.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        search.setIcon(R.drawable.serch);
+        MenuItem cart = menu.add("Cart").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+
+
+
+                startActivity(new Intent(MainActivity.this,CartActivity.class));
+
+
+                return false;
+            }
+        });
+        cart.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        cart.setIcon(R.drawable.buy);
+
+
+
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {

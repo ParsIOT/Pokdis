@@ -3,6 +3,7 @@
 <head>
     <title>My test Map - Leaflet</title>
     <link rel="stylesheet" href="css/leaflet.css"/>
+<link rel="stylesheet" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" href="leaflet.usermarker.css"/>
     <link rel="stylesheet" href="css/easy-button.css">
     <link rel="stylesheet" href="css/leaflet-slider.css">
@@ -158,20 +159,40 @@
     }
 
 
-    function addMarker(arg) {
+    function addMarker(arg,text) {
         var pattern = /(.*),(.*)/;
             var match = pattern.exec(arg);
             var x = match[1];
             var y = match[2];
         isMarkersShown = true;
-        var arbitraryMarker = L.marker([x, y]);
+        var arbitraryMarker = L.marker([x, y]);// .popup()
+          // .setContent("<i class=\"glyphicon glyphicon-plus\" style=\"font-size:30px;color:green;\"></i>"+text);
+	//arbitraryMarker;
         arbitraryMarker.addTo(arbitraryMarkersLayer);
+      var popup = arbitraryMarker.bindPopup("<i class=\"glyphicon glyphicon-plus\" onclick=\"callAndroid()\" style=\"font-size:30px;color:green;\"></i>"+text)
+	        .openPopup();;
         arbitraryMarker.on('click', function markerOnClick(e) {
             var retVar = e.latlng.lat + "," + e.latlng.lng;
             console.log(e.latlng.lat + "," + e.latlng.lng);
             Android.sendToAndroid(retVar);
             marker.openPopup();
         });
+
+//	var popup = L.popup()
+		 //   .setLatLng([x+1,y])
+		
+		    //.setContent("<i class=\"glyphicon glyphicon-plus\" style=\"font-size:30px;color:green;\"></i>"+text)
+		   
+		    //.openOn(map);
+
+
+    }
+
+    function callAndroid(){
+       // alert("ok");
+        var text =Android.getTagFromAndroid()
+        Android.addIdToList(text);
+
     }
 
     function toggleMarkers(){
@@ -193,10 +214,13 @@
         var x = match[1];
         var y = match[2];
 
-	latlng = marker.getLatLng()
 	var popup = L.popup()
 		    .setLatLng([x,y])
-		    .setContent(text)
+		//.setLatLng(latlng)
+		    .setContent("<i class=\"glyphicon glyphicon-plus\" style=\"font-size:30px;color:green;\"></i>"+
+
+		      Android.getTagFromAndroid()
+		    )
 		   
 		    .openOn(map);
 
