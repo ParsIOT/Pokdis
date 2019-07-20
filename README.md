@@ -1,4 +1,3 @@
 # NavigationInTheBuilding
 
-Developer : seyedsajjad seyedalian  
-Team : parsiot
+Developer : seyedsajjad seyedalian
