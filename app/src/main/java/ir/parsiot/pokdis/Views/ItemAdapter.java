@@ -75,8 +75,8 @@ public class ItemAdapter extends ArrayAdapter {
             name =convertView.findViewById(R.id.nameOfItem);
             description =convertView.findViewById(R.id.descriptionOfItem);
             price =convertView.findViewById(R.id.priceOfItem);
-            goToMapBtn =convertView.findViewById(R.id.goToMapBtn);
-            add_to_cart =convertView.findViewById(R.id.add_to_cart);
+            goToMapBtn =convertView.findViewById(R.id.show_map_btn);
+            add_to_cart =convertView.findViewById(R.id.add_to_card_btn);
 
             if(showAddToCart){
                 add_to_cart.setVisibility(View.VISIBLE);

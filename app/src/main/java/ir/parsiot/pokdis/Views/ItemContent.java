@@ -1,11 +1,16 @@
 package ir.parsiot.pokdis.Views;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -36,13 +41,14 @@ public class ItemContent extends AppCompatActivity {
     ItemOfList item;
     boolean isCollapsed;
 
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_content);
 
-
+        context = getApplicationContext();
         name = findViewById(R.id.item_name);
         itemImage = findViewById(R.id.item_image);
         price = findViewById(R.id.item_price);
@@ -58,7 +64,7 @@ public class ItemContent extends AppCompatActivity {
 
         String itemId = getIntent().getStringExtra("itemId");
         Items items = new Items();
-        ItemOfList item = items.get_item(itemId);
+        item = items.get_item(itemId);
         if (item != null){
 
             String nameTxt = item.getName();
@@ -111,12 +117,36 @@ public class ItemContent extends AppCompatActivity {
         btnDescExpand.startAnimation(animation); //to start animation
 
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        FloatingActionButton showMapFab = findViewById(R.id.show_map_fab);
+        showMapFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                Intent intent = new Intent(context,MainActivity.class);
+                intent.putExtra("locationMarker",item.getLocation());
+                intent.putExtra("itemName",item.getName());
+                intent.putExtra("itemID",item.getId());
+//                Log.e("tag",item.getId());
+                //intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
+
+        FloatingActionButton addToCartFab = findViewById(R.id.add_to_card_fab);
+        addToCartFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Snackbar mSnackbar = Snackbar.make(view, "این محصول به لیست خرید اضافه شد.", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null);
+                View mView = mSnackbar.getView();
+                TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                    mTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                else
+                    mTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+                mSnackbar.show();
             }
         });
     }

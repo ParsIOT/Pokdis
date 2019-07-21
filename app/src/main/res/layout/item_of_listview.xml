@@ -78,7 +78,7 @@
                                 android:orientation="vertical"
                                 android:layout_weight="2">
                                 <ImageView
-                                    android:id="@+id/goToMapBtn"
+                                    android:id="@+id/show_map_btn"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -86,7 +86,7 @@
                                     app:srcCompat="@drawable/map" />
 
                                 <ImageView
-                                    android:id="@+id/add_to_cart"
+                                    android:id="@+id/add_to_card_btn"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"

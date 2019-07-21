@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import ir.parsiot.pokdis.R;
@@ -67,8 +68,8 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         TextView name;
         TextView description;
         TextView price;
-        ImageView goToMapBtn;
-        ImageView add_to_cart;
+        ImageView showMapBtn;
+        ImageView addToCartBtn;
         ItemOfList item;
 
         ItemViewHolder(final View convertView) {
@@ -77,8 +78,8 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             name = convertView.findViewById(R.id.nameOfItem);
             description = convertView.findViewById(R.id.descriptionOfItem);
             price = convertView.findViewById(R.id.priceOfItem);
-            goToMapBtn = convertView.findViewById(R.id.goToMapBtn);
-            add_to_cart = convertView.findViewById(R.id.add_to_cart);
+            showMapBtn = convertView.findViewById(R.id.show_map_btn);
+            addToCartBtn = convertView.findViewById(R.id.add_to_card_btn);
 
 
             // Set a blinking animation on goToMapBtn
@@ -87,16 +88,16 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             animation.setInterpolator(new LinearInterpolator());
             animation.setRepeatCount(Animation.INFINITE);
             animation.setRepeatMode(Animation.REVERSE);
-            goToMapBtn.startAnimation(animation);
+            showMapBtn.startAnimation(animation);
 
             Typeface ir_font = Typeface.createFromAsset(context.getApplicationContext().getAssets(), "fonts/Yekan.ttf");
             name.setTypeface(ir_font);
             price.setTypeface(ir_font);
 
             if(showAddToCart){
-                add_to_cart.setVisibility(View.VISIBLE);
+                addToCartBtn.setVisibility(View.VISIBLE);
             }else {
-                add_to_cart.setVisibility(View.GONE);
+                addToCartBtn.setVisibility(View.GONE);
             }
             listeners();
 
@@ -122,7 +123,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         }
 
         private void listeners(){
-            goToMapBtn.setOnClickListener(new View.OnClickListener() {
+            showMapBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //  Bundle bundle = new Bundle();
@@ -141,19 +142,26 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
                 }
             });
 
-            add_to_cart.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                    Intent intent = new Intent(context,ItemContent.class);
-                    intent.putExtra("itemId",item.getId());
-                    Log.e("tag",item.getId());
-                    //intent.putExtras(bundle);
-                    context.startActivity(intent);
+            ArrayList<View> tempLis= new ArrayList<View>();
+            tempLis.add(name);
+            tempLis.add(price);
+            tempLis.add(description);
+            tempLis.add(itemImage);
+            for(View view : tempLis) {
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                }
-            });
+                        Intent intent = new Intent(context, ItemContent.class);
+                        intent.putExtra("itemId", item.getId());
+                        Log.e("tag", item.getId());
+                        //intent.putExtras(bundle);
+                        context.startActivity(intent);
 
+                    }
+                });
+            }
 
         }
     }
