@@ -14,9 +14,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="ir.parsiot.pokdis1.Views.CartActivity"></activity>
-        <activity android:name="ir.parsiot.pokdis1.Views.SalesListActivity" />
-        <activity android:name="ir.parsiot.pokdis1.Views.MainActivity">
+        <activity
+            android:name=".Views.ItemContent"
+            android:label="@string/title_activity_item_content"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".Views.CartActivity" />
+        <activity android:name=".Views.SalesListActivity" />
+        <activity android:name=".Views.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

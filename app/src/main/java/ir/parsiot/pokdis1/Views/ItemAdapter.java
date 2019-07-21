@@ -91,7 +91,7 @@ public class ItemAdapter extends ArrayAdapter {
 
         public void fill (ItemOfList item){
             this.item = item;
-            itemImage.setImageResource(item.getItemImage());
+//            itemImage.setImageResource(item.getItemImage());
             name.setText(item.getName());
             description.setText(item.getDescription());
             price.setText(item.getPrice());

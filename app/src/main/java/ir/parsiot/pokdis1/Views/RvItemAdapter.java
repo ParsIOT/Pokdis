@@ -2,6 +2,8 @@ package ir.parsiot.pokdis1.Views;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import ir.parsiot.pokdis1.R;
@@ -73,6 +77,12 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             goToMap = convertView.findViewById(R.id.goToMap);
             add_to_cart = convertView.findViewById(R.id.add_to_cart);
 
+
+
+            Typeface ir_font = Typeface.createFromAsset(context.getApplicationContext().getAssets(), "fonts/Yekan.ttf");
+            name.setTypeface(ir_font);
+            price.setTypeface(ir_font);
+
             if(showAddToCart){
                 add_to_cart.setVisibility(View.VISIBLE);
             }else {
@@ -84,10 +94,21 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
 
         public void fill (ItemOfList item){
             this.item = item;
-            itemImage.setImageResource(item.getItemImage());
+//            itemImage.setImageResource(item.getItemImage());
             name.setText(item.getName());
             description.setText(item.getDescription());
             price.setText(item.getPrice());
+
+
+
+            try {
+                InputStream ims = context.getApplicationContext().getAssets().open(item.getImageName());
+                Drawable drw = Drawable.createFromStream(ims, null);
+                itemImage.setImageDrawable(drw);
+            }
+            catch(IOException ex) {
+                return;
+            }
         }
 
         private void listeners(){
@@ -114,7 +135,11 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
                 @Override
                 public void onClick(View view) {
 
-
+                    Intent intent = new Intent(context,ItemContent.class);
+                    intent.putExtra("itemId",item.getId());
+                    Log.e("tag",item.getId());
+                    //intent.putExtras(bundle);
+                    context.startActivity(intent);
 
                 }
             });
