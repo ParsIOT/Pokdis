@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ir.parsiod.NavigationInTheBuilding">
+    package="ir.parsiot.pokdis1">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -14,9 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Views.CartActivity"></activity>
-        <activity android:name=".Views.SalesListActivity" />
-        <activity android:name=".Views.MainActivity">
+        <activity android:name="ir.parsiot.pokdis1.Views.CartActivity"></activity>
+        <activity android:name="ir.parsiot.pokdis1.Views.SalesListActivity" />
+        <activity android:name="ir.parsiot.pokdis1.Views.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
