@@ -78,7 +78,7 @@
                                 android:orientation="vertical"
                                 android:layout_weight="2">
                                 <ImageView
-                                    android:id="@+id/goToMap"
+                                    android:id="@+id/goToMapBtn"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"

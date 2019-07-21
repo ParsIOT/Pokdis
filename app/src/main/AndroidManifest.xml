@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ir.parsiot.pokdis1">
+    package="ir.parsiot.pokdis">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -15,12 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Views.ItemContent"
+            android:name="ir.parsiot.pokdis.Views.ItemContent"
             android:label="@string/title_activity_item_content"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".Views.CartActivity" />
-        <activity android:name=".Views.SalesListActivity" />
-        <activity android:name=".Views.MainActivity">
+        <activity android:name="ir.parsiot.pokdis.Views.CartActivity" />
+        <activity android:name="ir.parsiot.pokdis.Views.SalesListActivity" />
+        <activity android:name="ir.parsiot.pokdis.Views.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
