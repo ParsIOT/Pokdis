@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -139,6 +140,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         TextView name;
         TextView description;
         TextView price;
+        TextView discountPrice;
         ImageView showMapBtn;
         ImageView addToCartBtn;
         ImageView deleteBtn;
@@ -150,6 +152,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             name = convertView.findViewById(R.id.nameOfItem);
             description = convertView.findViewById(R.id.descriptionOfItem);
             price = convertView.findViewById(R.id.priceOfItem);
+            discountPrice = convertView.findViewById(R.id.disccountPriceOfItem);
             showMapBtn = convertView.findViewById(R.id.show_map_btn);
             addToCartBtn = convertView.findViewById(R.id.add_to_card_btn);
             deleteBtn = convertView.findViewById(R.id.delete_btn);
@@ -165,6 +168,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             Typeface ir_font = Typeface.createFromAsset(context.getApplicationContext().getAssets(), "fonts/Yekan.ttf");
             name.setTypeface(ir_font);
             price.setTypeface(ir_font);
+            discountPrice.setTypeface(ir_font);
 
             if(showAddToCart){
                 addToCartBtn.setVisibility(View.VISIBLE);
@@ -192,6 +196,13 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             description.setText(item.getDescription());
             price.setText(item.getPrice());
 
+            String discountPriceStr = item.getDiscountPrice();
+            if (!discountPriceStr.equals("")){
+                discountPrice.setText(discountPriceStr);;
+                price.setPaintFlags(price.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }else{
+                discountPrice.setVisibility(View.GONE);
+            }
 
 
             try {

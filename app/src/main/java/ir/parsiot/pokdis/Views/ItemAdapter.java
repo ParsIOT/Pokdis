@@ -97,7 +97,6 @@ public class ItemAdapter extends ArrayAdapter {
             price.setText(item.getPrice());
 
 
-
         }
 
        private void listeners(){

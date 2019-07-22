@@ -12,6 +12,7 @@ public class ItemOfList {
     private String weigth;
     private String brand;
     private double price;
+    private double discountPrice;
     private String location;
     private String id;
 
@@ -19,12 +20,14 @@ public class ItemOfList {
 
     public ItemOfList(String id, String name,
                       String description, String longDescription, String dimens, String weight, String brand,
-                      double price, String imageName, String location) {
+                      double price, double discountPrice,
+                      String imageName, String location) {
         this.imageName = imageName;
         this.name = name;
         this.description = description;
         this.longDescription = longDescription;
         this.price = price;
+        this.discountPrice = discountPrice;
         this.location = location;
         this.id = id;
         this.dimens = dimens;
@@ -92,18 +95,33 @@ public class ItemOfList {
 
 
     public String getPrice() {
-//        DecimalFormat decimalFormat = new DecimalFormat("#,###");
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setDecimalSeparator(',');
         DecimalFormat decimalFormat = new DecimalFormat("###,###,###,###", symbols);
         String formattedPrice = decimalFormat.format(price);
-//        String formattedPrice = decimalFormat.format(price);
         return formattedPrice + " ریال ";
     }
 
     public void setPrice(double price) {
         this.price = price;
     }
+
+
+    public String getDiscountPrice() {
+        if (discountPrice == -1){
+            return "";
+        }
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        DecimalFormat decimalFormat = new DecimalFormat("###,###,###,###", symbols);
+        String formattedPrice = decimalFormat.format(discountPrice);
+        return formattedPrice + " ریال ";
+    }
+
+    public void setDiscountPrice(double discountPrice) {
+        this.discountPrice = discountPrice;
+    }
+
 
     public String getLocation() {
         return location;

@@ -2,6 +2,7 @@ package ir.parsiot.pokdis.Views;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -34,6 +35,7 @@ public class ItemContent extends AppCompatActivity {
     TextView name;
     TextView description;
     TextView price;
+    TextView discountPrice;
     TextView dimens;
     TextView weight;
     TextView brand;
@@ -51,12 +53,14 @@ public class ItemContent extends AppCompatActivity {
         name = findViewById(R.id.item_name);
         itemImage = findViewById(R.id.item_image);
         price = findViewById(R.id.item_price);
+        discountPrice = findViewById(R.id.item_discount_price);
         description = findViewById(R.id.item_description);
         dimens = findViewById(R.id.item_dimens);
         weight = findViewById(R.id.item_weight);
         brand = findViewById(R.id.item_brand);
         Typeface ir_font = Typeface.createFromAsset(this.getApplicationContext().getAssets(), "fonts/Yekan.ttf");
         price.setTypeface(ir_font);
+        discountPrice.setTypeface(ir_font);
         name.setTypeface(ir_font);
 
 
@@ -69,7 +73,16 @@ public class ItemContent extends AppCompatActivity {
             String nameTxt = item.getName();
             name.setText(nameTxt);
             description.setText(item.getDescription()+"\n\n"+item.getLongDescription());
+
             price.setText(item.getPrice());
+            String discountPriceStr = item.getDiscountPrice();
+            if (!discountPriceStr.equals("")){
+                discountPrice.setText(discountPriceStr);;
+                price.setPaintFlags(price.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }else{
+                discountPrice.setVisibility(View.GONE);
+            }
+
             dimens.setText(item.getDimens());
             weight.setText(item.getWeigth());
             brand.setText(item.getBrand());
