@@ -259,13 +259,13 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             ArrayList<View> tempLis= new ArrayList<View>();
             tempLis.add(name);
             tempLis.add(price);
+            tempLis.add(discountPrice);
             tempLis.add(description);
             tempLis.add(itemImage);
             for(View view : tempLis) {
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
                         Intent intent = new Intent(context, ItemContent.class);
                         intent.putExtra("itemId", item.getId());
                         Log.e("tag", item.getId());
