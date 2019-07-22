@@ -19,6 +19,7 @@ public class Constants {
     public static  final String COMMON_UUID_BEACON ="23a01af0-232a-4518-9c0e-323fb773f5ef";
     public static  final String COMMON_MAJOR_BEACON ="1";
 
+    public static final String CART_ITEMS_KEY = "cart_items_key";
 
     public static final long PERIOD_OF_GET_TOP_BEACON = 1000l;
 

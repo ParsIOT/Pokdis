@@ -24,6 +24,7 @@ import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 import java.io.IOException;
 import java.io.InputStream;
 
+import ir.parsiot.pokdis.Items.CartItems;
 import ir.parsiot.pokdis.Items.Items;
 import ir.parsiot.pokdis.R;
 
@@ -36,11 +37,9 @@ public class ItemContent extends AppCompatActivity {
     TextView dimens;
     TextView weight;
     TextView brand;
-    ImageView goToMap;
-    ImageView add_to_cart;
     ItemOfList item;
     boolean isCollapsed;
-
+    CartItems cartItems = new CartItems();
     Context context;
 
     @Override
@@ -123,13 +122,13 @@ public class ItemContent extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Intent intent = new Intent(context,MainActivity.class);
+                Intent intent = new Intent(ItemContent.this,MainActivity.class);
                 intent.putExtra("locationMarker",item.getLocation());
                 intent.putExtra("itemName",item.getName());
                 intent.putExtra("itemID",item.getId());
 //                Log.e("tag",item.getId());
                 //intent.putExtras(bundle);
-                context.startActivity(intent);
+                startActivity(intent);
             }
         });
 
@@ -137,8 +136,13 @@ public class ItemContent extends AppCompatActivity {
         addToCartFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Snackbar mSnackbar = Snackbar.make(view, "این محصول به لیست خرید اضافه شد.", Snackbar.LENGTH_LONG)
+                String txtMessage;
+                if (cartItems.put_item(item)){
+                    txtMessage = "این محصول به لیست خرید اضافه شد.";
+                }else{
+                    txtMessage = "این محصول در سبد خرید از قبل وجود داشته است";
+                }
+                Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
                         .setAction("Action", null);
                 View mView = mSnackbar.getView();
                 TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);

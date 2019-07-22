@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +24,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import ir.parsiot.pokdis.Items.CartItems;
 import ir.parsiot.pokdis.R;
 
 public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHolder> {
-    private List<ItemOfList> items;
+    private ArrayList<ItemOfList> allItems = new ArrayList<ItemOfList>();
+    private ArrayList<ItemOfList> filteredItems = new ArrayList<ItemOfList>();
     private Context context;
     private LayoutInflater layoutInflater;
     boolean showAddToCart = false;
@@ -32,13 +37,14 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
     public RvItemAdapter(Context context, List objects, Boolean showAddToCart) {
 //        super(context, R.layout.item_of_listview, objects);
         this.context = context;
-        items = objects;
+        allItems = (ArrayList<ItemOfList>)objects;
+        filteredItems.addAll(allItems);
         this.showAddToCart = showAddToCart;
 
     }
     @Override
     public int getItemCount() {
-        return items.size();
+        return filteredItems.size();
     }
 
     @Override
@@ -51,7 +57,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
     @Override
     public void onBindViewHolder(ItemViewHolder itemViewHolder, int position) {
 
-        ItemOfList item = items.get(position);
+        ItemOfList item = filteredItems.get(position);
 
         itemViewHolder.fill(item);
     }
@@ -60,6 +66,23 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
+
+    public void filter(String query){
+        filteredItems.clear();
+        query = query.toLowerCase();
+
+        if (query.equals("")) {
+            filteredItems.addAll(allItems);
+        }else{
+            for (ItemOfList item : allItems) {
+                if (item.getName().toLowerCase().contains(query)){
+                    filteredItems.add(item);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
@@ -71,6 +94,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         ImageView showMapBtn;
         ImageView addToCartBtn;
         ItemOfList item;
+        CartItems cartItems = new CartItems();
 
         ItemViewHolder(final View convertView) {
             super(convertView);
@@ -142,6 +166,26 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
                 }
             });
 
+            addToCartBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String txtMessage;
+                    if (cartItems.put_item(item)){
+                        txtMessage = "این محصول به لیست خرید اضافه شد.";
+                    }else{
+                        txtMessage = "این محصول در سبد خرید از قبل وجود داشته است";
+                    }
+                    Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
+                            .setAction("Action", null);
+                    View mView = mSnackbar.getView();
+                    TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                        mTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    else
+                        mTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+                    mSnackbar.show();
+                }
+            });
 
             ArrayList<View> tempLis= new ArrayList<View>();
             tempLis.add(name);

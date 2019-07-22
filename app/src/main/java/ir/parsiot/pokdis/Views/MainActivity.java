@@ -26,6 +26,8 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 
+import com.orhanobut.hawk.Hawk;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ import java.util.TimerTask;
 
 import ir.parsiot.pokdis.Constants.Constants;
 import ir.parsiot.pokdis.Enums.ScanModeEnum;
+import ir.parsiot.pokdis.Items.Items;
 import ir.parsiot.pokdis.Listeners.OnWebViewClickListener;
 import ir.parsiot.pokdis.R;
 import ir.parsiot.pokdis.beacon.BeaconDiscovered;
@@ -57,7 +60,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Hawk.init(getApplicationContext()).build();
+
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setTitle("");
+
         //Permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //  ACCESS_COARSE_LOCATION Permission check
@@ -119,8 +126,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
+//            List<ItemOfList> items = new ArrayList<ItemOfList>();
+//            Items initItems = new Items();
+//            items.add(initItems.get_item("1"));
+//            Hawk.put("items", items);
+            List<ItemOfList> value = Hawk.get("items");
 
         }
 

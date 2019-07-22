@@ -19,7 +19,16 @@
             android:label="@string/title_activity_item_content"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name="ir.parsiot.pokdis.Views.CartActivity" />
-        <activity android:name="ir.parsiot.pokdis.Views.SalesListActivity" />
+        <activity android:name="ir.parsiot.pokdis.Views.SalesListActivity" >
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+        </activity>
         <activity android:name="ir.parsiot.pokdis.Views.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
