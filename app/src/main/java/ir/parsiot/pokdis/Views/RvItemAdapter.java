@@ -1,6 +1,8 @@
 package ir.parsiot.pokdis.Views;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ir.parsiot.pokdis.Items.CartItems;
+import ir.parsiot.pokdis.Items.CartItemsClient;
 import ir.parsiot.pokdis.R;
 
 public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHolder> {
@@ -33,13 +36,20 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
     private Context context;
     private LayoutInflater layoutInflater;
     boolean showAddToCart = false;
+    boolean showDeleteBtn = false;
+    private CartItemsClient cartItemsClient;
+    private CartItems cartItems;
 
-    public RvItemAdapter(Context context, List objects, Boolean showAddToCart) {
+
+    public RvItemAdapter(Context context, CartItemsClient cartItemsClient, List objects, Boolean showAddToCart, Boolean showDeleteBtn) {
 //        super(context, R.layout.item_of_listview, objects);
         this.context = context;
+        cartItems = new CartItems();
+        this.cartItemsClient = cartItemsClient;
         allItems = (ArrayList<ItemOfList>)objects;
         filteredItems.addAll(allItems);
         this.showAddToCart = showAddToCart;
+        this.showDeleteBtn = showDeleteBtn;
 
     }
     @Override
@@ -56,10 +66,18 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
 
     @Override
     public void onBindViewHolder(ItemViewHolder itemViewHolder, int position) {
-
+        if (allItems.size() == 0){
+            return;
+        }
+        final int pos = position;
         ItemOfList item = filteredItems.get(position);
-
         itemViewHolder.fill(item);
+
+        itemViewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                deleteItemFromList(v, pos);
+            }
+        });
     }
 
     @Override
@@ -83,6 +101,36 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         notifyDataSetChanged();
     }
 
+    // confirmation dialog box to delete an unit
+    private void deleteItemFromList(View v, final int position) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+
+        //builder.setTitle("Dlete ");
+        builder.setMessage("مطمئن هستید می خواهید این محصول را از لیست خرید حذف کنید ؟")
+                .setCancelable(false)
+                .setPositiveButton("بله",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //1: Delete from allItems
+                                //2: Delete from HAWK
+                                allItems = cartItemsClient.deleteItem(filteredItems.get(position));
+                                filteredItems.remove(position);
+
+                                notifyDataSetChanged();
+                            }
+                        })
+                .setNegativeButton("خیر", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+
+                    }
+                });
+
+        builder.show();
+
+    }
+
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
@@ -93,8 +141,8 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         TextView price;
         ImageView showMapBtn;
         ImageView addToCartBtn;
+        ImageView deleteBtn;
         ItemOfList item;
-        CartItems cartItems = new CartItems();
 
         ItemViewHolder(final View convertView) {
             super(convertView);
@@ -104,7 +152,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             price = convertView.findViewById(R.id.priceOfItem);
             showMapBtn = convertView.findViewById(R.id.show_map_btn);
             addToCartBtn = convertView.findViewById(R.id.add_to_card_btn);
-
+            deleteBtn = convertView.findViewById(R.id.delete_btn);
 
             // Set a blinking animation on goToMapBtn
             Animation animation = new AlphaAnimation(1, (float)0.6);
@@ -123,9 +171,19 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             }else {
                 addToCartBtn.setVisibility(View.GONE);
             }
+
+            if(showDeleteBtn){
+                deleteBtn.setVisibility(View.VISIBLE);
+            }else {
+                deleteBtn.setVisibility(View.GONE);
+            }
+
             listeners();
 
         }
+
+
+
 
         public void fill (ItemOfList item){
             this.item = item;

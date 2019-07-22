@@ -39,14 +39,14 @@ public class ItemContent extends AppCompatActivity {
     TextView brand;
     ItemOfList item;
     boolean isCollapsed;
-    CartItems cartItems = new CartItems();
+    CartItems cartItems;
     Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_content);
-
+        cartItems = new CartItems();
         context = getApplicationContext();
         name = findViewById(R.id.item_name);
         itemImage = findViewById(R.id.item_image);
@@ -79,7 +79,7 @@ public class ItemContent extends AppCompatActivity {
                 InputStream ims = this.getApplicationContext().getAssets().open(item.getImageName());
                 Drawable drw = Drawable.createFromStream(ims, null);
                 itemImage.setImageDrawable(drw);
-                findViewById(R.id.image_none_text).setVisibility(View.INVISIBLE);
+                findViewById(R.id.image_none_text).setVisibility(View.GONE);
             }
             catch(IOException ex) {
                 return;

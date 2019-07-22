@@ -33,15 +33,27 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2">
+                    <ImageButton
+                        android:id="@+id/delete_btn"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/delete" />
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/nameOfItem"
-                        android:text="name"
-                        android:layout_weight="2"
-                        android:gravity="right"
-                        android:textSize="17dp"
-                        android:textColor="@android:color/black"/>
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/nameOfItem"
+                            android:text="name"
+                            android:layout_weight="1"
+                            android:gravity="right"
+                            android:textSize="17dp"
+                            android:textColor="@android:color/black"/>
+
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

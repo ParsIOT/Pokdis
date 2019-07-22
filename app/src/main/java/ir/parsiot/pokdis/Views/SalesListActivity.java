@@ -41,7 +41,7 @@ public class SalesListActivity extends AppCompatActivity {
     private void refreshDisplay() {
         items = new Items();
 //        adapter = new ItemAdapter(SalesListActivity.this,items.items,true);
-        adapter = new RvItemAdapter(SalesListActivity.this,items.items,true);
+        adapter = new RvItemAdapter(SalesListActivity.this,null,items.items,true, false);
         listItems.setAdapter(adapter);
     }
 

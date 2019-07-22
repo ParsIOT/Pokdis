@@ -8,24 +8,28 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ir.parsiot.pokdis.Items.CartItems;
+import ir.parsiot.pokdis.Items.CartItemsClient;
 import ir.parsiot.pokdis.R;
 //import ir.parsiot.pokdis.ViewWidgets.StickyBottomBehavior;
 
-public class CartActivity extends AppCompatActivity {
+public class CartActivity extends AppCompatActivity implements CartItemsClient {
     private RvItemAdapter adapter;
     private RecyclerView listView;
     private List<ItemOfList> items;
-    CartItems cartItems = new CartItems();
+    Button cntButton;
+    CartItems cartItems ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        cartItems = new CartItems();
         setContentView(R.layout.activity_cart);
         getSupportActionBar().setTitle("سبد خرید");
         initViews();
@@ -33,6 +37,7 @@ public class CartActivity extends AppCompatActivity {
         items = new ArrayList<>();
         items = cartItems.get_items();
 
+        cntButton = findViewById(R.id.continue_button);
 
 //        Button button = findViewById(R.id.continue_button);
 //        ((CoordinatorLayout.LayoutParams) button.getLayoutParams()).setBehavior(new StickyBottomBehavior(R.id.anchor, getResources().getDimensionPixelOffset(R.dimen.margins)));
@@ -50,9 +55,16 @@ public class CartActivity extends AppCompatActivity {
 
 
     private void refreshDisplay() {
-
-        adapter = new RvItemAdapter(CartActivity.this,items,false);
+        if (items.size() == 0){
+            cntButton.setVisibility(View.GONE);
+        }
+        adapter = new RvItemAdapter(CartActivity.this,  this, items,false, true);
         listView.setAdapter(adapter);
+    }
+
+    @Override
+    public ArrayList<ItemOfList> deleteItem(ItemOfList item){
+        return cartItems.delete_item(item);
     }
 
     @Override
