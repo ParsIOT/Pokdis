@@ -277,13 +277,13 @@ public class MainActivity extends AppCompatActivity {
 
         MapDetail mapDetail = new MapDetail();
         mapDetail.setMapName("map");
-//        mapDetail.setMapPath("map.png");
-        mapDetail.setMapPath("map1.png");
+        mapDetail.setMapPath("map.png");
+//        mapDetail.setMapPath("map1.png");
         List<Integer> dimensions = new ArrayList<Integer>();
-//        dimensions.add(1206);
-//        dimensions.add(1151);
-        dimensions.add(909);
-        dimensions.add(769);
+        dimensions.add(1206);
+        dimensions.add(1151);
+//        dimensions.add(909);
+//        dimensions.add(769);
         mapDetail.setMapDimensions(dimensions);
         webViewManager.addMap(mapDetail);
 
@@ -310,81 +310,46 @@ public class MainActivity extends AppCompatActivity {
     // a function for draw line between marker and point
     //note: location of marker is  in webViewManager
     //read TODO
-    void pathToPoint(final String point) {
+    void pathToPoint(final String dstPoint) {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 GraphBuilder location = new GraphBuilder();
                 ConstOfMap constOfMap = new ConstOfMap();
-
+                String srcPoint = webViewManager.getLoctionOfMarker();
                 try {
-                    Edge nearEdge1 = location.graph.findNearEdge(point);
-                    Edge nearEdge2 = location.graph.findNearEdge(webViewManager.getLoctionOfMarker());
+                    // Find closet edges
+                    Edge srcEdge = location.graph.findNearEdge(srcPoint); // nearest edge to the source point
+                    Edge dstEdge = location.graph.findNearEdge(dstPoint); // nearest edge to the destination point
 
-                    String point1P = nearEdge1.pointOnLineImage(point);
-                    String point2P = nearEdge2.pointOnLineImage(webViewManager.getLoctionOfMarker());
+                    String srcEdgePoint = srcEdge.pointOnLineImage(srcPoint); // find the nearest point on the nearest edge to the source
+                    String dstEdgePoint = dstEdge.pointOnLineImage(dstPoint); // find the nearest point on the nearest edge to the destination
 
-                    String vertex1 = nearEdge1.nearVertex(point1P);
-                    String vertex2 = nearEdge2.nearVertex(point2P);
+                    String srcEdgeClosestVertex = srcEdge.nearVertex(srcEdgePoint); // find closet vertex of the nearest edge to srcEdgePoint
+                    String dstEdgeClosestVertex = dstEdge.nearVertex(dstEdgePoint); // find closet vertex of the nearest edge to dstEdgePoint
 
-                    String strPath = location.graph.getPathBetween(vertex1, vertex2);
-                    strPath.toString();
+                    // Find path between two edges according to the closest vetexes
+                    String strPath = location.graph.getPathBetweenEdges(dstEdgeClosestVertex, dstEdge, srcEdgeClosestVertex, srcEdge);
                     String[] path = strPath.split(",");
 
-                    webViewManager.drawLine(point, point1P);
-//                    webViewManager.drawLine(point1P, constOfMap.vertexOfGraph.get(vertex1));
-                    webViewManager.drawLine(webViewManager.getLoctionOfMarker(), point2P);
-//                    webViewManager.drawLine(point2P, constOfMap.vertexOfGraph.get(vertex2));
-
-                    //TODO AFTER YOU GET NEAR POINT ON LINE ON COMMENT THIS COMMENT :)
-                    // webViewManager.drawLine(point1P,constOfMap.vertexOfGraph.get(vertex1));
-                    // webViewManager.drawLine(point2P,constOfMap.vertexOfGraph.get(vertex2));
-                    boolean vertex1Passed = false;
-                    boolean vertex2Passed = false;
+                    // Draw the path
+                    webViewManager.drawLine(srcPoint, srcEdgePoint);
+                    webViewManager.drawLine(dstPoint, dstEdgePoint);
 
                     String lastVertex = path[0];
                     for (int i = 1; i < path.length; i++) {
-                        String vrtx = constOfMap.vertexOfGraph.get(path[i]);
-//                        if (!vertex1Passed &&
-//                                (vrtx.equals(constOfMap.vertexOfGraph.get(nearEdge1.getV1())) ||
-//                                        vrtx.equals(constOfMap.vertexOfGraph.get(nearEdge1.getV2())))){
-//                            vertex1Passed = true;
-//                        }
-//                        if (!vertex2Passed &&
-//                                (vrtx.equals(constOfMap.vertexOfGraph.get(nearEdge2.getV1())) ||
-//                                        vrtx.equals(constOfMap.vertexOfGraph.get(nearEdge2.getV2())))){
-//                            vertex2Passed = true;
-//                        }
-
                         webViewManager.drawLine(constOfMap.vertexOfGraph.get(lastVertex)
                                 , constOfMap.vertexOfGraph.get(path[i]));
                         lastVertex = path[i];
                     }
-                    //webViewManager.drawLine(point,constOfMap.vertexOfGraph.get(path[path.length]));
-                    String.valueOf(path.length).toString();
-//                    if (path.length != 0) {
-//                        if (!vertex1Passed){
-//                            webViewManager.drawLine(point1P, constOfMap.vertexOfGraph.get(vertex1));
-//                            webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex1)
-//                                    , constOfMap.vertexOfGraph.get(0));
-//                        }else{
-//                            webViewManager.drawLine(point1P
-//                                    , constOfMap.vertexOfGraph.get(0));
-//                        }
-//
-//                        if (!vertex2Passed){
-//                            webViewManager.drawLine(point2P, constOfMap.vertexOfGraph.get(vertex2));
-//                            webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex2)
-//                                    , constOfMap.vertexOfGraph.get(lastVertex));
-//                        }else{
-//                            webViewManager.drawLine(point2P
-//                                    , constOfMap.vertexOfGraph.get(lastVertex));
-//                        }
 
-//                    }
-                    if (path[0] == "") {
-                        webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex1)
-                                , constOfMap.vertexOfGraph.get(vertex2));
+                    webViewManager.drawLine(dstEdgePoint, constOfMap.vertexOfGraph.get(path[0]));
+                    webViewManager.drawLine(srcEdgePoint, constOfMap.vertexOfGraph.get(path[path.length-1]));
+
+
+                    if (path[0].equals("")) {
+                        webViewManager.drawLine(constOfMap.vertexOfGraph.get(dstEdgeClosestVertex)
+                                , constOfMap.vertexOfGraph.get(srcEdgeClosestVertex));
                     }
 
                 } catch (RuntimeException e) {

@@ -105,7 +105,7 @@ mapLayer = 0;
         var bounds = [[-1*bound0, -1*bound1], [bound0, bound1]];
         mapLayer = L.imageOverlay(image, bounds).addTo(map);
         mapLayer.getElement().classList.add('leaflet-map-layer');
-        map.setView([0, 0], 0);
+        map.setView([0, 0], -1);
     }
 
 

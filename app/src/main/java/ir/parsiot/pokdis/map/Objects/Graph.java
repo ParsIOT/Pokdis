@@ -1,6 +1,7 @@
 package ir.parsiot.pokdis.map.Objects;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ir.parsiot.pokdis.map.ConstOfMap;
@@ -80,6 +81,105 @@ public class Graph {
         return nearPath;
 
     }
+
+    //getPathBetween to vertex on
+    public String getPathBetweenEdges(String edge1V, Edge edge1, String edge2V, Edge edge2) {
+        /*
+        First we use getPathBetween to find path between two cloests vertex of the closets edges(edg11V and edge2V) to our source and destination point
+        Then we check that if both of edge1 vertexes are in the path we delete one of vertex that may cause making the path longer. We do the same for edge2 too.
+         */
+        nearPath = "";
+
+        String strPath = getPathBetween(edge1V,  edge2V);
+        ArrayList<String> path = new ArrayList<String>(Arrays.asList(strPath.split(",")));
+        if(path.get(0).equals("")){
+            path = new ArrayList<String>();
+        }
+        path.add(0, edge1V);
+        path.add(edge2V);
+        nearPath = "";
+
+        // 1. Check begin of the path :
+
+        if (path.size()>=2) {
+            // edge1.v1 --> edge1.v2 is in path
+            if (path.get(0).equals(edge1.v1.tag) && path.size() >= 2) {
+                if (path.get(1).equals(edge1.v2.tag)) {
+                    path.remove(0);
+                }
+            }
+
+            // edge1.v2 --> edge1.v1 is in path
+            if (path.get(0).equals(edge1.v2.tag) && path.size() >= 2) {
+                if (path.get(1).equals(edge1.v1.tag)) {
+                    path.remove(0);
+                }
+            }
+
+            // edge2.v1 --> edge2.v2 is in path
+            if (path.get(0).equals(edge2.v1.tag) && path.size() >= 2) {
+                if (path.get(1).equals(edge2.v2.tag)) {
+                    path.remove(0);
+                }
+            }
+
+            // edge2.v2 --> edge2.v1 is in path
+            if (path.get(0).equals(edge2.v2.tag) && path.size() >= 2) {
+                if (path.get(1).equals(edge2.v1.tag)) {
+                    path.remove(0);
+                }
+            }
+        }
+
+        // 2. Check end of the path :
+        int last = path.size()-1;
+        int beforeLast = path.size()-2;
+
+        if (path.size()>=2) {
+            // edge1.v1 --> edge1.v2 is in path
+            if (path.get(beforeLast).equals(edge1.v1.tag) && path.size() >= 2) {
+                if (path.get(last).equals(edge1.v2.tag)) {
+                    path.remove(last);
+                }
+            }
+
+            // edge1.v2 --> edge1.v1 is in path
+            if (path.get(beforeLast).equals(edge1.v2.tag) && path.size() >= 2) {
+                if (path.get(last).equals(edge1.v1.tag)) {
+                    path.remove(last);
+                }
+            }
+
+            // edge2.v1 --> edge2.v2 is in path
+            if (path.get(beforeLast).equals(edge2.v1.tag) && path.size() >= 2) {
+                if (path.get(last).equals(edge2.v2.tag)) {
+                    path.remove(last);
+                }
+            }
+
+            // edge2.v2 --> edge2.v1 is in path
+            if (path.get(beforeLast).equals(edge2.v2.tag) && path.size() >= 2) {
+                if (path.get(last).equals(edge2.v1.tag)) {
+                    path.remove(last);
+                }
+            }
+        }
+
+        return convertUsingStringBuilder(path);
+    }
+
+
+    // Use instead of String.join(",",list)
+    public static String convertUsingStringBuilder(List<String> names)
+    {
+        StringBuilder namesStr = new StringBuilder();
+        for(String name : names)
+        {
+            namesStr = namesStr.length() > 0 ? namesStr.append(",").append(name) : namesStr.append(name);
+        }
+        return namesStr.toString();
+    }
+
 
     //work on nearPath String
     private void path(int q, int r) {
