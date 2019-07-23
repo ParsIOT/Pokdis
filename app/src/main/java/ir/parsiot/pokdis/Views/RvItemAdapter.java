@@ -22,6 +22,8 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.shawnlin.numberpicker.NumberPicker;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -37,22 +39,27 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
     private Context context;
     private LayoutInflater layoutInflater;
     boolean showAddToCart = false;
+    boolean showNumPicker = false;
     boolean showDeleteBtn = false;
+    boolean showMapBtn = false;
     private CartItemsClient cartItemsClient;
     private CartItems cartItems;
 
 
-    public RvItemAdapter(Context context, CartItemsClient cartItemsClient, List objects, Boolean showAddToCart, Boolean showDeleteBtn) {
+    public RvItemAdapter(Context context, CartItemsClient cartItemsClient, List objects, Boolean showAddToCart, Boolean showNumPicker, Boolean showMapBtn, Boolean showDeleteBtn) {
 //        super(context, R.layout.item_of_listview, objects);
         this.context = context;
         cartItems = new CartItems();
         this.cartItemsClient = cartItemsClient;
-        allItems = (ArrayList<ItemOfList>)objects;
+        allItems = (ArrayList<ItemOfList>) objects;
         filteredItems.addAll(allItems);
         this.showAddToCart = showAddToCart;
+        this.showNumPicker = showNumPicker;
         this.showDeleteBtn = showDeleteBtn;
+        this.showMapBtn = showMapBtn;
 
     }
+
     @Override
     public int getItemCount() {
         return filteredItems.size();
@@ -67,7 +74,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
 
     @Override
     public void onBindViewHolder(ItemViewHolder itemViewHolder, int position) {
-        if (allItems.size() == 0){
+        if (allItems.size() == 0) {
             return;
         }
         final int pos = position;
@@ -86,15 +93,15 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public void filter(String query){
+    public void filter(String query) {
         filteredItems.clear();
         query = query.toLowerCase();
 
         if (query.equals("")) {
             filteredItems.addAll(allItems);
-        }else{
+        } else {
             for (ItemOfList item : allItems) {
-                if (item.getName().toLowerCase().contains(query)){
+                if (item.getName().toLowerCase().contains(query)) {
                     filteredItems.add(item);
                 }
             }
@@ -141,8 +148,10 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         TextView description;
         TextView price;
         TextView discountPrice;
-        ImageView showMapBtn;
+        ImageView mapBtn;
         ImageView addToCartBtn;
+        NumberPicker numPicker;
+        TextView numPickerLabel;
         ImageView deleteBtn;
         ItemOfList item;
 
@@ -153,33 +162,52 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             description = convertView.findViewById(R.id.descriptionOfItem);
             price = convertView.findViewById(R.id.priceOfItem);
             discountPrice = convertView.findViewById(R.id.disccountPriceOfItem);
-            showMapBtn = convertView.findViewById(R.id.show_map_btn);
+            mapBtn = convertView.findViewById(R.id.map_btn);
             addToCartBtn = convertView.findViewById(R.id.add_to_card_btn);
+            numPicker = (NumberPicker) convertView.findViewById(R.id.number_picker);
+            numPickerLabel = (TextView) convertView.findViewById(R.id.number_picker_label);
             deleteBtn = convertView.findViewById(R.id.delete_btn);
 
-            // Set a blinking animation on goToMapBtn
-            Animation animation = new AlphaAnimation(1, (float)0.6);
+            // Set a blinking animation on mapBtn
+            Animation animation = new AlphaAnimation(1, (float) 0.6);
             animation.setDuration(500);
             animation.setInterpolator(new LinearInterpolator());
             animation.setRepeatCount(Animation.INFINITE);
             animation.setRepeatMode(Animation.REVERSE);
-            showMapBtn.startAnimation(animation);
+            mapBtn.startAnimation(animation);
 
             Typeface ir_font = Typeface.createFromAsset(context.getApplicationContext().getAssets(), "fonts/Yekan.ttf");
             name.setTypeface(ir_font);
             price.setTypeface(ir_font);
+            numPicker.setTypeface(ir_font);
+            numPickerLabel.setTypeface(ir_font);
+
             discountPrice.setTypeface(ir_font);
 
-            if(showAddToCart){
+            if (showAddToCart) {
                 addToCartBtn.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 addToCartBtn.setVisibility(View.GONE);
             }
 
-            if(showDeleteBtn){
+            if (showNumPicker) {
+                numPicker.setVisibility(View.VISIBLE);
+                numPickerLabel.setVisibility(View.VISIBLE);
+            } else {
+                numPicker.setVisibility(View.GONE);
+                numPickerLabel.setVisibility(View.GONE);
+            }
+
+            if (showDeleteBtn) {
                 deleteBtn.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 deleteBtn.setVisibility(View.GONE);
+            }
+
+            if (showMapBtn) {
+                mapBtn.setVisibility(View.VISIBLE);
+            } else {
+                mapBtn.setVisibility(View.GONE);
             }
 
             listeners();
@@ -187,9 +215,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         }
 
 
-
-
-        public void fill (ItemOfList item){
+        public void fill(ItemOfList item) {
             this.item = item;
 //            itemImage.setImageResource(item.getItemImage());
             name.setText(item.getName());
@@ -197,10 +223,11 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             price.setText(item.getPrice());
 
             String discountPriceStr = item.getDiscountPrice();
-            if (!discountPriceStr.equals("")){
-                discountPrice.setText(discountPriceStr);;
+            if (!discountPriceStr.equals("")) {
+                discountPrice.setText(discountPriceStr);
+                ;
                 price.setPaintFlags(price.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            }else{
+            } else {
                 discountPrice.setVisibility(View.GONE);
             }
 
@@ -209,14 +236,13 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
                 InputStream ims = context.getApplicationContext().getAssets().open(item.getImageName());
                 Drawable drw = Drawable.createFromStream(ims, null);
                 itemImage.setImageDrawable(drw);
-            }
-            catch(IOException ex) {
+            } catch (IOException ex) {
                 return;
             }
         }
 
-        private void listeners(){
-            showMapBtn.setOnClickListener(new View.OnClickListener() {
+        private void listeners() {
+            mapBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //  Bundle bundle = new Bundle();
@@ -224,11 +250,11 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
                     //    bundle.putString("itemId",item.getId());
 
 
-                    Intent intent = new Intent(context,MainActivity.class);
-                    intent.putExtra("locationMarker",item.getLocation());
-                    intent.putExtra("itemName",item.getName());
-                    intent.putExtra("itemID",item.getId());
-                    Log.e("tag",item.getId());
+                    Intent intent = new Intent(context, MainActivity.class);
+                    intent.putExtra("locationMarker", item.getLocation());
+                    intent.putExtra("itemName", item.getName());
+                    intent.putExtra("itemID", item.getId());
+                    Log.e("tag", item.getId());
                     //intent.putExtras(bundle);
                     context.startActivity(intent);
 
@@ -239,9 +265,9 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
                 @Override
                 public void onClick(View view) {
                     String txtMessage;
-                    if (cartItems.put_item(item)){
+                    if (cartItems.put_item(item)) {
                         txtMessage = "این محصول به لیست خرید اضافه شد.";
-                    }else{
+                    } else {
                         txtMessage = "این محصول در سبد خرید از قبل وجود داشته است";
                     }
                     Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
@@ -256,13 +282,13 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
                 }
             });
 
-            ArrayList<View> tempLis= new ArrayList<View>();
+            ArrayList<View> tempLis = new ArrayList<View>();
             tempLis.add(name);
             tempLis.add(price);
             tempLis.add(discountPrice);
             tempLis.add(description);
             tempLis.add(itemImage);
-            for(View view : tempLis) {
+            for (View view : tempLis) {
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -278,7 +304,6 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
 
         }
     }
-
 
 
 }

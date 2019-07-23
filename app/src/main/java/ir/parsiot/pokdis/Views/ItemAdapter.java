@@ -65,7 +65,7 @@ public class ItemAdapter extends ArrayAdapter {
         TextView name;
         TextView description;
         TextView price;
-        ImageView goToMapBtn;
+        ImageView mapBtn;
         ImageView add_to_cart;
         ItemOfList item;
 
@@ -75,7 +75,7 @@ public class ItemAdapter extends ArrayAdapter {
             name =convertView.findViewById(R.id.nameOfItem);
             description =convertView.findViewById(R.id.descriptionOfItem);
             price =convertView.findViewById(R.id.priceOfItem);
-            goToMapBtn =convertView.findViewById(R.id.show_map_btn);
+            mapBtn =convertView.findViewById(R.id.map_btn);
             add_to_cart =convertView.findViewById(R.id.add_to_card_btn);
 
             if(showAddToCart){
@@ -100,7 +100,7 @@ public class ItemAdapter extends ArrayAdapter {
         }
 
        private void listeners(){
-           goToMapBtn.setOnClickListener(new View.OnClickListener() {
+           mapBtn.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View view) {
                  //  Bundle bundle = new Bundle();

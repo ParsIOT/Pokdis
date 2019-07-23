@@ -14,6 +14,8 @@ import android.os.Build;
 
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,13 +59,19 @@ public class MainActivity extends AppCompatActivity {
 
     WebView webView;
     WebViewManager webViewManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Hawk.init(getApplicationContext()).build();
 
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setTitle("");
+//        getSupportActionBar().setTitle("");
+
+        initBottomBar(this, 1);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
 
         //Permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -84,10 +92,10 @@ public class MainActivity extends AppCompatActivity {
 
                 });
                 builder.show();
-            }else {
+            } else {
                 // Enable location services
-                LocationManager locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-                if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                     alertDialog.setTitle("Enable location services");
                     alertDialog.setMessage("Please enable location services");
@@ -116,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                Constants. REQUEST_CODE_READ_EXTERNAL_STORAGE);
+                                Constants.REQUEST_CODE_READ_EXTERNAL_STORAGE);
 
                     }
 
@@ -125,50 +133,92 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-
 //            List<ItemOfList> items = new ArrayList<ItemOfList>();
 //            Items initItems = new Items();
 //            items.add(initItems.get_item("1"));
 //            Hawk.put("items", items);
-            List<ItemOfList> value = Hawk.get("items");
 
         }
+        List<ItemOfList> value = Hawk.get("items");
 
 
-       // beaconDiscovered = new BeaconDiscovered(this);
+        // beaconDiscovered = new BeaconDiscovered(this);
 
         initViews();
 
         //get location from albeacon
-        try{
-            beaconDiscovered.startMonitoring();
-            updateLocation();
-        }catch (RuntimeException e){
 
-        }
+//        try {
+        beaconDiscovered = new BeaconDiscovered(this);
+        beaconDiscovered.startMonitoring();
+        updateLocation();
+//        } catch (RuntimeException e) {
+//            Log.e("Error:", e.getMessage());
+//
+//        }
 
 
-
-
-    //get information from SalesListActivity
+        //get information from SalesListActivity
         final String locationMarker = getIntent().getStringExtra("locationMarker");
         String itemName = getIntent().getStringExtra("itemName");
         String itemID = getIntent().getStringExtra("itemID");
 
         //if from SalesListActivity
-        if(locationMarker!=null && itemName!=null){
+        if (locationMarker != null && itemName != null) {
             pathToPoint(locationMarker);
-            webViewManager.addMarker(locationMarker,"محصول"+itemName +"<br>"+"اضافه کردن به سبد خرید");
+            webViewManager.addMarker(locationMarker, "محصول" + itemName + "<br>" + "اضافه کردن به سبد خرید");
 
             webViewManager.setTagToJS(itemID);
-
-
         }
-
 
     }
 
+    protected void initBottomBar(final Context context, int iconNum) {
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
+//        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(iconNum); // Map icon
+        menuItem.setChecked(true);
 
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.ic_map_page:
+                        if (context.getClass() != MainActivity.class) {
+                            Intent intent = new Intent(context, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            finish();
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                        break;
+
+                    case R.id.ic_search_page:
+                        if (context.getClass() != SalesListActivity.class) {
+                            Intent intent = new Intent(context, SalesListActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            finish();
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                        break;
+                    case R.id.ic_buy_page:
+                        if (context.getClass() != CartActivity.class) {
+                            Intent intent = new Intent(context, CartActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            finish();
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                        break;
+                }
+
+                return false;
+            }
+        });
+
+    }
 
 
     @Override
@@ -176,15 +226,13 @@ public class MainActivity extends AppCompatActivity {
         //check BLUETOOTH is enable on any start program
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
-            Toast.makeText(this,"Device does not support Bluetooth",Toast.LENGTH_SHORT);
-        }else{
+            Toast.makeText(this, "Device does not support Bluetooth", Toast.LENGTH_SHORT);
+        } else {
             if (!mBluetoothAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, Constants.REQUEST_CODE_ENABLE_BLUETOOTH);
             }
         }
-
-
         super.onResume();
     }
 
@@ -196,15 +244,16 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String location = beaconDiscovered.getNearLoacationToString();
-                    if(location!=null){
+                    if (location != null) {
+                        Log.e("location:", location);
 
                         webViewManager.updateLocation(location);
                     }
                 }
-            },6000,Constants.PERIOD_OF_GET_TOP_BEACON);
+            }, 6000, Constants.PERIOD_OF_GET_TOP_BEACON);
 
 
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
 
         }
 
@@ -223,21 +272,22 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        MapDetail mapDetail = new MapDetail();
-        mapDetail.setMapName("map");
-        mapDetail.setMapPath("map.png");
-        List<Integer> dimensions = new ArrayList<Integer>();
-        dimensions.add(1206);
-        dimensions.add(1151);
-        mapDetail.setMapDimensions(dimensions);
-        webViewManager.addMap(mapDetail);
-
-        Log.e("map",mapDetail.toString());
-
-
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
+        MapDetail mapDetail = new MapDetail();
+        mapDetail.setMapName("map");
+//        mapDetail.setMapPath("map.png");
+        mapDetail.setMapPath("map1.png");
+        List<Integer> dimensions = new ArrayList<Integer>();
+//        dimensions.add(1206);
+//        dimensions.add(1151);
+        dimensions.add(909);
+        dimensions.add(769);
+        mapDetail.setMapDimensions(dimensions);
+        webViewManager.addMap(mapDetail);
+
+        Log.e("map", mapDetail.toString());
 
 
     }
@@ -247,87 +297,101 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         //for unbind beaconDiscovered
-       if(beaconDiscovered!=null){
-           try {
-               beaconDiscovered.unbind();
-           }catch (RuntimeException e){
-               Log.e("error",e.toString());
-           }
-       }
+        if (beaconDiscovered != null) {
+            try {
+                beaconDiscovered.unbind();
+            } catch (RuntimeException e) {
+                Log.e("error", e.toString());
+            }
+        }
     }
 
 
     // a function for draw line between marker and point
     //note: location of marker is  in webViewManager
     //read TODO
-    void pathToPoint (final String point){
-
-
+    void pathToPoint(final String point) {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
-
-
-
-
-
-                GraphBuilder location =new GraphBuilder();
+                GraphBuilder location = new GraphBuilder();
                 ConstOfMap constOfMap = new ConstOfMap();
 
-
                 try {
-
-
-
-
-
-
-
-                    Edge nearEdge1=  location.graph.findNearEdge(point);
-                    Edge nearEdge2=  location.graph.findNearEdge(webViewManager.getLoctionOfMarker());
-
+                    Edge nearEdge1 = location.graph.findNearEdge(point);
+                    Edge nearEdge2 = location.graph.findNearEdge(webViewManager.getLoctionOfMarker());
 
                     String point1P = nearEdge1.pointOnLineImage(point);
                     String point2P = nearEdge2.pointOnLineImage(webViewManager.getLoctionOfMarker());
 
-
                     String vertex1 = nearEdge1.nearVertex(point1P);
                     String vertex2 = nearEdge2.nearVertex(point2P);
 
-                    String strPath = location.graph.getPathBetween(vertex1,vertex2);
+                    String strPath = location.graph.getPathBetween(vertex1, vertex2);
                     strPath.toString();
-                    String [] path = strPath.split(",");
+                    String[] path = strPath.split(",");
 
-                    webViewManager.drawLine(point,constOfMap.vertexOfGraph.get(vertex1));
-                     webViewManager.drawLine(webViewManager.getLoctionOfMarker(),constOfMap.vertexOfGraph.get(vertex2));
-                     //TODO AFTER YOU GET NEAR POINT ON LINE ON COMMENT THIS COMMENT :)
+                    webViewManager.drawLine(point, point1P);
+//                    webViewManager.drawLine(point1P, constOfMap.vertexOfGraph.get(vertex1));
+                    webViewManager.drawLine(webViewManager.getLoctionOfMarker(), point2P);
+//                    webViewManager.drawLine(point2P, constOfMap.vertexOfGraph.get(vertex2));
+
+                    //TODO AFTER YOU GET NEAR POINT ON LINE ON COMMENT THIS COMMENT :)
                     // webViewManager.drawLine(point1P,constOfMap.vertexOfGraph.get(vertex1));
                     // webViewManager.drawLine(point2P,constOfMap.vertexOfGraph.get(vertex2));
+                    boolean vertex1Passed = false;
+                    boolean vertex2Passed = false;
+
                     String lastVertex = path[0];
-                    for (int i=1;i<path.length;i++){
+                    for (int i = 1; i < path.length; i++) {
+                        String vrtx = constOfMap.vertexOfGraph.get(path[i]);
+//                        if (!vertex1Passed &&
+//                                (vrtx.equals(constOfMap.vertexOfGraph.get(nearEdge1.getV1())) ||
+//                                        vrtx.equals(constOfMap.vertexOfGraph.get(nearEdge1.getV2())))){
+//                            vertex1Passed = true;
+//                        }
+//                        if (!vertex2Passed &&
+//                                (vrtx.equals(constOfMap.vertexOfGraph.get(nearEdge2.getV1())) ||
+//                                        vrtx.equals(constOfMap.vertexOfGraph.get(nearEdge2.getV2())))){
+//                            vertex2Passed = true;
+//                        }
+
                         webViewManager.drawLine(constOfMap.vertexOfGraph.get(lastVertex)
-                                ,constOfMap.vertexOfGraph.get(path[i]));
+                                , constOfMap.vertexOfGraph.get(path[i]));
                         lastVertex = path[i];
                     }
                     //webViewManager.drawLine(point,constOfMap.vertexOfGraph.get(path[path.length]));
                     String.valueOf(path.length).toString();
-                    if(path.length!=0){
-                        webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex2)
-                                ,constOfMap.vertexOfGraph.get(lastVertex));
+//                    if (path.length != 0) {
+//                        if (!vertex1Passed){
+//                            webViewManager.drawLine(point1P, constOfMap.vertexOfGraph.get(vertex1));
+//                            webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex1)
+//                                    , constOfMap.vertexOfGraph.get(0));
+//                        }else{
+//                            webViewManager.drawLine(point1P
+//                                    , constOfMap.vertexOfGraph.get(0));
+//                        }
+//
+//                        if (!vertex2Passed){
+//                            webViewManager.drawLine(point2P, constOfMap.vertexOfGraph.get(vertex2));
+//                            webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex2)
+//                                    , constOfMap.vertexOfGraph.get(lastVertex));
+//                        }else{
+//                            webViewManager.drawLine(point2P
+//                                    , constOfMap.vertexOfGraph.get(lastVertex));
+//                        }
+
+//                    }
+                    if (path[0] == "") {
                         webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex1)
-                                ,constOfMap.vertexOfGraph.get(path[0]));
-                    }
-                    if(path[0]==""){
-                        webViewManager.drawLine(constOfMap.vertexOfGraph.get(vertex1)
-                                ,constOfMap.vertexOfGraph.get(vertex2));
+                                , constOfMap.vertexOfGraph.get(vertex2));
                     }
 
-                }catch (RuntimeException e){
-                    Log.e("error",e.toString());
+                } catch (RuntimeException e) {
+                    Log.e("error", e.toString());
                 }
             }
-        },1000);
+        }, 1000);
     }
 
 
@@ -338,8 +402,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
 
 
-
-                startActivity(new Intent(MainActivity.this,SalesListActivity.class));
+                startActivity(new Intent(MainActivity.this, SalesListActivity.class));
 
 
                 return false;
@@ -352,8 +415,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
 
 
-
-                startActivity(new Intent(MainActivity.this,CartActivity.class));
+                startActivity(new Intent(MainActivity.this, CartActivity.class));
 
 
                 return false;
@@ -361,7 +423,6 @@ public class MainActivity extends AppCompatActivity {
         });
         cart.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         cart.setIcon(R.drawable.buy);
-
 
 
         return super.onCreateOptionsMenu(menu);
@@ -372,8 +433,8 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case Constants.REQUEST_CODE_ACCESS_COARSE_LOCATION: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    LocationManager locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-                    if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                    LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+                    if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivity(intent);
                     }
@@ -384,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
-            case Constants.REQUEST_CODE_READ_EXTERNAL_STORAGE:{
+            case Constants.REQUEST_CODE_READ_EXTERNAL_STORAGE: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("tagRequest", "coarse location permission granted");
                 } else {

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <item
+        android:id="@+id/ic_search_page"
+        android:icon="@drawable/serch"
+        android:title="جستجو"
+        />
+    <item
+        android:id="@+id/ic_map_page"
+        android:icon="@drawable/map"
+        android:title="نقشه"
+        />
+
+    <item
+        android:id="@+id/ic_buy_page"
+        android:icon="@drawable/buy"
+        android:title="سبد خرید"
+        />
+
+</menu>

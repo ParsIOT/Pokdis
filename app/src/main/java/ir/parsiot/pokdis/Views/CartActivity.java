@@ -1,6 +1,9 @@
 package ir.parsiot.pokdis.Views;
 
+import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +40,15 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
 
         items = new ArrayList<>();
         items = cartItems.get_items();
+        initBottomBar(this, 2);
 
+        ImageView emptyCartImage = (ImageView)findViewById(R.id.empty_cart_image);
+
+        if (items.size()==0){
+            listView.setVisibility(View.GONE);
+        }else{
+            emptyCartImage.setVisibility(View.GONE);
+        }
         cntButton = findViewById(R.id.continue_button);
 
 //        Button button = findViewById(R.id.continue_button);
@@ -53,12 +65,58 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
 
     }
 
+    protected void initBottomBar(final Context context, int iconNum) {
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
+//        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(iconNum); // Map icon
+        menuItem.setChecked(true);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.ic_map_page:
+                        if (context.getClass() != MainActivity.class) {
+                            Intent intent = new Intent(context, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            finish();
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                        break;
+
+                    case R.id.ic_search_page:
+                        if (context.getClass() != SalesListActivity.class) {
+                            Intent intent = new Intent(context, SalesListActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            finish();
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                        break;
+                    case R.id.ic_buy_page:
+                        if (context.getClass() != CartActivity.class) {
+                            Intent intent = new Intent(context, CartActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            finish();
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                        break;
+                }
+
+                return false;
+            }
+        });
+
+    }
 
     private void refreshDisplay() {
         if (items.size() == 0){
             cntButton.setVisibility(View.GONE);
         }
-        adapter = new RvItemAdapter(CartActivity.this,  this, items,false, true);
+        adapter = new RvItemAdapter(CartActivity.this,  this, items,false, true, false,true);
         listView.setAdapter(adapter);
     }
 

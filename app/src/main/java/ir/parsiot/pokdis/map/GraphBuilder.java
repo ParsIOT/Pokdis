@@ -13,24 +13,24 @@ public class GraphBuilder {
 
 
         graph.addEdge("1","2");
-        graph.addEdge("3","2");
+        graph.addEdge("2","3");
         graph.addEdge("3","4");
 
-        graph.addEdge("6","5");
-        graph.addEdge("6","7");
+        graph.addEdge("9","10");
+        graph.addEdge("10","11");
+        graph.addEdge("11","12");
 
-        graph.addEdge("8","7");
-        graph.addEdge("8","4");
-        graph.addEdge("2","9");
-        graph.addEdge("6","9");
+        graph.addEdge("1","5");
+        graph.addEdge("5","9");
 
-        graph.addEdge("3","10");
-        graph.addEdge("7","10");
+        graph.addEdge("2","6");
+        graph.addEdge("6","10");
 
-        graph.addEdge("11","1");
-        graph.addEdge("11","5");
-        graph.addEdge("12","4");
-        graph.addEdge("12","8");
+        graph.addEdge("3","7");
+        graph.addEdge("7","11");
+
+        graph.addEdge("4","8");
+        graph.addEdge("8","12");
 
 
 

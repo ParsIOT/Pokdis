@@ -30,8 +30,7 @@ public class BeaconDiscovered implements BeaconConsumer {
     private ArrayList<BLEdevice> discoveredDevices;
     private BeaconManager beaconManager = null;
 
-    private BLEdevice proposedBeacon=null;
-
+    private BLEdevice proposedBeacon = null;
 
 
     public ArrayList<BLEdevice> getDiscoveredDevices() {
@@ -42,7 +41,7 @@ public class BeaconDiscovered implements BeaconConsumer {
     Context context;
 
     public BeaconDiscovered(final Context context) {
-        this.context =context;
+        this.context = context;
         discoveredDevices = new ArrayList<>();
         //setting of beacons Manager
         beaconManager = BeaconManager.getInstanceForApplication(context);
@@ -52,99 +51,93 @@ public class BeaconDiscovered implements BeaconConsumer {
         //set between scan period
         beaconManager.setForegroundBetweenScanPeriod(Constants.PERIOD_TIME_BETWEEN_SCAN);
 
-
     }
 
 
-
-    public void unbind(){
+    public void unbind() {
         beaconManager.unbind(this);
     }
 
 
-    public void startRangingBeaconsInRegion(){
+    public void startRangingBeaconsInRegion() {
         try {
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
 
-
-        } catch (RemoteException e) {   }
+        } catch (RemoteException e) {
+            Log.e("Error", e.getMessage());
+        }
     }
 
 
-    public void startMonitoring(){
+    public void startMonitoring() {
 
         RangeNotifier rangeNotifier = new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
 
                 if (beacons.size() > 0) {
-
-                    // Log.i("beacon", "didRangeBeaconsInRegion called with beacon count:  "+beacons.size());
-
+                    Log.i("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beacons.size());
 
                     //covert collection<beacon> to list<beacon> for access to beacons
                     List<Beacon> list = new ArrayList<Beacon>(beacons);
 
-                    if(list.size()>0){
+                    if (list.size() > 0) {
 
-                        for(int i=0;i<list.size();i++){
+                        for (int i = 0; i < list.size(); i++) {
                             Beacon beacon = list.get(i);
-                            boolean flag =false;
+                            boolean flag = false;
 
-                            for(int j=0;j<discoveredDevices.size();j++){
+                            for (int j = 0; j < discoveredDevices.size(); j++) {
                                 Integer a = beacon.getId3().toInt();
-                                Integer b =Integer.valueOf(discoveredDevices.get(j).getMinor());
+                                Integer b = Integer.valueOf(discoveredDevices.get(j).getMinor());
 
-                                if(a.equals(b)
-                                ){
+                                if (a.equals(b)
+                                ) {
                                     discoveredDevices.get(j).InsertRssi(beacon.getRssi());
 
-                                    Log.i("beacon","minor: "+discoveredDevices.get(j).getMac()+" add rssi="+ beacon.getRssi());
-                                    flag =true;
-
+                                    Log.i("beacon", "minor: " + discoveredDevices.get(j).getMac() + " add rssi=" + beacon.getRssi());
+                                    flag = true;
 
 
                                 }
                             }
 
-                            if(!flag){
+                            if (!flag) {
 
 
-                                Log.i("beacon","add minor="+ beacon.getId3().toString());
+                                Log.i("beacon", "add minor=" + beacon.getId3().toString());
                                 BLEdevice blEdevice = new BLEdevice();
                                 blEdevice.setUUID(beacon.getId1().toString());
                                 blEdevice.setMajor(beacon.getId2().toString());
                                 blEdevice.setMinor(beacon.getId3().toString());
                                 blEdevice.InsertRssi(beacon.getRssi());
                                 blEdevice.setMac(beacon.getBluetoothAddress());
-                                Log.i("beacon","mac"+blEdevice.getMac());
+                                Log.i("beacon", "mac" + blEdevice.getMac());
                                 discoveredDevices.add(blEdevice);
 
 
-
                             }
-
 
 
                         }
 
                         //add zero to devices that no discovering in this scan
-                        for(int j=0;j<discoveredDevices.size();j++){
-                            boolean flagOfExit =false;
+                        for (int j = 0; j < discoveredDevices.size(); j++) {
+                            boolean flagOfExit = false;
 
-                            for(int i=0;i<list.size();i++){
+                            for (int i = 0; i < list.size(); i++) {
                                 Beacon beacon = list.get(i);
-                                if(beacon.getId3().equals(discoveredDevices.get(j).getMinor())){
-                                    flagOfExit=true;
+                                if (beacon.getId3().equals(discoveredDevices.get(j).getMinor())) {
+                                    flagOfExit = true;
                                 }
                             }
-                            if(flagOfExit){
+                            if (flagOfExit) {
                                 discoveredDevices.get(j).InsertRssi(0);
                             }
                         }
                         //remove devices that all their rssis = 0
-                        for(int i=0;i<discoveredDevices.size();i++){
-                            if(discoveredDevices.get(i).canThatCanRemoveThisDivice()){
+                        for (int i = 0; i < discoveredDevices.size(); i++) {
+                            if (discoveredDevices.get(i).canThatCanRemoveThisDivice()) {
                                 discoveredDevices.remove(i);
                             }
                         }
@@ -166,10 +159,11 @@ public class BeaconDiscovered implements BeaconConsumer {
                                     Toast.makeText(context,"proposedBeacon Minor"+proposedBeacon.getMinor(),Toast.LENGTH_SHORT);
                                 }
                         }*/
-                        if(discoveredDevices.get(0).getRssiAvg()>=-56)
-                        proposedBeacon = discoveredDevices.get(0);
+//                        Log.d("beaconData:",String.valueOf(discoveredDevices.get(0).getRssiAvg()));
 
-
+                        if (discoveredDevices.get(0).getRssiAvg() >= -56) {
+                            proposedBeacon = discoveredDevices.get(0);
+                        }
 
 
                     }
@@ -182,26 +176,27 @@ public class BeaconDiscovered implements BeaconConsumer {
         try {
 
             //set uuid of beacons and their major for better discovering
-            beaconRegion = new Region("beacon", Identifier.parse(Constants.COMMON_UUID_BEACON),null,null);
+            beaconRegion = new Region("beacon", Identifier.parse(Constants.COMMON_UUID_BEACON), null, null);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
             beaconManager.addRangeNotifier(rangeNotifier);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
             beaconManager.addRangeNotifier(rangeNotifier);
 
-        } catch (RemoteException e) {    }
-
+        } catch (RemoteException e) {
+            Log.e("beacon_manager",e.getMessage());
+        }
 
 
     }
 
     private void sortDiscoveredDevices() {
 
-        for(int i=0;i<discoveredDevices.size();i++){
-            for(int j=i;j<discoveredDevices.size();j++){
-                if(discoveredDevices.get(j).getRssiAvg()>discoveredDevices.get(i).getRssiAvg()){
+        for (int i = 0; i < discoveredDevices.size(); i++) {
+            for (int j = i; j < discoveredDevices.size(); j++) {
+                if (discoveredDevices.get(j).getRssiAvg() > discoveredDevices.get(i).getRssiAvg()) {
                     BLEdevice a = discoveredDevices.get(i);
-                    discoveredDevices.set(i,discoveredDevices.get(j));
-                    discoveredDevices.set(j,a);
+                    discoveredDevices.set(i, discoveredDevices.get(j));
+                    discoveredDevices.set(j, a);
                 }
             }
 
@@ -209,18 +204,18 @@ public class BeaconDiscovered implements BeaconConsumer {
     }
 
     //stop discovering Beacons In Region
-    public void stopMonitoring(){
+    public void stopMonitoring() {
 
 
         try {
 
-            beaconRegion = new Region("beacon",Identifier.parse(Constants.COMMON_UUID_BEACON),Identifier.parse(Constants.COMMON_MAJOR_BEACON),null);
+            beaconRegion = new Region("beacon", Identifier.parse(Constants.COMMON_UUID_BEACON), Identifier.parse(Constants.COMMON_MAJOR_BEACON), null);
             beaconManager.stopRangingBeaconsInRegion(beaconRegion);
 
             beaconManager.stopRangingBeaconsInRegion(beaconRegion);
 
-        } catch (RemoteException e) {    }
-
+        } catch (RemoteException e) {
+        }
 
 
     }
@@ -228,13 +223,16 @@ public class BeaconDiscovered implements BeaconConsumer {
 
     @Override
     public void onBeaconServiceConnect() {
+//        beaconManager.setForegroundBetweenScanPeriod(Constants.PERIOD_TIME_BETWEEN_SCAN);
 
         try {
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
 
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
 
-        } catch (RemoteException e) {   }
+        } catch (RemoteException e) {
+            Log.e("Error", e.getMessage());
+        }
     }
 
     @Override
@@ -256,9 +254,9 @@ public class BeaconDiscovered implements BeaconConsumer {
         return proposedBeacon;
     }
 
-    public String getNearLoacationToString(){
-       try {
-          /*   if(discoveredDevices.get(0).getRssiAvg()
+    public String getNearLoacationToString() {
+        try {
+             if(discoveredDevices.get(0).getRssiAvg()
                     -discoveredDevices.get(1).getRssiAvg()<4){
                 String nearMac1 = discoveredDevices.get(0).getMac();
                 LocationOfBeacon locationOfBeacon1 = new LocationOfBeacon();
@@ -280,21 +278,21 @@ public class BeaconDiscovered implements BeaconConsumer {
                     String loc = location[0]+","+location[1];
                     return loc;
                 }
-            }*/
+            }
 
 
-         if(proposedBeacon!=null){
-             String nearMac = proposedBeacon.getMac();
-             LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
-             Double [] location = locationOfBeacon.beaconCoordinates.get(nearMac);
-             if(location != null){
-                 String loc = location[0]+","+location[1];
-                 return loc;
-             }
-         }
+            if (proposedBeacon != null) {
+                String nearMac = proposedBeacon.getMac();
+                LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
+                Double[] location = locationOfBeacon.beaconCoordinates.get(nearMac);
+                if (location != null) {
+                    String loc = location[0] + "," + location[1];
+                    return loc;
+                }
+            }
 
 
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
 
         }
 

@@ -32,6 +32,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:28.0.+'
     implementation 'com.github.aakira:expandable-layout:1.6.0@aar'
     implementation "com.orhanobut:hawk:2.0.1"
-    implementation 'org.altbeacon:android-beacon-library:2+'
+    implementation 'com.shawnlin:number-picker:2.4.6'
+    implementation 'org.altbeacon:android-beacon-library:2.16.2'
 
 }
