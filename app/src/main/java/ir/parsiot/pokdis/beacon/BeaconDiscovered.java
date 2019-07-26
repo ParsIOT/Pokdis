@@ -35,14 +35,30 @@ public class BeaconDiscovered implements BeaconConsumer {
 
     private Region beaconRegion;
     Context context;
+    RangeNotifier rangeNotifier;
 
     public BeaconDiscovered(final Context context) {
         this.context = context;
         discoveredDevices = new ArrayList<>();
         //setting of beacons Manager
         beaconManager = BeaconManager.getInstanceForApplication(context);
+        beaconManager.getBeaconParsers().clear();
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(Constants.ALTBEACON_LAYOUT));
-        beaconManager.bind(this);
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        // Detect the main identifier (UID) frame:
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=00,p:3-3:-41,i:4-13,i:14-19"));
+        // Detect the telemetry (TLM) frame:
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("x,s:0-1=feaa,m:2-2=20,d:3-3,d:4-5,d:6-7,d:8-11,d:12-15"));
+        // Detect the URL frame:
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=10,p:3-3:-41,i:4-21v"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=00,p:3-3:-41,i:4-13,i:14-19"));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("s:0-1=feaa,m:2-2=10,p:3-3:-41,i:4-20v"));
+        if (!beaconManager.isBound(this)) {
+            beaconManager.bind(this);
+        }
 
         //set between scan period
         beaconManager.setForegroundBetweenScanPeriod(Constants.PERIOD_TIME_BETWEEN_SCAN);
@@ -53,6 +69,23 @@ public class BeaconDiscovered implements BeaconConsumer {
     public void unbind() {
         beaconManager.unbind(this);
     }
+
+//    public void startScan() {
+//        if (!beaconManager.isBound(this)) {
+//
+//                    /*Only do this in onDestroy() not onPause()
+//                    Can't be bind() & unbind() several times*/
+//            beaconManager.bind(this);
+//        }
+//    }
+//
+//    public void stopScan() {
+//        if (beaconManager.isBound(this)) {
+//                    /*Only do this in onDestroy() not onPause()
+//                    Can't be bind() & unbind() several times*/
+//            beaconManager.unbind(this);
+//        }
+//    }
 
 
     public void startRangingBeaconsInRegion() {
@@ -67,7 +100,7 @@ public class BeaconDiscovered implements BeaconConsumer {
 
     public void startMonitoring() {
 
-        RangeNotifier rangeNotifier = new RangeNotifier() {
+        rangeNotifier = new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
 
@@ -174,9 +207,9 @@ public class BeaconDiscovered implements BeaconConsumer {
             //set uuid of beacons and their major for better discovering
             beaconRegion = new Region("beacon", Identifier.parse(Constants.COMMON_UUID_BEACON), null, null);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
-            beaconManager.addRangeNotifier(rangeNotifier);
+//            beaconManager.addRangeNotifier(rangeNotifier);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
-            beaconManager.addRangeNotifier(rangeNotifier);
+//            beaconManager.addRangeNotifier(rangeNotifier);
 
         } catch (RemoteException e) {
             Log.e("beacon_manager",e.getMessage());
@@ -217,19 +250,30 @@ public class BeaconDiscovered implements BeaconConsumer {
     }
 
 
+//    @Override
+//    public void onBeaconServiceConnect() {
+////        beaconManager.setForegroundBetweenScanPeriod(Constants.PERIOD_TIME_BETWEEN_SCAN);
+//
+//        try {
+//            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+//
+//            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+//
+//        } catch (RemoteException e) {
+//            Log.e("Error", e.getMessage());
+//        }
+//    }
+
     @Override
     public void onBeaconServiceConnect() {
-//        beaconManager.setForegroundBetweenScanPeriod(Constants.PERIOD_TIME_BETWEEN_SCAN);
-
+        beaconManager.addRangeNotifier(rangeNotifier);
         try {
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-
-            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-
         } catch (RemoteException e) {
-            Log.e("Error", e.getMessage());
+            e.printStackTrace();
         }
     }
+
 
     @Override
     public Context getApplicationContext() {
@@ -238,12 +282,13 @@ public class BeaconDiscovered implements BeaconConsumer {
 
     @Override
     public void unbindService(ServiceConnection serviceConnection) {
-
+        context.unbindService(serviceConnection);
     }
 
     @Override
     public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
-        return true;
+        return context.bindService(intent, serviceConnection, i);
+//        return true;
     }
 
     public BLEdevice getProposedBeacon() {
