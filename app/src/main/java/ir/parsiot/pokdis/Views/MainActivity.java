@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     private BeaconDiscovered beaconDiscovered;
 
-
+    boolean isMainPage = true;
     WebView webView;
     WebViewManager webViewManager;
 
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Hawk.init(getApplicationContext()).build();
-
+        isMainPage = true;
         setContentView(R.layout.activity_main);
         try{
             getSupportActionBar().setTitle("");
@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
 
         //if from SalesListActivity
         if (locationMarker != null && itemName != null) {
+            isMainPage = false;
             webViewManager.addItem(locationMarker, itemId, itemName, "../"+ itemImgSrc); // Todo: Sometimes
 //            webViewManager.setTagToJS(itemId);
 
@@ -402,44 +403,34 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        if (isMainPage) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        //builder.setTitle("Dlete ");
-        builder.setMessage("آیا میخواهید از برنامه خارج شوید؟")
-                .setCancelable(false)
-                .setPositiveButton("بله",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                //1: Delete from allItems
-                                //2: Delete from HAWK
+            //builder.setTitle("Dlete ");
+            builder.setMessage("آیا میخواهید از برنامه خارج شوید؟")
+                    .setCancelable(false)
+                    .setPositiveButton("بله",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    //1: Delete from allItems
+                                    //2: Delete from HAWK
 
-                              finish();
+                                    finish();
 
 //                                            allItems = cartItemsClient.deleteItem(filteredItems.get(position));
 //                                            filteredItems.remove(position);
 //
 //                                            notifyDataSetChanged();
-                            }
-                        })
-                .setNegativeButton("خیر", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                    }
-                });
+                                }
+                            })
+                    .setNegativeButton("خیر", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
 
-        builder.show();
-//        new AlertDialog.Builder(this)
-//                .setIcon(android.R.drawable.ic_dialog_alert)
-//                .setTitle("Closing Activity")
-//                .setMessage("Are you sure you want to close this activity?")
-//                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-//                {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        finish();
-//                    }
-//
-//                })
-//                .setNegativeButton("No", null)
-//                .show();
+            builder.show();
+        }else{
+            super.onBackPressed();
+        }
     }
 }

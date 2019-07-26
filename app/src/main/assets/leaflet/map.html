@@ -136,6 +136,15 @@ mapLayer = 0;
         var bounds = [[-1*bound0, -1*bound1], [bound0, bound1]];
         mapLayer = L.imageOverlay(image, bounds).addTo(map);
         mapLayer.getElement().classList.add('leaflet-map-layer');
+
+        document.addEventListener('DOMContentLoaded', function() {
+             var bound0 = height / 2;
+             var bound1 = width / 2;
+             var bounds = [[-1*bound0, -1*bound1], [bound0, bound1]];
+             mapLayer = L.imageOverlay(image, bounds).addTo(map);
+             mapLayer.getElement().classList.add('leaflet-map-layer');
+        }, false);
+
 //        map.setView([0, 0], -1);
     }
 
