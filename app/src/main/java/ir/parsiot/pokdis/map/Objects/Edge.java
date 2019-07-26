@@ -108,33 +108,31 @@ public class Edge {
 //        return AD;
 //    }
 
-    public float distanceFromTheLine(String point)
-    {
-                String[] loc = point.split(",");
+    public float distanceFromTheLine(String point) {
+        String[] loc = point.split(",");
         Float[] locOfPoint = new Float[2];
         float x3 = Float.valueOf(loc[0]);
         float y3 = Float.valueOf(loc[1]);
-        float x1,x2,y1,y2;
+        float x1, x2, y1, y2;
         x1 = v1.x;
         y1 = v1.y;
         x2 = v2.x;
         y2 = v2.y;
-        float px=x2-x1;
-        float py=y2-y1;
-        float temp=(px*px)+(py*py);
-        float u=((x3 - x1) * px + (y3 - y1) * py) / (temp);
-        if(u>1){
-            u=1;
-        }
-        else if(u<0){
-            u=0;
+        float px = x2 - x1;
+        float py = y2 - y1;
+        float temp = (px * px) + (py * py);
+        float u = ((x3 - x1) * px + (y3 - y1) * py) / (temp);
+        if (u > 1) {
+            u = 1;
+        } else if (u < 0) {
+            u = 0;
         }
         float x = x1 + u * px;
         float y = y1 + u * py;
 
         float dx = x - x3;
         float dy = y - y3;
-        float dist = (float)Math.sqrt(dx*dx + dy*dy);
+        float dist = (float) Math.sqrt(dx * dx + dy * dy);
         return dist;
 
     }
@@ -209,7 +207,7 @@ public class Edge {
             resY = Math.round(v1.y + u * yDelta);
         }
 
-        return  resX + "," + resY;
+        return resX + "," + resY;
     }
 
     //NEAR VERTEX ON A edge
@@ -235,7 +233,7 @@ public class Edge {
     }
 
     //check a point is on line or not
-    public Boolean checkOnLine(String point) {
+    public Boolean checkOnLine(String point) { //Todo: It doesn't work correctly(e.g It doesn't work on the vertexes of the edge)
         String[] loc = point.split(",");
         Float[] locOfPoint = new Float[2];
         locOfPoint[0] = Float.valueOf(loc[0]);

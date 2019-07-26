@@ -1,10 +1,13 @@
 package ir.parsiot.pokdis.map.Objects;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import ir.parsiot.pokdis.map.ConstOfMap;
+import ir.parsiot.pokdis.map.GraphBuilder;
 
 public class Graph {
 
@@ -50,14 +53,15 @@ public class Graph {
             float min = edges.get(0).distanceFromTheLine(point);
 
             for (int i = 0; i < edges.size(); i++) {
-                Edge A = edges.get(i);
-                A.toString();
-                if (edges.get(i).checkOnLine(point)) {
-                    return edges.get(i);
+                Edge edg = edges.get(i);
+
+                float dist = edg.distanceFromTheLine(point);
+                if (dist == 0) {
+                    return edg;
                 }
-                if (min > edges.get(i).distanceFromTheLine(point)) {
-                    min = edges.get(i).distanceFromTheLine(point);
-                    near = edges.get(i);
+                if (min > dist) {
+                    min = dist;
+                    near = edg;
                 }
 
             }
@@ -85,8 +89,8 @@ public class Graph {
     //getPathBetween to vertex on
     public String getPathBetweenEdges(String edge1V, Edge edge1, String edge2V, Edge edge2) {
         /*
-        First we use getPathBetween to find path between two cloests vertex of the closets edges(edg11V and edge2V) to our source and destination point
-        Then we check that if both of edge1 vertexes are in the path we delete one of vertex that may cause making the path longer. We do the same for edge2 too.
+        First we use getPathBetween to find path between two the closest vertexes of the closest edges(edg11V and edge2V) to our source and destination point.
+        Then we check that if both of edge1 vertexes are in the path, we delete one of the vertexes that may cause making the path longer. We do the same for edge2 too.
          */
         nearPath = "";
 
@@ -100,7 +104,6 @@ public class Graph {
         nearPath = "";
 
         // 1. Check begin of the path :
-
         if (path.size()>=2) {
             // edge1.v1 --> edge1.v2 is in path
             if (path.get(0).equals(edge1.v1.tag) && path.size() >= 2) {
@@ -244,5 +247,104 @@ public class Graph {
 
     }
 
+
+    public ArrayList<ArrayList<Point>> getPath(String srcPoint, String dstPoint){
+        ConstOfMap constOfMap = new ConstOfMap();
+        ArrayList<ArrayList<Point>> resPath = new ArrayList<ArrayList<Point>>();
+        ArrayList<Point> tempLine = new ArrayList<Point>();
+
+        try {
+
+            // We relocate the dst and src point if they are one of vertexes accidently, because our routing algorithm doesn't work in these situations
+            if (constOfMap.isGraphVertex(srcPoint) != null){
+                String[] srcPointStrList = srcPoint.split(",");
+                float xTemp = Float.valueOf(srcPointStrList[0]) + ConstOfMap.epsilon;
+                float yTemp = Float.valueOf(srcPointStrList[1]) + ConstOfMap.epsilon;
+                srcPoint = xTemp+","+yTemp;
+            }
+            if (constOfMap.isGraphVertex(dstPoint) != null){
+                String[] dstPointStrList = dstPoint.split(",");
+                float xTemp = Float.valueOf(dstPointStrList[0]) + ConstOfMap.epsilon;
+                float yTemp = Float.valueOf(dstPointStrList[1]) + ConstOfMap.epsilon;
+                dstPoint = xTemp+","+yTemp;
+            }
+
+            // Routing :
+            // Find closet edges
+            Edge srcEdge = this.findNearEdge(srcPoint); // nearest edge to the source point
+            Edge dstEdge = this.findNearEdge(dstPoint); // nearest edge to the destination point
+
+            String srcEdgePoint = srcEdge.pointOnLineImage(srcPoint); // find the nearest point on the nearest edge to the source
+            String dstEdgePoint = dstEdge.pointOnLineImage(dstPoint); // find the nearest point on the nearest edge to the destination
+
+            String srcEdgeClosestVertex = srcEdge.nearVertex(srcEdgePoint); // find closet vertex of the nearest edge to srcEdgePoint
+            String dstEdgeClosestVertex = dstEdge.nearVertex(dstEdgePoint); // find closet vertex of the nearest edge to dstEdgePoint
+
+            // Find tempPath between two edges according to the closest vetexes
+            String strPath = this.getPathBetweenEdges(dstEdgeClosestVertex, dstEdge, srcEdgeClosestVertex, srcEdge);
+            String[] tempPath = strPath.split(",");
+
+            // Draw the tempPath
+            tempLine = new ArrayList<Point>();
+            tempLine.add(new Point(srcPoint));
+            tempLine.add(new Point(srcEdgePoint));
+            resPath.add(tempLine);
+
+
+            tempLine = new ArrayList<Point>();
+            tempLine.add(new Point(dstPoint));
+            tempLine.add(new Point(dstEdgePoint));
+            resPath.add(tempLine);
+
+//            webViewManager.drawLine(srcPoint, srcEdgePoint);
+//            webViewManager.drawLine(dstPoint, dstEdgePoint);
+
+            String lastVertex = tempPath[0];
+            for (int i = 1; i < tempPath.length; i++) {
+                tempLine = new ArrayList<Point>();
+                tempLine.add(new Point(constOfMap.vertexOfGraph.get(lastVertex)));
+                tempLine.add(new Point(constOfMap.vertexOfGraph.get(tempPath[i])));
+                resPath.add(tempLine);
+
+
+//                webViewManager.drawLine(constOfMap.vertexOfGraph.get(lastVertex)
+//                        , constOfMap.vertexOfGraph.get(tempPath[i]));
+                lastVertex = tempPath[i];
+            }
+
+            tempLine = new ArrayList<Point>();
+            tempLine.add(new Point(dstEdgePoint));
+            tempLine.add(new Point(constOfMap.vertexOfGraph.get(tempPath[0])));
+            resPath.add(tempLine);
+
+
+            tempLine = new ArrayList<Point>();
+            tempLine.add(new Point(srcEdgePoint));
+            tempLine.add(new Point(constOfMap.vertexOfGraph.get(tempPath[tempPath.length-1])));
+            resPath.add(tempLine);
+
+
+//            webViewManager.drawLine(dstEdgePoint, constOfMap.vertexOfGraph.get(tempPath[0]));
+//            webViewManager.drawLine(srcEdgePoint, constOfMap.vertexOfGraph.get(tempPath[tempPath.length-1]));
+
+
+            if (tempPath[0].equals("")) {
+
+                tempLine = new ArrayList<Point>();
+                tempLine.add(new Point(constOfMap.vertexOfGraph.get(dstEdgeClosestVertex)));
+                tempLine.add(new Point(constOfMap.vertexOfGraph.get(srcEdgeClosestVertex)));
+                resPath.add(tempLine);
+
+//                webViewManager.drawLine(constOfMap.vertexOfGraph.get(dstEdgeClosestVertex)
+//                        , constOfMap.vertexOfGraph.get(srcEdgeClosestVertex));
+            }
+
+            return resPath;
+
+        } catch (RuntimeException e) {
+            Log.e("error", e.toString());
+            return null;
+        }
+    }
 
 }

@@ -35,7 +35,7 @@ public class WebViewManager {
     private OnWebViewClickListener onWebViewClickListener;
     private String tagToJS;
 
-    private String loctionOfMarker="-381,416";
+    private String loctionOfMarker = ConstOfMap.initLocation;
 
     public WebViewManager(WebView webView) {
         this.webView = webView;
@@ -79,20 +79,20 @@ public class WebViewManager {
         }, 1000);
     }
 
-    public void addMarker(final String point, final String text ){
+    public void addMarker(final String point, final String text) {
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                webView.loadUrl(String.format(Locale.getDefault(), "javascript:addMarker(\"%s\",\"%s\")",point,text));
+                webView.loadUrl(String.format(Locale.getDefault(), "javascript:addMarker(\"%s\",\"%s\")", point, text));
 
             }
         }, 1000);
     }
 
 
-    public void drawLine(String location1,String location2){
-        final String js_location = String.format("javascript:drawLine(\"%s\",\"%s\")", location1,location2);
+    public void drawLine(String location1, String location2) {
+        final String js_location = String.format("javascript:drawLine(\"%s\",\"%s\")", location1, location2);
         //  webView.loadUrl(js_location);
         if (context != null) {
             ((Activity) context).runOnUiThread(new Runnable() {
@@ -108,7 +108,7 @@ public class WebViewManager {
     public void updateLocation(String location) {
         loctionOfMarker = location;
         final String js_location = String.format("javascript:moveMarker(\'%s\')", location);
-      //  webView.loadUrl(js_location);
+        //  webView.loadUrl(js_location);
         if (context != null) {
             ((Activity) context).runOnUiThread(new Runnable() {
                 @Override
@@ -148,11 +148,11 @@ public class WebViewManager {
     }
 
 
-    public void addPopup(final String point, final String text){
+    public void addPopup(final String point, final String text) {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                webView.loadUrl(String.format(Locale.getDefault(), "javascript:makePopup(\"%s\",\"%s\")",point,text));
+                webView.loadUrl(String.format(Locale.getDefault(), "javascript:makePopup(\"%s\",\"%s\")", point, text));
 
             }
         }, 1000);
@@ -189,13 +189,15 @@ public class WebViewManager {
         }
 
         @JavascriptInterface
-        public String getTagFromAndroid(){return tagToJS;}
+        public String getTagFromAndroid() {
+            return tagToJS;
+        }
 
         @JavascriptInterface
-        public void addIdToList(String text){//TODO ADD ID OF ITEM FROM JS TO CART LIST
-            Toast.makeText(context,"+",Toast.LENGTH_SHORT);
-            Log.e("tag",text);
-             }
+        public void addIdToList(String text) {//TODO ADD ID OF ITEM FROM JS TO CART LIST
+            Toast.makeText(context, "+", Toast.LENGTH_SHORT);
+            Log.e("tag", text);
+        }
 
         @JavascriptInterface
         public void startMap() {
@@ -207,7 +209,6 @@ public class WebViewManager {
 //            startActivity(mIntent);
         }
     }
-
 
 
 }

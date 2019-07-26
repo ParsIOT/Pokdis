@@ -46,11 +46,8 @@ import ir.parsiot.pokdis.map.ConstOfMap;
 import ir.parsiot.pokdis.map.MapDetail;
 import ir.parsiot.pokdis.map.GraphBuilder;
 import ir.parsiot.pokdis.map.Objects.Edge;
+import ir.parsiot.pokdis.map.Objects.Point;
 import ir.parsiot.pokdis.map.WebViewManager;
-
-/**
- * Created by seyedalian on 11/6/2019.
- */
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,12 +63,17 @@ public class MainActivity extends AppCompatActivity {
         Hawk.init(getApplicationContext()).build();
 
         setContentView(R.layout.activity_main);
-//        getSupportActionBar().setTitle("");
+        try{
+            getSupportActionBar().setTitle("");
+        }catch (Exception e){
+
+        }
 
         initBottomBar(this, 1);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
+
 
         //Permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -170,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
 
             webViewManager.setTagToJS(itemID);
         }
+//        webViewManager.updateLocation(ConstOfMap.initLocation);
+
 
     }
 
@@ -277,19 +281,16 @@ public class MainActivity extends AppCompatActivity {
 
         MapDetail mapDetail = new MapDetail();
         mapDetail.setMapName("map");
-        mapDetail.setMapPath("map.png");
-//        mapDetail.setMapPath("map1.png");
+//        mapDetail.setMapPath("map.png");
+        mapDetail.setMapPath("map1.png");
         List<Integer> dimensions = new ArrayList<Integer>();
-        dimensions.add(1206);
-        dimensions.add(1151);
-//        dimensions.add(909);
-//        dimensions.add(769);
+//        dimensions.add(1206);
+//        dimensions.add(1151);
+        dimensions.add(909);
+        dimensions.add(769);
         mapDetail.setMapDimensions(dimensions);
         webViewManager.addMap(mapDetail);
-
         Log.e("map", mapDetail.toString());
-
-
     }
 
 
@@ -306,54 +307,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     // a function for draw line between marker and point
     //note: location of marker is  in webViewManager
-    //read TODO
     void pathToPoint(final String dstPoint) {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                GraphBuilder location = new GraphBuilder();
-                ConstOfMap constOfMap = new ConstOfMap();
                 String srcPoint = webViewManager.getLoctionOfMarker();
-                try {
-                    // Find closet edges
-                    Edge srcEdge = location.graph.findNearEdge(srcPoint); // nearest edge to the source point
-                    Edge dstEdge = location.graph.findNearEdge(dstPoint); // nearest edge to the destination point
+                GraphBuilder location = new GraphBuilder();
+                ArrayList<ArrayList<Point>> path = location.graph.getPath(srcPoint, dstPoint);
 
-                    String srcEdgePoint = srcEdge.pointOnLineImage(srcPoint); // find the nearest point on the nearest edge to the source
-                    String dstEdgePoint = dstEdge.pointOnLineImage(dstPoint); // find the nearest point on the nearest edge to the destination
-
-                    String srcEdgeClosestVertex = srcEdge.nearVertex(srcEdgePoint); // find closet vertex of the nearest edge to srcEdgePoint
-                    String dstEdgeClosestVertex = dstEdge.nearVertex(dstEdgePoint); // find closet vertex of the nearest edge to dstEdgePoint
-
-                    // Find path between two edges according to the closest vetexes
-                    String strPath = location.graph.getPathBetweenEdges(dstEdgeClosestVertex, dstEdge, srcEdgeClosestVertex, srcEdge);
-                    String[] path = strPath.split(",");
-
-                    // Draw the path
-                    webViewManager.drawLine(srcPoint, srcEdgePoint);
-                    webViewManager.drawLine(dstPoint, dstEdgePoint);
-
-                    String lastVertex = path[0];
-                    for (int i = 1; i < path.length; i++) {
-                        webViewManager.drawLine(constOfMap.vertexOfGraph.get(lastVertex)
-                                , constOfMap.vertexOfGraph.get(path[i]));
-                        lastVertex = path[i];
-                    }
-
-                    webViewManager.drawLine(dstEdgePoint, constOfMap.vertexOfGraph.get(path[0]));
-                    webViewManager.drawLine(srcEdgePoint, constOfMap.vertexOfGraph.get(path[path.length-1]));
-
-
-                    if (path[0].equals("")) {
-                        webViewManager.drawLine(constOfMap.vertexOfGraph.get(dstEdgeClosestVertex)
-                                , constOfMap.vertexOfGraph.get(srcEdgeClosestVertex));
-                    }
-
-                } catch (RuntimeException e) {
-                    Log.e("error", e.toString());
+                for (ArrayList<Point> line : path){
+                    webViewManager.drawLine(line.get(0).toString(), line.get(1).toString());
                 }
             }
         }, 1000);

@@ -1,27 +1,22 @@
 package ir.parsiot.pokdis.map.Objects;
 
-public class Vertex {
-   public String tag;
-   public float x;
-   public float y;
+public class Point {
+    public float x;
+    public float y;
 
-    public Vertex(String tag, float x, float y) {
-        this.tag = tag;
+    public Point(String tag, float x, float y) {
         this.x = x;
         this.y = y;
     }
-    public Vertex(String xyStr) {
-
+    public Point(String xyStr) {
         String [] xyStrList = xyStr.split(",");
         this.x = Float.valueOf(xyStrList[0]);
         this.y  = Float.valueOf(xyStrList[1]);
     }
-    public Vertex() {
-        String tag ="";
+    public Point() {
         this.x = 0;
         this.y = 0;
     }
-
     public float distanceFromThis(String point){
         String [] loc = point.split(",");
         Float [] locOfPoint=new Float[2];
@@ -29,13 +24,18 @@ public class Vertex {
         locOfPoint[1] = Float.valueOf(loc[1]);
 
         float distance = (float) Math.sqrt(Math.pow(x-locOfPoint[0],2)+Math.pow(y-locOfPoint[1],2));
-
         return distance;
-
     }
+
+    public float distanceFromThis(Point p){
+        float distance = (float) Math.sqrt(Math.pow(x-p.x,2)+Math.pow(y-p.y,2));
+        return distance;
+    }
+
 
     @Override
     public String toString() {
         return x+","+y;
     }
+
 }
