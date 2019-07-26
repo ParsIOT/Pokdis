@@ -5,11 +5,16 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -19,7 +24,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ir.parsiot.pokdis.Enums.ScanModeEnum;
+import ir.parsiot.pokdis.Items.CartItems;
+import ir.parsiot.pokdis.Items.Items;
 import ir.parsiot.pokdis.Listeners.OnWebViewClickListener;
+import ir.parsiot.pokdis.Views.ItemOfList;
 
 
 /**
@@ -79,12 +87,23 @@ public class WebViewManager {
         }, 1000);
     }
 
-    public void addMarker(final String point, final String text) {
+    public void addMarker(final String point) {
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                webView.loadUrl(String.format(Locale.getDefault(), "javascript:addMarker(\"%s\",\"%s\")", point, text));
+                webView.loadUrl(String.format(Locale.getDefault(), "javascript:addMarker(\"%s\")", point));
+
+            }
+        }, 1000);
+    }
+
+    public void addItem(final String point, final String itemId, final String itemName, final String itemImgSrc) {
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                webView.loadUrl(String.format(Locale.getDefault(), "javascript:addItem(\"%s\",\"%s\",\"%s\",\"%s\")", point, itemId, itemName, itemImgSrc));
 
             }
         }, 1000);
@@ -147,6 +166,32 @@ public class WebViewManager {
         }
     }
 
+    public void destoryWebView() {
+        webView.clearHistory();
+
+        // NOTE: clears RAM cache, if you pass true, it will also clear the disk cache.
+        // Probably not a great idea to pass true if you have other WebViews still alive.
+        webView.clearCache(true);
+
+        // Loading a blank page is optional, but will ensure that the WebView isn't doing anything when you destroy it.
+        webView.loadUrl("about:blank");
+
+        webView.onPause();
+        webView.removeAllViews();
+        webView.destroyDrawingCache();
+
+        // NOTE: This pauses JavaScript execution for ALL WebViews,
+        // do not use if you have other WebViews still alive.
+        // If you create another WebView after calling this,
+        // make sure to call mWebView.resumeTimers().
+        webView.pauseTimers();
+
+        // NOTE: This can occasionally cause a segfault below API 17 (4.2)
+        webView.destroy();
+
+        // Null out the reference so that you don't end up re-using it.
+        webView = null;
+    }
 
     public void addPopup(final String point, final String text) {
         new Handler().postDelayed(new Runnable() {
@@ -182,6 +227,32 @@ public class WebViewManager {
             Log.d("TAG", "sendToAndroid: " + text);
             onWebViewClickListener.onWebViewClick(text);
         }
+
+        @JavascriptInterface
+        public void addItemToCart(String itemId) {
+            Log.d("TAG", "addItemToCart: " + itemId);
+//            onWebViewClickListener.onWebViewClick(text);
+            String txtMessage;
+            CartItems cartItems = new CartItems();
+            Items items = new Items();
+            ItemOfList item = items.get_item(itemId);
+            if (cartItems.put_item(item)){
+                txtMessage = "این محصول به لیست خرید اضافه شد.";
+            }else{
+                txtMessage = "این محصول در سبد خرید از قبل وجود داشته است";
+            }
+            Toast.makeText(mContext,txtMessage,Toast.LENGTH_SHORT).show();
+//            Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null);
+//            View mView = mSnackbar.getView();
+//            TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+//                mTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+//            else
+//                mTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+//            mSnackbar.show();
+        }
+
 
         @JavascriptInterface
         public String getFromAndroid() {

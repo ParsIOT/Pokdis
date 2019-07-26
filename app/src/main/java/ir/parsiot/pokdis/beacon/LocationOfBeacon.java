@@ -2,10 +2,6 @@ package ir.parsiot.pokdis.beacon;
 
 import java.util.HashMap;
 
-/**
- * Created by seyedalian on 11/6/2019.
- */
-
 public class LocationOfBeacon {
   public   HashMap<String, Double[]> beaconCoordinates;
 
@@ -15,7 +11,6 @@ public class LocationOfBeacon {
 
     public LocationOfBeacon() {
         beaconCoordinates = new HashMap<String, Double[]>() {{
-
             put("01:17:C5:97:E7:B3", new Double[]{-381d,416d});//1
             put("01:17:C5:97:1B:44", new Double[]{-381d,-35d });//2
             put("01:17:C5:97:87:84", new Double[]{-381d,-470d});//3

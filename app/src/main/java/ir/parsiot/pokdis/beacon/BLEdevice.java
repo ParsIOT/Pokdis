@@ -2,10 +2,6 @@ package ir.parsiot.pokdis.beacon;
 
 import ir.parsiot.pokdis.Constants.Constants;
 
-/**
- * Created by seyedalian on 11/6/2019.
- */
-
 public class BLEdevice {
 
     private String name;

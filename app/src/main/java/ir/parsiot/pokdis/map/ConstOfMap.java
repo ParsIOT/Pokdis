@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ConstOfMap {
 
-    public static String initLocation = "-320,100";
+    public static String initLocation = "-320,330";
     public static float epsilon = 0.01f;
     public HashMap<String,String > vertexOfGraph;
 

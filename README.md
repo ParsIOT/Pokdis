@@ -1,3 +1,3 @@
 # Pokdis
 
-Developer : seyedsajjad seyedalian
+Developer : Parsiot team

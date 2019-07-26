@@ -1,10 +1,6 @@
 package ir.parsiot.pokdis.Constants;
 
 
-/**
- * Created by seyedalian on 11/6/2019.
- */
-
 public class Constants {
     public static final int REQUEST_CODE_ACCESS_COARSE_LOCATION =1;
     public static final int REQUEST_CODE_READ_EXTERNAL_STORAGE =2;

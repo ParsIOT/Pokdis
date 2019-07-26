@@ -111,7 +111,8 @@ public class ItemAdapter extends ArrayAdapter {
                    Intent intent = new Intent(context,MainActivity.class);
                    intent.putExtra("locationMarker",item.getLocation());
                    intent.putExtra("itemName",item.getName());
-                   intent.putExtra("itemID",item.getId());
+                   intent.putExtra("itemImgSrc", item.getImageName());
+                   intent.putExtra("itemId",item.getId());
                    Log.e("tag",item.getId());
                    //intent.putExtras(bundle);
                    context.startActivity(intent);

@@ -280,7 +280,7 @@ public class Graph {
             String srcEdgeClosestVertex = srcEdge.nearVertex(srcEdgePoint); // find closet vertex of the nearest edge to srcEdgePoint
             String dstEdgeClosestVertex = dstEdge.nearVertex(dstEdgePoint); // find closet vertex of the nearest edge to dstEdgePoint
 
-            // Find tempPath between two edges according to the closest vetexes
+            // Find tempPath between two edges according to the closest vertexes
             String strPath = this.getPathBetweenEdges(dstEdgeClosestVertex, dstEdge, srcEdgeClosestVertex, srcEdge);
             String[] tempPath = strPath.split(",");
 

@@ -12,10 +12,32 @@
 //.leaflet-container {
 //    background-color:rgba(255,0,0,0.0);
 //}
+@font-face {
+	font-family: 'yekan';
+	src: url('fonts/Yekan.ttf');
+}
 
 .leaflet-map-layer {
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.6), 0 12px 40px 0 rgba(0, 0, 0, 0.70);
 }
+
+.item-title{
+//    direction : rtl;
+    font-family: "yekan";
+    white-space: pre;
+    font-size: inherit;
+    padding-top: 10px;
+}
+.item-img{
+    margin: 0 auto;
+    display:block;
+}
+
+.plus-icon-custom-style{
+    font-size:40px;
+    color:green;
+}
+
 </style>
 </head>
 
@@ -33,14 +55,21 @@
 
 
 
+    var bounds = new L.LatLngBounds(new L.LatLng(-1400, -1400), new L.LatLng(1400, 1400));
 
-
-
-
-    var map = L.map('map', {
-        crs: L.CRS.Simple,
-        minZoom: -5
+//    var map = L.map('map', {
+//        crs: L.CRS.Simple,
+//        minZoom: -5
+//    });
+    var map = new L.Map('map', {
+      crs: L.CRS.Simple,
+      minZoom: -5,
+      center: bounds.getCenter(),
+      zoom: 5,
+      maxBounds: bounds,
+      maxBoundsViscosity: 1.0
     });
+
 
     var isMarkersShown = false;
     //var lastLocation = [null,null];
@@ -55,12 +84,11 @@
     //var image = L.imageOverlay('img/daneshkadehFullMapRevised.png', bounds).addTo(map);
 
     var arbitraryMarkersLayer = L.featureGroup().addTo(map);
-    map.setView([0, 0], -2);
-    latlng = [-381,416];
-    var marker = L.userMarker(latlng, {pulsing: true, accuracy: 200});
+    latlng = [-320,330];
+    map.setView(latlng, -0.5);
+
+    var marker = L.userMarker(latlng, {pulsing: true, accuracy: 100});
     marker.addTo(map);
-
-
 
     marker.setRotationOrigin("center center");
     marker.setRotationAngle(180);
@@ -93,7 +121,7 @@
 
     var window_length = 4;
     var h_locations = [];
-    var accuracy_limit = 200;
+    var accuracy_limit = 100;
     for (var i = 0; i < window_length; i++) {
         h_locations.push([null, null])
     }
@@ -105,7 +133,7 @@ mapLayer = 0;
         var bounds = [[-1*bound0, -1*bound1], [bound0, bound1]];
         mapLayer = L.imageOverlay(image, bounds).addTo(map);
         mapLayer.getElement().classList.add('leaflet-map-layer');
-        map.setView([0, 0], -1);
+//        map.setView([0, 0], -1);
     }
 
 
@@ -123,7 +151,7 @@ mapLayer = 0;
 
 
 
-    function moveMarker(arg) {
+    function moveMarker(arg, delay=1000) {
         var pattern = /(.*),(.*)/;
         var match = pattern.exec(arg);
         var x = match[1];
@@ -149,7 +177,7 @@ mapLayer = 0;
         //}
 
          marker.slideTo([x, y], {
-             duration: 100,
+             duration: delay,
             keepAtCenter: false
          });
     }
@@ -170,41 +198,75 @@ mapLayer = 0;
     }
 
 
-    function addMarker(arg,text) {
+    function addMarker(arg) {
         var pattern = /(.*),(.*)/;
             var match = pattern.exec(arg);
             var x = match[1];
             var y = match[2];
         isMarkersShown = true;
-        var arbitraryMarker = L.marker([x, y]);// .popup()
-          // .setContent("<i class=\"glyphicon glyphicon-plus\" style=\"font-size:30px;color:green;\"></i>"+text);
-	//arbitraryMarker;
+        var arbitraryMarker = L.marker([x, y]);
         arbitraryMarker.addTo(arbitraryMarkersLayer);
-      var popup = arbitraryMarker.bindPopup("<i class=\"glyphicon glyphicon-plus\" onclick=\"callAndroid()\" style=\"font-size:30px;color:green;\"></i>"+text)
-	        .openPopup();;
+
         arbitraryMarker.on('click', function markerOnClick(e) {
             var retVar = e.latlng.lat + "," + e.latlng.lng;
             console.log(e.latlng.lat + "," + e.latlng.lng);
             Android.sendToAndroid(retVar);
-            marker.openPopup();
         });
-
-//	var popup = L.popup()
-		 //   .setLatLng([x+1,y])
-		
-		    //.setContent("<i class=\"glyphicon glyphicon-plus\" style=\"font-size:30px;color:green;\"></i>"+text)
-		   
-		    //.openOn(map);
-
-
     }
 
-    function callAndroid(){
-       // alert("ok");
-        var text =Android.getTagFromAndroid()
-        Android.addIdToList(text);
+     function addItem(arg, id, text, imgSrc) {
+            var pattern = /(.*),(.*)/;
+                var match = pattern.exec(arg);
+                var x = match[1];
+                var y = match[2];
+            isMarkersShown = true;
+            var arbitraryMarker = L.marker([x, y]);// .popup()
+              // .setContent("<i class=\"glyphicon glyphicon-plus\" style=\"font-size:30px;color:green;\"></i>"+text);
+    	//arbitraryMarker;
+            arbitraryMarker.addTo(arbitraryMarkersLayer);
 
-    }
+            var itemImg = "<img class='item-img' src='"+imgSrc+"' height='100px' width='100px'/>";
+            popupTag = "<span dir='rtl' class='item-title'> " + text + "</span> "+itemImg;
+          var popup = arbitraryMarker.bindPopup(
+          "<i id='ic-"+id+"' class='glyphicon glyphicon-plus plus-icon-custom-style' onclick='plusButtonClick(\""+id+"\")'></i>"+popupTag,
+          {maxWidth: "auto"})
+          .openPopup();
+
+            map.panTo(new L.LatLng(x, y));
+
+//            arbitraryMarker.on('click', function markerOnClick(e) {
+////                var retVar = e.latlng.lat + "," + e.latlng.lng;
+//                console.log(e.latlng.lat + "," + e.latlng.lng);
+//                marker.openPopup();
+//            });
+
+
+    //	var popup = L.popup()
+    		 //   .setLatLng([x+1,y])
+
+    		    //.setContent("<i class=\"glyphicon glyphicon-plus\" style=\"font-size:30px;color:green;\"></i>"+text)
+
+    		    //.openOn(map);
+
+
+        }
+
+    function plusButtonClick(id){
+        var ic = document.getElementById("ic-"+id);
+//        console.log(id);
+//        console.log(ic);
+        ic.classList.toggle("glyphicon-plus");
+        ic.classList.toggle("glyphicon-ok");
+        //                popup.setContent( popup );
+        Android.addItemToCart(id);
+     }
+
+//    function callAndroid(){
+//       // alert("ok");
+//        var text =Android.getTagFromAndroid()
+//        Android.addIdToList(text);
+//
+//    }
 
     function toggleMarkers(){
         if (isMarkersShown){
@@ -274,7 +336,7 @@ function drawLine(arg1,arg2){
 	var polyline = L.polyline(latlngs, polylineOptions).addTo(map);
 
 	// zoom the map to the polyline
-	map.fitBounds(polyline.getBounds());
+//	map.fitBounds(polyline.getBounds());
 
 
 	}

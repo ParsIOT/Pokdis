@@ -163,14 +163,18 @@ public class MainActivity extends AppCompatActivity {
         //get information from SalesListActivity
         final String locationMarker = getIntent().getStringExtra("locationMarker");
         String itemName = getIntent().getStringExtra("itemName");
-        String itemID = getIntent().getStringExtra("itemID");
+        String itemImgSrc = getIntent().getStringExtra("itemImgSrc");
+        String itemId = getIntent().getStringExtra("itemId");
 
         //if from SalesListActivity
         if (locationMarker != null && itemName != null) {
-            pathToPoint(locationMarker);
-            webViewManager.addMarker(locationMarker, "محصول" + itemName + "<br>" + "اضافه کردن به سبد خرید");
+            webViewManager.addItem(locationMarker, itemId, itemName, "../"+ itemImgSrc); // Todo: Sometimes
+//            webViewManager.setTagToJS(itemId);
 
-            webViewManager.setTagToJS(itemID);
+//            webViewManager.addMarker(locationMarker);
+            pathToPoint(locationMarker);
+            webViewManager.setTagToJS(itemId);
+
         }
 //        webViewManager.updateLocation(ConstOfMap.initLocation);
 
@@ -296,7 +300,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+
         super.onDestroy();
+
         //for unbind beaconDiscovered
         if (beaconDiscovered != null) {
             try {
@@ -305,7 +311,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("error", e.toString());
             }
         }
+        webViewManager.destoryWebView();
     }
+
 
     // a function for draw line between marker and point
     //note: location of marker is  in webViewManager
