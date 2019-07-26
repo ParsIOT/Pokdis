@@ -103,7 +103,10 @@
     //     console.log(e.latlng.lat + "," + e.latlng.lng);
     // });
 
-
+    var homeBtnTxt = "مکان فعلی";
+    L.easyButton('fa-map-marker fa-2x',function(btn,map){
+      map.setView(latlng, -0.5);
+    },homeBtnTxt,"home-btn").addTo(map);
     /*var grid = new L.GridToolbar(latlng, 1,
         {
             mode: 'indoor',

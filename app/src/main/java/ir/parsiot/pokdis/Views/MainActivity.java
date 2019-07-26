@@ -16,15 +16,19 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -396,4 +400,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        //builder.setTitle("Dlete ");
+        builder.setMessage("آیا میخواهید از برنامه خارج شوید؟")
+                .setCancelable(false)
+                .setPositiveButton("بله",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //1: Delete from allItems
+                                //2: Delete from HAWK
+
+                              finish();
+
+//                                            allItems = cartItemsClient.deleteItem(filteredItems.get(position));
+//                                            filteredItems.remove(position);
+//
+//                                            notifyDataSetChanged();
+                            }
+                        })
+                .setNegativeButton("خیر", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+
+        builder.show();
+//        new AlertDialog.Builder(this)
+//                .setIcon(android.R.drawable.ic_dialog_alert)
+//                .setTitle("Closing Activity")
+//                .setMessage("Are you sure you want to close this activity?")
+//                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+//                {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        finish();
+//                    }
+//
+//                })
+//                .setNegativeButton("No", null)
+//                .show();
+    }
 }

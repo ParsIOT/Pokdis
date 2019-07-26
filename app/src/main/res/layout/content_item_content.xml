@@ -171,6 +171,7 @@ tools:showIn="@layout/activity_item_content">
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_centerVertical="true"
+            android:id="@+id/description_expand_txt"
             android:layout_toLeftOf="@id/description_expand_btn"
             android:gravity="center_vertical"
             android:paddingRight="8dp"

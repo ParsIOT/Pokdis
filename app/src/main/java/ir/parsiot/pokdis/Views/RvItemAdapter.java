@@ -264,22 +264,51 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
 
             addToCartBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    String txtMessage;
-                    if (cartItems.put_item(item)) {
-                        txtMessage = "این محصول به لیست خرید اضافه شد.";
-                    } else {
-                        txtMessage = "این محصول در سبد خرید از قبل وجود داشته است";
-                    }
-                    Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
-                            .setAction("Action", null);
-                    View mView = mSnackbar.getView();
-                    TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-                        mTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                    else
-                        mTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-                    mSnackbar.show();
+                public void onClick(final View view) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+
+                    //builder.setTitle("Dlete ");
+                    builder.setMessage("آیا مایل هستید این محصول به سبد خرید اضافه شود؟")
+                            .setCancelable(false)
+                            .setPositiveButton("بله",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            //1: Delete from allItems
+                                            //2: Delete from HAWK
+
+                                            String txtMessage;
+                                            if (cartItems.put_item(item)) {
+                                                txtMessage = "این محصول به لیست خرید اضافه شد.";
+                                            } else {
+                                                txtMessage = "این محصول در سبد خرید از قبل وجود داشته است";
+                                            }
+                                            Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
+                                                    .setAction("Action", null);
+                                            View mView = mSnackbar.getView();
+                                            TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                                                mTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                                            else
+                                                mTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+                                            mSnackbar.show();
+
+//                                            allItems = cartItemsClient.deleteItem(filteredItems.get(position));
+//                                            filteredItems.remove(position);
+//
+//                                            notifyDataSetChanged();
+                                        }
+                                    })
+                            .setNegativeButton("خیر", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+
+                                }
+                            });
+
+                    builder.show();
+
+
                 }
             });
 

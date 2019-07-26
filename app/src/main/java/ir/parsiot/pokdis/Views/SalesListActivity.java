@@ -128,4 +128,13 @@ public class SalesListActivity extends AppCompatActivity {
         });
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(SalesListActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        finish();
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
 }

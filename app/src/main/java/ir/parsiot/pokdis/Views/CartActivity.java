@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,6 +56,15 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
 //        ((CoordinatorLayout.LayoutParams) button.getLayoutParams()).setBehavior(new StickyBottomBehavior(R.id.anchor, getResources().getDimensionPixelOffset(R.dimen.margins)));
 
         refreshDisplay();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        cartItems = cartItems = new CartItems();
+        items = cartItems.get_items();
+        refreshDisplay();
+
     }
 
     private void initViews() {
@@ -144,5 +154,14 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
 
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(CartActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        finish();
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 }

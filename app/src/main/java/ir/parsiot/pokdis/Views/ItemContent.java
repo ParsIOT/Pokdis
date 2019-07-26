@@ -1,6 +1,8 @@
 package ir.parsiot.pokdis.Views;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -26,8 +28,11 @@ import android.widget.TextView;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import ir.parsiot.pokdis.Items.CartItems;
 import ir.parsiot.pokdis.Items.Items;
@@ -108,22 +113,32 @@ public class ItemContent extends AppCompatActivity {
 
         final ExpandableRelativeLayout itemDesContainer = (ExpandableRelativeLayout) findViewById(R.id.item_description_container);
         final ImageButton btnDescExpand = (ImageButton) findViewById(R.id.description_expand_btn);
+        final TextView descriptionExpandTxt = (TextView) findViewById(R.id.description_expand_txt) ;
         isCollapsed = true;
         itemDesContainer.collapse();
-        btnDescExpand.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isCollapsed) {
-                    itemDesContainer.expand();
-                    btnDescExpand.setImageResource(R.drawable.ic_expand_less);
-                    isCollapsed = false;
-                } else {
-                    itemDesContainer.collapse();
-                    btnDescExpand.setImageResource(R.drawable.ic_expand_more);
-                    isCollapsed = true;
+
+
+        ArrayList<View> tempLis = new ArrayList<View>();
+        tempLis.add(descriptionExpandTxt);
+        tempLis.add(btnDescExpand);
+
+        for (View view : tempLis) {
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (isCollapsed) {
+                        itemDesContainer.expand();
+                        btnDescExpand.setImageResource(R.drawable.ic_expand_less);
+                        isCollapsed = false;
+                    } else {
+                        itemDesContainer.collapse();
+                        btnDescExpand.setImageResource(R.drawable.ic_expand_more);
+                        isCollapsed = true;
+                    }
                 }
-            }
-        });
+            });
+        }
+
 
         // Set a blinking animation for btnDescExpand
         Animation animation = new AlphaAnimation(1, 0); //to change visibility from visible to invisible
@@ -154,22 +169,47 @@ public class ItemContent extends AppCompatActivity {
         FloatingActionButton addToCartFab = findViewById(R.id.add_to_card_fab);
         addToCartFab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                String txtMessage;
-                if (cartItems.put_item(item)){
-                    txtMessage = "این محصول به لیست خرید اضافه شد.";
-                }else{
-                    txtMessage = "این محصول در سبد خرید از قبل وجود داشته است";
-                }
-                Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null);
-                View mView = mSnackbar.getView();
-                TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-                    mTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                else
-                    mTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-                mSnackbar.show();
+            public void onClick(final View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+
+                //builder.setTitle("Dlete ");
+                builder.setMessage("آیا مایل هستید این محصول به سبد خرید اضافه شود؟")
+                        .setCancelable(false)
+                        .setPositiveButton("بله",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        //1: Delete from allItems
+                                        //2: Delete from HAWK
+
+                                        String txtMessage;
+                                        if (cartItems.put_item(item)) {
+                                            txtMessage = "این محصول به لیست خرید اضافه شد.";
+                                        } else {
+                                            txtMessage = "این محصول در سبد خرید از قبل وجود داشته است";
+                                        }
+                                        Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
+                                                .setAction("Action", null);
+                                        View mView = mSnackbar.getView();
+                                        TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                                            mTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                                        else
+                                            mTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+                                        mSnackbar.show();
+
+//                                            allItems = cartItemsClient.deleteItem(filteredItems.get(position));
+//                                            filteredItems.remove(position);
+//
+//                                            notifyDataSetChanged();
+                                    }
+                                })
+                        .setNegativeButton("خیر", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+
+                builder.show();
+
             }
         });
     }
