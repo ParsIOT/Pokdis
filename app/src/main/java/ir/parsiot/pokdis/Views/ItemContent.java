@@ -162,6 +162,8 @@ public class ItemContent extends AppCompatActivity {
                 intent.putExtra("itemId",item.getId());
 //                Log.e("tag",item.getId());
                 //intent.putExtras(bundle);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
                 startActivity(intent);
             }
         });

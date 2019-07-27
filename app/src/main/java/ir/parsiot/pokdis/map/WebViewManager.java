@@ -128,7 +128,7 @@ public class WebViewManager {
         loctionOfMarker = location;
         final String js_location = String.format("javascript:moveMarker(\'%s\')", location);
         //  webView.loadUrl(js_location);
-        if (context != null) {
+        if (context != null && webView != null) {
             ((Activity) context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

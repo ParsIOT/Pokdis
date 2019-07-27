@@ -20,6 +20,8 @@ import java.util.List;
 
 import ir.parsiot.pokdis.Constants.Constants;
 
+import static ir.parsiot.pokdis.Constants.Constants.MIN_RSS_TO_RELOCATE;
+
 public class BeaconDiscovered implements BeaconConsumer {
 
 
@@ -62,6 +64,7 @@ public class BeaconDiscovered implements BeaconConsumer {
 
         //set between scan period
         beaconManager.setForegroundBetweenScanPeriod(Constants.PERIOD_TIME_BETWEEN_SCAN);
+//        beaconManager.setDebug(true);
 
     }
 
@@ -190,7 +193,7 @@ public class BeaconDiscovered implements BeaconConsumer {
                         }*/
 //                        Log.d("beaconData:",String.valueOf(discoveredDevices.get(0).getRssiAvg()));
 
-                        if (discoveredDevices.get(0).getRssiAvg() >= -56) {
+                        if (discoveredDevices.get(0).getRssiAvg() >= MIN_RSS_TO_RELOCATE) {
                             proposedBeacon = discoveredDevices.get(0);
                         }
 
@@ -297,29 +300,29 @@ public class BeaconDiscovered implements BeaconConsumer {
 
     public String getNearLoacationToString() {
         try {
-             if(discoveredDevices.get(0).getRssiAvg()
-                    -discoveredDevices.get(1).getRssiAvg()<4){
-                String nearMac1 = discoveredDevices.get(0).getMac();
-                LocationOfBeacon locationOfBeacon1 = new LocationOfBeacon();
-                Double [] location1 = locationOfBeacon1.beaconCoordinates.get(nearMac1);
-                String nearMac2 = discoveredDevices.get(1).getMac();
-                LocationOfBeacon locationOfBeacon2 = new LocationOfBeacon();
-                Double [] location2 = locationOfBeacon2.beaconCoordinates.get(nearMac2);
-                if(location1 != null){
-                    String loc = ((location1[0]+location2[0])/2)+","+((location1[1]+location2[1])/2);
-                    return loc;
-                }
-
-
-            }else {
-                String nearMac = discoveredDevices.get(0).getMac();
-                LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
-                Double [] location = locationOfBeacon.beaconCoordinates.get(nearMac);
-                if(location != null){
-                    String loc = location[0]+","+location[1];
-                    return loc;
-                }
-            }
+//             if(discoveredDevices.get(0).getRssiAvg()
+//                    -discoveredDevices.get(1).getRssiAvg()<4){
+//                String nearMac1 = discoveredDevices.get(0).getMac();
+//                LocationOfBeacon locationOfBeacon1 = new LocationOfBeacon();
+//                Double [] location1 = locationOfBeacon1.beaconCoordinates.get(nearMac1);
+//                String nearMac2 = discoveredDevices.get(1).getMac();
+//                LocationOfBeacon locationOfBeacon2 = new LocationOfBeacon();
+//                Double [] location2 = locationOfBeacon2.beaconCoordinates.get(nearMac2);
+//                if(location1 != null){
+//                    String loc = ((location1[0]+location2[0])/2)+","+((location1[1]+location2[1])/2);
+//                    return loc;
+//                }
+//
+//
+//            }else {
+//                String nearMac = discoveredDevices.get(0).getMac();
+//                LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
+//                Double [] location = locationOfBeacon.beaconCoordinates.get(nearMac);
+//                if(location != null){
+//                    String loc = location[0]+","+location[1];
+//                    return loc;
+//                }
+//            }
 
 
             if (proposedBeacon != null) {

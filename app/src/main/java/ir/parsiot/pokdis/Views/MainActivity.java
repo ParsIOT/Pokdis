@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Hawk.init(getApplicationContext()).build();
         isMainPage = true;
+        Log.e("TAG", "Main activity is created");
         setContentView(R.layout.activity_main);
         try{
             getSupportActionBar().setTitle("");
@@ -157,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
 //        try {
         beaconDiscovered = new BeaconDiscovered(this);
         beaconDiscovered.startMonitoring();
+
         updateLocation();
 //        } catch (RuntimeException e) {
 //            Log.e("Error:", e.getMessage());
@@ -200,8 +202,8 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.ic_map_page:
                         if (context.getClass() != MainActivity.class) {
                             Intent intent = new Intent(context, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            finish();
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
@@ -210,8 +212,8 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.ic_search_page:
                         if (context.getClass() != SalesListActivity.class) {
                             Intent intent = new Intent(context, SalesListActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            finish();
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
@@ -219,8 +221,8 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.ic_buy_page:
                         if (context.getClass() != CartActivity.class) {
                             Intent intent = new Intent(context, CartActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            finish();
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
@@ -233,10 +235,37 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        final String locationMarker = intent.getStringExtra("locationMarker");
+        String itemName = intent.getStringExtra("itemName");
+        String itemImgSrc = intent.getStringExtra("itemImgSrc");
+        String itemId = intent.getStringExtra("itemId");
+
+        if (itemId!=null){
+            Log.d("MainActivity",itemId);
+        }else{
+            Log.d("MainActivity","There's not itemID");
+        }
+        //if from SalesListActivity
+        if (locationMarker != null && itemName != null) {
+            isMainPage = false;
+            webViewManager.addItem(locationMarker, itemId, itemName, "../"+ itemImgSrc); // Todo: Sometimes
+//            webViewManager.setTagToJS(itemId);
+
+//            webViewManager.addMarker(locationMarker);
+            pathToPoint(locationMarker);
+            webViewManager.setTagToJS(itemId);
+
+        }
+    }
 
     @Override
     protected void onResume() {
         //check BLUETOOTH is enable on any start program
+
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, "Device does not support Bluetooth", Toast.LENGTH_SHORT);
@@ -258,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
                     String location = beaconDiscovered.getNearLoacationToString();
                     if (location != null) {
-                        Log.e("location:", location);
+//                        Log.e("location:", location);
 
                         webViewManager.updateLocation(location);
                     }
