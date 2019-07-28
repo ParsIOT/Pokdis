@@ -78,13 +78,14 @@ public class WebViewManager {
     public void addMap(final MapDetail map) {
         Log.d(TAG, "addMap: " + map.toString());
         final List<Integer> bounds = map.getMapDimensions();
+//        Log.e("Map is loading...","ok");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 webView.loadUrl(String.format(Locale.getDefault(), "javascript:addMap(\'%s\',%d, %d)", map.getMapPath(), bounds.get(0), bounds.get(1)));
 
             }
-        }, 1000);
+        }, 2000);
     }
 
     public void addMarker(final String point) {

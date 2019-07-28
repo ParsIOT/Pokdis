@@ -89,6 +89,12 @@
     latlng = [-320,330];
     map.setView(latlng, -0.5);
 
+//    var zoomBounds = new L.LatLngBounds(new L.LatLng(-300, -300), new L.LatLng(300, 300));
+    setTimeout(function () {
+        map.setView([0,0], -1.5);
+//        map.flyToBounds(zoomBounds);
+    }, 3000);
+
     var marker = L.userMarker(latlng, {pulsing: true, accuracy: 100});
     marker.addTo(map);
 
@@ -139,13 +145,21 @@ mapLayer = 0;
         mapLayer = L.imageOverlay(image, bounds).addTo(map);
         mapLayer.getElement().classList.add('leaflet-map-layer');
 
-        document.addEventListener('DOMContentLoaded', function() {
-             var bound0 = height / 2;
-             var bound1 = width / 2;
-             var bounds = [[-1*bound0, -1*bound1], [bound0, bound1]];
-             mapLayer = L.imageOverlay(image, bounds).addTo(map);
-             mapLayer.getElement().classList.add('leaflet-map-layer');
-        }, false);
+        setTimeout(function () {
+            var bound0 = height / 2;
+            var bound1 = width / 2;
+            var bounds = [[-1*bound0, -1*bound1], [bound0, bound1]];
+            mapLayer = L.imageOverlay(image, bounds).addTo(map);
+            mapLayer.getElement().classList.add('leaflet-map-layer');
+        }, 100);
+
+//        document.addEventListener('DOMContentLoaded', function() {
+//             var bound0 = height / 2;
+//             var bound1 = width / 2;
+//             var bounds = [[-1*bound0, -1*bound1], [bound0, bound1]];
+//             mapLayer = L.imageOverlay(image, bounds).addTo(map);
+//             mapLayer.getElement().classList.add('leaflet-map-layer');
+//        }, false);
 
 //        map.setView([0, 0], -1);
     }
@@ -246,8 +260,12 @@ mapLayer = 0;
           {maxWidth: "auto"})
           .openPopup();
 
-            map.panTo(new L.LatLng(x, y));
-
+         map.panTo(new L.LatLng(x, y),);
+         map.setView([x, y], -0.2);
+         setTimeout(function () {
+            map.setView([0,0], -1.5);
+//             map.flyToBounds(zoomBounds);
+         }, 2000);
 //            arbitraryMarker.on('click', function markerOnClick(e) {
 ////                var retVar = e.latlng.lat + "," + e.latlng.lng;
 //                console.log(e.latlng.lat + "," + e.latlng.lng);
