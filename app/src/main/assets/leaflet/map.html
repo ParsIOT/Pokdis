@@ -84,6 +84,8 @@
     //var image = L.imageOverlay('img/daneshkadehFullMapRevised.png', bounds).addTo(map);
 
     var arbitraryMarkersLayer = L.featureGroup().addTo(map);
+    var pathLines =  L.featureGroup().addTo(map);
+
     latlng = [-320,330];
     map.setView(latlng, -0.5);
 
@@ -319,8 +321,6 @@ mapLayer = 0;
 	}
 
 
-
-
 function drawLine(arg1,arg2){
 	   var pattern = /(.*),(.*)/;
         var match = pattern.exec(arg1);
@@ -345,13 +345,28 @@ function drawLine(arg1,arg2){
 
 	//Get latlng from first marker
 	latlngs.push([x2,y2]);
-	var polyline = L.polyline(latlngs, polylineOptions).addTo(map);
-
+	var polyline = L.polyline(latlngs, polylineOptions).addTo(pathLines);
+//    pathLines.push(polyline)
 	// zoom the map to the polyline
 //	map.fitBounds(polyline.getBounds());
 
 
 	}
+
+function clearItemDetails(){
+    clearPathLines();
+    clearArbitraryMarkers();
+}
+
+function clearPathLines(){
+    map.removeLayer(pathLines);
+    pathLines = L.featureGroup().addTo(map);
+}
+
+function clearArbitraryMarkers(){
+    map.removeLayer(arbitraryMarkersLayer);
+    arbitraryMarkersLayer = L.featureGroup().addTo(map);
+}
 
 
 

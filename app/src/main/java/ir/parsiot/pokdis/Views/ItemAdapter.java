@@ -113,6 +113,8 @@ public class ItemAdapter extends ArrayAdapter {
                    intent.putExtra("itemName",item.getName());
                    intent.putExtra("itemImgSrc", item.getImageName());
                    intent.putExtra("itemId",item.getId());
+                   intent.putExtra("isMainPage",false);
+
                    Log.e("tag",item.getId());
                    //intent.putExtras(bundle);
                    context.startActivity(intent);

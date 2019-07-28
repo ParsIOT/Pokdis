@@ -238,11 +238,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        webViewManager.clearItemDetails();
 
         final String locationMarker = intent.getStringExtra("locationMarker");
         String itemName = intent.getStringExtra("itemName");
         String itemImgSrc = intent.getStringExtra("itemImgSrc");
         String itemId = intent.getStringExtra("itemId");
+        try{
+            Boolean isMainPageTemp = intent.getExtras().getBoolean("isMainPage");
+            Log.d("isMainPageTemp: ",isMainPageTemp.toString());
+
+            if (isMainPageTemp != null){
+                isMainPage = isMainPageTemp;
+            }
+        }catch (Exception e){
+
+        }
+
 
         if (itemId!=null){
             Log.d("MainActivity",itemId);
@@ -459,7 +471,9 @@ public class MainActivity extends AppCompatActivity {
 
             builder.show();
         }else{
-            super.onBackPressed();
+            isMainPage = true;
+            this.moveTaskToBack(true);
+//            super.onBackPressed();
         }
     }
 }

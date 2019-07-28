@@ -109,6 +109,14 @@ public class WebViewManager {
         }, 1000);
     }
 
+    public void clearItemDetails(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                webView.loadUrl(String.format(Locale.getDefault(), "javascript:clearItemDetails()"));
+            }
+        }, 1000);
+    }
 
     public void drawLine(String location1, String location2) {
         final String js_location = String.format("javascript:drawLine(\"%s\",\"%s\")", location1, location2);

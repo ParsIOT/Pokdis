@@ -160,6 +160,7 @@ public class ItemContent extends AppCompatActivity {
                 intent.putExtra("itemName",item.getName());
                 intent.putExtra("itemImgSrc", item.getImageName());
                 intent.putExtra("itemId",item.getId());
+                intent.putExtra("isMainPage",false);
 //                Log.e("tag",item.getId());
                 //intent.putExtras(bundle);
 //                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -230,7 +231,7 @@ public class ItemContent extends AppCompatActivity {
                     case R.id.ic_map_page:
                         if (context.getClass() != MainActivity.class) {
                             Intent intent = new Intent(context, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -240,7 +241,7 @@ public class ItemContent extends AppCompatActivity {
                     case R.id.ic_search_page:
                         if (context.getClass() != SalesListActivity.class) {
                             Intent intent = new Intent(context, SalesListActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -249,7 +250,7 @@ public class ItemContent extends AppCompatActivity {
                     case R.id.ic_buy_page:
                         if (context.getClass() != CartActivity.class) {
                             Intent intent = new Intent(context, CartActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -262,5 +263,12 @@ public class ItemContent extends AppCompatActivity {
         });
 
     }
+//    @Override
+//    public void onBackPressed() {
+//        Intent intent = new Intent(context, MainActivity.class);
+////                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        finish();
+//        startActivity(intent);
+//    }
 
 }

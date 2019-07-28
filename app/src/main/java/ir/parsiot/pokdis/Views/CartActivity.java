@@ -89,7 +89,7 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
                     case R.id.ic_map_page:
                         if (context.getClass() != MainActivity.class) {
                             Intent intent = new Intent(context, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -99,7 +99,7 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
                     case R.id.ic_search_page:
                         if (context.getClass() != SalesListActivity.class) {
                             Intent intent = new Intent(context, SalesListActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -108,7 +108,7 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
                     case R.id.ic_buy_page:
                         if (context.getClass() != CartActivity.class) {
                             Intent intent = new Intent(context, CartActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -160,7 +160,7 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
     public void onBackPressed() {
         Intent intent = new Intent(CartActivity.this, MainActivity.class);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 //        finish();
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
