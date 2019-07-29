@@ -298,7 +298,26 @@ public class BeaconDiscovered implements BeaconConsumer {
         return proposedBeacon;
     }
 
-    public String getNearLoacationToString() {
+
+    public ArrayList<String> getAllSortedDiscoveredBeaconLocations(){
+        if(discoveredDevices != null){
+            if (discoveredDevices.size() > 0){
+                ArrayList<String> locations = new ArrayList<String>();
+                for (BLEdevice beacon : discoveredDevices){
+                    String nearMac = beacon.getMac();
+                    LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
+                    Double[] location = locationOfBeacon.beaconCoordinates.get(nearMac);
+                    if (location != null) {
+                        String loc = location[0] + "," + location[1];
+                        locations.add(loc);
+                    }
+                }
+                return locations;
+            }
+        }
+        return null;
+    }
+    public String getNearLocationToString() {
         try {
 //             if(discoveredDevices.get(0).getRssiAvg()
 //                    -discoveredDevices.get(1).getRssiAvg()<4){

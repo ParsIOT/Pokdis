@@ -339,12 +339,67 @@ public class Graph {
 //                        , constOfMap.vertexOfGraph.get(srcEdgeClosestVertex));
             }
 
-            return resPath;
+            ArrayList<ArrayList<Point>> finalResPath = new ArrayList<ArrayList<Point>>(); // I don't know why there exits some line with same src and dst point
+            for (ArrayList<Point> line : resPath){
+                if (!line.get(0).equals(line.get(1))){
+                    finalResPath.add(line);
+                }
+            }
+            return finalResPath;
 
         } catch (RuntimeException e) {
             Log.e("error", e.toString());
             return null;
         }
+    }
+
+
+
+    public static float distanceFromCustomLine(ArrayList<Point> line, String point) {
+        String[] loc = point.split(",");
+        Float[] locOfPoint = new Float[2];
+        float x3 = Float.valueOf(loc[0]);
+        float y3 = Float.valueOf(loc[1]);
+        float x1, x2, y1, y2;
+
+
+        Point p1 = line.get(0);
+        Point p2 = line.get(1);
+        x1 = p1.x;
+        y1 = p1.y;
+        x2 = p2.x;
+        y2 = p2.y;
+
+
+
+        float px = x2 - x1;
+        float py = y2 - y1;
+        float temp = (px * px) + (py * py);
+        float u = ((x3 - x1) * px + (y3 - y1) * py) / (temp);
+        if (u > 1) {
+            u = 1;
+        } else if (u < 0) {
+            u = 0;
+        }
+        float x = x1 + u * px;
+        float y = y1 + u * py;
+
+        float dx = x - x3;
+        float dy = y - y3;
+        float dist = (float) Math.sqrt(dx * dx + dy * dy);
+        return dist;
+
+    }
+    public static float dist2Route(String loc, ArrayList<ArrayList<Point>> RoutePath){
+        float minDist = Integer.MAX_VALUE;
+
+        for (ArrayList<Point> line: RoutePath){
+            float tempDist = distanceFromCustomLine(line, loc);
+            if (tempDist < minDist){
+                minDist = tempDist;
+            }
+        }
+        return minDist;
     }
 
 }

@@ -17,6 +17,11 @@ public class Point {
         this.x = 0;
         this.y = 0;
     }
+
+    public boolean equals(Point p2) {
+        return (p2.x==this.x && p2.y == this.y);
+    }
+
     public float distanceFromThis(String point){
         String [] loc = point.split(",");
         Float [] locOfPoint=new Float[2];

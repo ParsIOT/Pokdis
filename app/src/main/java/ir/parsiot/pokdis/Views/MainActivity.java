@@ -14,10 +14,13 @@ import android.os.Build;
 
 import android.os.Handler;
 import android.provider.Settings;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
 
@@ -44,16 +47,23 @@ import ir.parsiot.pokdis.R;
 import ir.parsiot.pokdis.beacon.BeaconDiscovered;
 import ir.parsiot.pokdis.map.MapDetail;
 import ir.parsiot.pokdis.map.GraphBuilder;
+import ir.parsiot.pokdis.map.Objects.Graph;
 import ir.parsiot.pokdis.map.Objects.Point;
 import ir.parsiot.pokdis.map.WebViewManager;
+
+import static ir.parsiot.pokdis.Constants.Constants.MAX_PROXIMITY_TO_ROUTE_THRESHOLD;
 
 public class MainActivity extends AppCompatActivity {
 
     private BeaconDiscovered beaconDiscovered;
 
     boolean isMainPage = true;
+    ArrayList<ArrayList<Point>> RoutePath = new ArrayList<ArrayList<Point>>();
+    int farFromRouteCnt = 0;
+
     WebView webView;
     WebViewManager webViewManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +72,9 @@ public class MainActivity extends AppCompatActivity {
         isMainPage = true;
 //        Log.e("TAG", "Main activity is created");
         setContentView(R.layout.activity_main);
-        try{
+        try {
             getSupportActionBar().setTitle("");
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 
@@ -169,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         //if from SalesListActivity
         if (locationMarker != null && itemName != null) {
             isMainPage = false;
-            webViewManager.addItem(locationMarker, itemId, itemName, "../"+ itemImgSrc); // Todo: Sometimes
+            webViewManager.addItem(locationMarker, itemId, itemName, "../" + itemImgSrc); // Todo: Sometimes
 //            webViewManager.setTagToJS(itemId);
 
 //            webViewManager.addMarker(locationMarker);
@@ -238,27 +248,28 @@ public class MainActivity extends AppCompatActivity {
         String itemName = intent.getStringExtra("itemName");
         String itemImgSrc = intent.getStringExtra("itemImgSrc");
         String itemId = intent.getStringExtra("itemId");
-        try{
+        try {
             Boolean isMainPageTemp = intent.getExtras().getBoolean("isMainPage");
-            Log.d("isMainPageTemp: ",isMainPageTemp.toString());
+            Log.d("isMainPageTemp: ", isMainPageTemp.toString());
 
-            if (isMainPageTemp != null){
+            if (isMainPageTemp != null) {
                 isMainPage = isMainPageTemp;
+                farFromRouteCnt = 0;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 
 
-        if (itemId!=null){
-            Log.d("MainActivity",itemId);
-        }else{
-            Log.d("MainActivity","There's not itemID");
+        if (itemId != null) {
+            Log.d("MainActivity", itemId);
+        } else {
+            Log.d("MainActivity", "There's not itemID");
         }
         //if from SalesListActivity
         if (locationMarker != null && itemName != null) {
             isMainPage = false;
-            webViewManager.addItem(locationMarker, itemId, itemName, "../"+ itemImgSrc); // Todo: Sometimes
+            webViewManager.addItem(locationMarker, itemId, itemName, "../" + itemImgSrc); // Todo: Sometimes
 //            webViewManager.setTagToJS(itemId);
 
 //            webViewManager.addMarker(locationMarker);
@@ -291,11 +302,25 @@ public class MainActivity extends AppCompatActivity {
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    String location = beaconDiscovered.getNearLoacationToString();
-                    if (location != null) {
+//                    String location = beaconDiscovered.getNearLocationToString();
+                    ArrayList<String> nearBeaconLocations = beaconDiscovered.getAllSortedDiscoveredBeaconLocations();
+
+                    if (nearBeaconLocations != null) {
+                        if (nearBeaconLocations.size() > 0) {
 //                        Log.e("location:", location);
 
-                        webViewManager.updateLocation(location);
+                            String location;
+                            if(RoutePath.size()>0){
+                                location = findNearLocationByPath(nearBeaconLocations, RoutePath);
+                            }else{
+                                location = nearBeaconLocations.get(0);
+                            }
+                            if (location != null) {
+                                webViewManager.updateLocation(location);
+                            } else {
+                                Log.d("MainActivity", "Estimated location is far from route path");
+                            }
+                        }
                     }
                 }
             }, 6000, Constants.PERIOD_OF_GET_TOP_BEACON);
@@ -305,6 +330,27 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    public String findNearLocationByPath(ArrayList<String> nearBeaconLocations, ArrayList<ArrayList<Point>> RoutePath) {
+        String firstBeaconLocation = nearBeaconLocations.get(0);
+        if (Graph.dist2Route(firstBeaconLocation, RoutePath) < MAX_PROXIMITY_TO_ROUTE_THRESHOLD) {  // estLocation is near the route graph
+            farFromRouteCnt = 0;
+            return firstBeaconLocation;
+        } else {
+            farFromRouteCnt++;
+            if (farFromRouteCnt < Constants.MIN_COUNT_TO_IGNORE_PATH) {
+                if (nearBeaconLocations.size() > 1) {
+                    String secondBeaconLocation  = nearBeaconLocations.get(1);
+                    if (Graph.dist2Route(secondBeaconLocation, RoutePath) < MAX_PROXIMITY_TO_ROUTE_THRESHOLD) {  // estLocation is near the route graph
+                        return secondBeaconLocation;
+                    }
+                }
+            } else {
+                return firstBeaconLocation;
+            }
+        }
+        return null; // Don't update location!
     }
 
     //initViews
@@ -364,8 +410,9 @@ public class MainActivity extends AppCompatActivity {
                 String srcPoint = webViewManager.getLoctionOfMarker();
                 GraphBuilder location = new GraphBuilder();
                 ArrayList<ArrayList<Point>> path = location.graph.getPath(srcPoint, dstPoint);
+                RoutePath = path;
 
-                for (ArrayList<Point> line : path){
+                for (ArrayList<Point> line : path) {
                     webViewManager.drawLine(line.get(0).toString(), line.get(1).toString());
                 }
             }
@@ -464,8 +511,12 @@ public class MainActivity extends AppCompatActivity {
                     });
 
             builder.show();
-        }else{
+        } else {
             isMainPage = true;
+            farFromRouteCnt = 0;
+            RoutePath.clear();
+
+
             this.moveTaskToBack(true);
 //            super.onBackPressed();
         }
