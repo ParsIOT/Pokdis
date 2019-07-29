@@ -14,21 +14,18 @@ import android.os.Build;
 
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -42,14 +39,11 @@ import java.util.TimerTask;
 
 import ir.parsiot.pokdis.Constants.Constants;
 import ir.parsiot.pokdis.Enums.ScanModeEnum;
-import ir.parsiot.pokdis.Items.Items;
 import ir.parsiot.pokdis.Listeners.OnWebViewClickListener;
 import ir.parsiot.pokdis.R;
 import ir.parsiot.pokdis.beacon.BeaconDiscovered;
-import ir.parsiot.pokdis.map.ConstOfMap;
 import ir.parsiot.pokdis.map.MapDetail;
 import ir.parsiot.pokdis.map.GraphBuilder;
-import ir.parsiot.pokdis.map.Objects.Edge;
 import ir.parsiot.pokdis.map.Objects.Point;
 import ir.parsiot.pokdis.map.WebViewManager;
 
@@ -66,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Hawk.init(getApplicationContext()).build();
         isMainPage = true;
-        Log.e("TAG", "Main activity is created");
+//        Log.e("TAG", "Main activity is created");
         setContentView(R.layout.activity_main);
         try{
             getSupportActionBar().setTitle("");

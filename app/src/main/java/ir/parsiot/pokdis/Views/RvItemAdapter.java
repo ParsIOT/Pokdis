@@ -8,9 +8,9 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -169,7 +169,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             deleteBtn = convertView.findViewById(R.id.delete_btn);
 
             // Set a blinking animation on mapBtn
-            Animation animation = new AlphaAnimation(1, (float) 0.6);
+            Animation animation = new AlphaAnimation(1, (float) 0.4);
             animation.setDuration(500);
             animation.setInterpolator(new LinearInterpolator());
             animation.setRepeatCount(Animation.INFINITE);
@@ -179,8 +179,11 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             Typeface ir_font = Typeface.createFromAsset(context.getApplicationContext().getAssets(), "fonts/Yekan.ttf");
             name.setTypeface(ir_font);
             price.setTypeface(ir_font);
-            numPicker.setTypeface(ir_font);
             numPickerLabel.setTypeface(ir_font);
+
+            numPicker.setTypeface(ir_font);
+            numPicker.setMinValue(1);
+            numPicker.setWrapSelectorWheel(false);
 
             discountPrice.setTypeface(ir_font);
 
@@ -193,6 +196,24 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             if (showNumPicker) {
                 numPicker.setVisibility(View.VISIBLE);
                 numPickerLabel.setVisibility(View.VISIBLE);
+
+                numPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                    @Override
+                    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                        //Display the newly selected number from picker
+
+                        price.setText(item.getPrice(newVal));
+
+                        String discountPriceStr = item.getDiscountPrice(newVal);
+                        if (!discountPriceStr.equals("")) {
+                            discountPrice.setText(discountPriceStr);
+                            price.setPaintFlags(price.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        } else {
+                            discountPrice.setVisibility(View.GONE);
+                        }
+                    }
+                });
+
             } else {
                 numPicker.setVisibility(View.GONE);
                 numPickerLabel.setVisibility(View.GONE);
@@ -286,7 +307,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
                                             Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
                                                     .setAction("Action", null);
                                             View mView = mSnackbar.getView();
-                                            TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);
+                                            TextView mTextView = (TextView) mView.findViewById(R.id.snackbar_text);
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
                                                 mTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                             else

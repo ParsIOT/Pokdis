@@ -102,6 +102,14 @@ public class ItemOfList {
         return formattedPrice + " ریال ";
     }
 
+    public String getPrice(int num) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        DecimalFormat decimalFormat = new DecimalFormat("###,###,###,###", symbols);
+        String formattedPrice = decimalFormat.format(price*num);
+        return formattedPrice + " ریال ";
+    }
+
     public void setPrice(double price) {
         this.price = price;
     }
@@ -117,6 +125,18 @@ public class ItemOfList {
         String formattedPrice = decimalFormat.format(discountPrice);
         return formattedPrice + " ریال ";
     }
+
+    public String getDiscountPrice(int num) {
+        if (discountPrice == -1){
+            return "";
+        }
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        DecimalFormat decimalFormat = new DecimalFormat("###,###,###,###", symbols);
+        String formattedPrice = decimalFormat.format(discountPrice*num);
+        return formattedPrice + " ریال ";
+    }
+
 
     public void setDiscountPrice(double discountPrice) {
         this.discountPrice = discountPrice;

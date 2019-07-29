@@ -92,7 +92,7 @@ tools:showIn="@layout/activity_item_content">
                             android:textColor="@color/DarkGreen"
                             android:text="موجود" />
 
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/product_availability_switch"
                             android:checked="true"
                             android:layout_width="wrap_content"

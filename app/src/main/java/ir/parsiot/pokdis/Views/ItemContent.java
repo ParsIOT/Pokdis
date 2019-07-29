@@ -9,12 +9,12 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,8 +27,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -193,7 +191,7 @@ public class ItemContent extends AppCompatActivity {
                                         Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
                                                 .setAction("Action", null);
                                         View mView = mSnackbar.getView();
-                                        TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);
+                                        TextView mTextView = (TextView) mView.findViewById(R.id.snackbar_text);
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
                                             mTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                         else
