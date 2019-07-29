@@ -49,7 +49,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
     public RvItemAdapter(Context context, CartItemsClient cartItemsClient, List objects, Boolean showAddToCart, Boolean showNumPicker, Boolean showMapBtn, Boolean showDeleteBtn) {
 //        super(context, R.layout.item_of_listview, objects);
         this.context = context;
-        cartItems = new CartItems();
+        cartItems = new CartItems(context);
         this.cartItemsClient = cartItemsClient;
         allItems = (ArrayList<ItemOfList>) objects;
         filteredItems.addAll(allItems);

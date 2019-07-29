@@ -11,6 +11,13 @@ public class Items {
     public Items() {
         items = new ArrayList<>();
 
+        items.add(new ItemOfList("3","کرم ضد چروک قوی دور چشم مای "
+                ,"حجم 15 میلی لیتر",
+                "MY Eye Contour Anti Wrinkle Cream \n\n  نرم کننده و سفت کننده و تقویت کننده پوست",
+                "-","15 میلی لیتر","مای",
+                700000,-1, "item_images/"+"3.jpg",
+                "-260,-260"));
+
         items.add(new ItemOfList("1","مایع ظرفشویی تاژ مدل Lemon"
                 ,"حجم 3750 گرم",
                 " تمیز کنندگی , چربی زدایی",
@@ -23,13 +30,6 @@ public class Items {
                 "Cheetoz Original Salty Potato Chips 450gr \n\n چیپس ساده نمکی ورقه\u200Cای",
                 "42 × 31 سانتی\u200Cمتر","450 گرم","چی توز", 40000 ,-1,"item_images/"+"2.jpg",
                 "330,-30"));
-
-        items.add(new ItemOfList("3","کرم ضد چروک قوی دور چشم مای "
-                ,"حجم 15 میلی لیتر",
-                "MY Eye Contour Anti Wrinkle Cream \n\n  نرم کننده و سفت کننده و تقویت کننده پوست",
-                "-","15 میلی لیتر","مای",
-                700000,-1, "item_images/"+"3.jpg",
-                "-260,-260"));
 
         items.add(new ItemOfList("4","پوشک مای بیبی مدل Chamomile"
                 ,"سایز 3 بسته 38 عددی",

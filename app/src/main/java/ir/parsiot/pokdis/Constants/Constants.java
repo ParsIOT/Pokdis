@@ -7,8 +7,9 @@ public class Constants {
     public static final int REQUEST_CODE_ENABLE_BLUETOOTH = 3;
 
 
-    public static final int MAX_RSSI_LIST_SIZE = 2;
-    public static final int MIN_RSS_TO_RELOCATE = -69;
+    public static final int MAX_RSSI_LIST_SIZE = 6;
+    public static final int MIN_RSS_TO_RELOCATE = -56;
+//    public static final int MIN_RSS_TO_RELOCATE = -69;
 
     public static final int MAX_PROXIMITY_TO_ROUTE_THRESHOLD = 350;
     public static final int MIN_COUNT_TO_IGNORE_PATH = 10;

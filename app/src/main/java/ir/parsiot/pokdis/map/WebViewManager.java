@@ -237,7 +237,7 @@ public class WebViewManager {
             Log.d("TAG", "addItemToCart: " + itemId);
 //            onWebViewClickListener.onWebViewClick(text);
             String txtMessage;
-            CartItems cartItems = new CartItems();
+            CartItems cartItems = new CartItems(mContext);
             Items items = new Items();
             ItemOfList item = items.get_item(itemId);
             if (cartItems.put_item(item)){

@@ -145,13 +145,13 @@ mapLayer = 0;
         mapLayer = L.imageOverlay(image, bounds).addTo(map);
         mapLayer.getElement().classList.add('leaflet-map-layer');
 
-        setTimeout(function () {
+        setTimeout(function () { // Sometimes android app call it before complete initialization, So it'll run some time later to sure that we load it.
             var bound0 = height / 2;
             var bound1 = width / 2;
             var bounds = [[-1*bound0, -1*bound1], [bound0, bound1]];
             mapLayer = L.imageOverlay(image, bounds).addTo(map);
             mapLayer.getElement().classList.add('leaflet-map-layer');
-        }, 100);
+        }, 300);
 
 //        document.addEventListener('DOMContentLoaded', function() {
 //             var bound0 = height / 2;

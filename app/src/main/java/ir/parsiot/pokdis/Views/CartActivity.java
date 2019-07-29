@@ -34,7 +34,7 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cartItems = new CartItems();
+        cartItems = new CartItems(getApplicationContext());
         setContentView(R.layout.activity_cart);
         getSupportActionBar().setTitle("سبد خرید");
         initViews();
@@ -61,7 +61,7 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
     @Override
     public void onResume(){
         super.onResume();
-        cartItems = cartItems = new CartItems();
+        cartItems = cartItems = new CartItems(getApplicationContext());
         items = cartItems.get_items();
         refreshDisplay();
 

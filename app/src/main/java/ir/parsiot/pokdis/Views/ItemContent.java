@@ -55,7 +55,7 @@ public class ItemContent extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_content);
-        cartItems = new CartItems();
+        cartItems = new CartItems(getApplicationContext());
         context = getApplicationContext();
         name = findViewById(R.id.item_name);
         itemImage = findViewById(R.id.item_image);

@@ -1,5 +1,7 @@
 package ir.parsiot.pokdis.Items;
 
+import android.content.Context;
+
 import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
@@ -11,8 +13,11 @@ import ir.parsiot.pokdis.Views.ItemOfList;
 
 public class CartItems {
     private ArrayList<ItemOfList> items;
-    public CartItems(){
+    public CartItems(Context context){
         items = new ArrayList<ItemOfList>();
+        if (!Hawk.isBuilt()){
+            Hawk.init(context).build();
+        }
         if (Hawk.contains(Constants.CART_ITEMS_KEY)){
             items = Hawk.get(Constants.CART_ITEMS_KEY);
         }else{
