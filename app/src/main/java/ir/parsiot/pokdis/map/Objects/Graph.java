@@ -1,13 +1,10 @@
 package ir.parsiot.pokdis.map.Objects;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ir.parsiot.pokdis.map.ConstOfMap;
-import ir.parsiot.pokdis.map.GraphBuilder;
+import ir.parsiot.pokdis.map.MapConsts;
 
 public class Graph {
 
@@ -19,7 +16,7 @@ public class Graph {
     private int size;
     //private int sizeOfedges;
     String lEdges = "";
-    ConstOfMap constOfMap;
+    MapConsts mapConsts;
 
     public List<Edge> getEdges() {
         return edges;
@@ -28,13 +25,13 @@ public class Graph {
     public Graph() {
         this.edges = new ArrayList<>();
         vertices = new ArrayList<>();
-        constOfMap = new ConstOfMap();
+        mapConsts = new MapConsts();
     }
 
-    //ADD WITH KEY OF HASH IN constOfMap
+    //ADD WITH KEY OF HASH IN mapConsts
     public void addEdge(String ver1, String ver2) {
-        edges.add(new Edge().setVertexs(constOfMap.vertexOfGraph.get(ver1), ver1
-                , constOfMap.vertexOfGraph.get(ver2), ver2));
+        edges.add(new Edge().setVertexs(mapConsts.vertexOfGraph.get(ver1), ver1
+                , mapConsts.vertexOfGraph.get(ver2), ver2));
 
 
         if (lEdges.length() < 1) {
@@ -49,7 +46,7 @@ public class Graph {
     public Edge findNearEdge(String point) {
 
         if (edges.size() > 0) {
-            Edge near = null;
+            Edge near = edges.get(0);
             float min = edges.get(0).distanceFromTheLine(point);
 
             for (int i = 0; i < edges.size(); i++) {
@@ -63,10 +60,7 @@ public class Graph {
                     min = dist;
                     near = edg;
                 }
-
             }
-
-
             return near;
         }
 
@@ -222,7 +216,7 @@ public class Graph {
 
     //make a matrix for floyd algorithm
     private void makeVertex() {
-        size = constOfMap.vertexOfGraph.size();
+        size = mapConsts.vertexOfGraph.size();
         size++;
         vertex = new int[size][size];
         for (int i = 0; i < size; i++) {
@@ -249,23 +243,23 @@ public class Graph {
 
 
     public ArrayList<ArrayList<Point>> getPath(String srcPoint, String dstPoint){
-        ConstOfMap constOfMap = new ConstOfMap();
+        MapConsts mapConsts = new MapConsts();
         ArrayList<ArrayList<Point>> resPath = new ArrayList<ArrayList<Point>>();
         ArrayList<Point> tempLine = new ArrayList<Point>();
 
-        try {
+//        try {
 
             // We relocate the dst and src point if they are one of vertexes accidently, because our routing algorithm doesn't work in these situations
-            if (constOfMap.isGraphVertex(srcPoint) != null){
+            if (mapConsts.isGraphVertex(srcPoint) != null){
                 String[] srcPointStrList = srcPoint.split(",");
-                float xTemp = Float.valueOf(srcPointStrList[0]) + ConstOfMap.epsilon;
-                float yTemp = Float.valueOf(srcPointStrList[1]) + ConstOfMap.epsilon;
+                float xTemp = Float.valueOf(srcPointStrList[0]) + MapConsts.epsilon;
+                float yTemp = Float.valueOf(srcPointStrList[1]) + MapConsts.epsilon;
                 srcPoint = xTemp+","+yTemp;
             }
-            if (constOfMap.isGraphVertex(dstPoint) != null){
+            if (mapConsts.isGraphVertex(dstPoint) != null){
                 String[] dstPointStrList = dstPoint.split(",");
-                float xTemp = Float.valueOf(dstPointStrList[0]) + ConstOfMap.epsilon;
-                float yTemp = Float.valueOf(dstPointStrList[1]) + ConstOfMap.epsilon;
+                float xTemp = Float.valueOf(dstPointStrList[0]) + MapConsts.epsilon;
+                float yTemp = Float.valueOf(dstPointStrList[1]) + MapConsts.epsilon;
                 dstPoint = xTemp+","+yTemp;
             }
 
@@ -302,41 +296,41 @@ public class Graph {
             String lastVertex = tempPath[0];
             for (int i = 1; i < tempPath.length; i++) {
                 tempLine = new ArrayList<Point>();
-                tempLine.add(new Point(constOfMap.vertexOfGraph.get(lastVertex)));
-                tempLine.add(new Point(constOfMap.vertexOfGraph.get(tempPath[i])));
+                tempLine.add(new Point(mapConsts.vertexOfGraph.get(lastVertex)));
+                tempLine.add(new Point(mapConsts.vertexOfGraph.get(tempPath[i])));
                 resPath.add(tempLine);
 
 
-//                webViewManager.drawLine(constOfMap.vertexOfGraph.get(lastVertex)
-//                        , constOfMap.vertexOfGraph.get(tempPath[i]));
+//                webViewManager.drawLine(mapConsts.vertexOfGraph.get(lastVertex)
+//                        , mapConsts.vertexOfGraph.get(tempPath[i]));
                 lastVertex = tempPath[i];
             }
 
             tempLine = new ArrayList<Point>();
             tempLine.add(new Point(dstEdgePoint));
-            tempLine.add(new Point(constOfMap.vertexOfGraph.get(tempPath[0])));
+            tempLine.add(new Point(mapConsts.vertexOfGraph.get(tempPath[0])));
             resPath.add(tempLine);
 
 
             tempLine = new ArrayList<Point>();
             tempLine.add(new Point(srcEdgePoint));
-            tempLine.add(new Point(constOfMap.vertexOfGraph.get(tempPath[tempPath.length-1])));
+            tempLine.add(new Point(mapConsts.vertexOfGraph.get(tempPath[tempPath.length-1])));
             resPath.add(tempLine);
 
 
-//            webViewManager.drawLine(dstEdgePoint, constOfMap.vertexOfGraph.get(tempPath[0]));
-//            webViewManager.drawLine(srcEdgePoint, constOfMap.vertexOfGraph.get(tempPath[tempPath.length-1]));
+//            webViewManager.drawLine(dstEdgePoint, mapConsts.vertexOfGraph.get(tempPath[0]));
+//            webViewManager.drawLine(srcEdgePoint, mapConsts.vertexOfGraph.get(tempPath[tempPath.length-1]));
 
 
             if (tempPath[0].equals("")) {
 
                 tempLine = new ArrayList<Point>();
-                tempLine.add(new Point(constOfMap.vertexOfGraph.get(dstEdgeClosestVertex)));
-                tempLine.add(new Point(constOfMap.vertexOfGraph.get(srcEdgeClosestVertex)));
+                tempLine.add(new Point(mapConsts.vertexOfGraph.get(dstEdgeClosestVertex)));
+                tempLine.add(new Point(mapConsts.vertexOfGraph.get(srcEdgeClosestVertex)));
                 resPath.add(tempLine);
 
-//                webViewManager.drawLine(constOfMap.vertexOfGraph.get(dstEdgeClosestVertex)
-//                        , constOfMap.vertexOfGraph.get(srcEdgeClosestVertex));
+//                webViewManager.drawLine(mapConsts.vertexOfGraph.get(dstEdgeClosestVertex)
+//                        , mapConsts.vertexOfGraph.get(srcEdgeClosestVertex));
             }
 
             ArrayList<ArrayList<Point>> finalResPath = new ArrayList<ArrayList<Point>>(); // I don't know why there exits some line with same src and dst point
@@ -347,10 +341,10 @@ public class Graph {
             }
             return finalResPath;
 
-        } catch (RuntimeException e) {
-            Log.e("error", e.toString());
-            return null;
-        }
+//        } catch (RuntimeException e) {
+//            Log.e("error", e.toString());
+//            return null;
+//        }
     }
 
 

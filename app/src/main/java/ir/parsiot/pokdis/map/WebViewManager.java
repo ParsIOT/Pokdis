@@ -20,9 +20,9 @@ import java.util.regex.Pattern;
 
 import ir.parsiot.pokdis.Enums.ScanModeEnum;
 import ir.parsiot.pokdis.Items.CartItems;
-import ir.parsiot.pokdis.Items.Items;
+import ir.parsiot.pokdis.Items.ItemValues;
 import ir.parsiot.pokdis.Listeners.OnWebViewClickListener;
-import ir.parsiot.pokdis.Views.ItemOfList;
+import ir.parsiot.pokdis.Items.ItemClass;
 
 
 /**
@@ -38,7 +38,7 @@ public class WebViewManager {
     private OnWebViewClickListener onWebViewClickListener;
     private String tagToJS;
 
-    private String loctionOfMarker = ConstOfMap.initLocation;
+    private String loctionOfMarker = MapConsts.initLocation;
 
     public WebViewManager(WebView webView) {
         this.webView = webView;
@@ -227,36 +227,44 @@ public class WebViewManager {
         }
 
         @JavascriptInterface
-        public void sendToAndroid(String text) {
-            Log.d("TAG", "sendToAndroid: " + text);
-            onWebViewClickListener.onWebViewClick(text);
-        }
-
-        @JavascriptInterface
         public void addItemToCart(String itemId) {
             Log.d("TAG", "addItemToCart: " + itemId);
 //            onWebViewClickListener.onWebViewClick(text);
             String txtMessage;
             CartItems cartItems = new CartItems(mContext);
-            Items items = new Items();
-            ItemOfList item = items.get_item(itemId);
+            ItemValues itemValues = new ItemValues();
+            ItemClass item = itemValues.get_item(itemId);
             if (cartItems.put_item(item)){
                 txtMessage = "این محصول به لیست خرید اضافه شد.";
             }else{
                 txtMessage = "این محصول در سبد خرید از قبل وجود داشته است";
             }
             Toast.makeText(mContext,txtMessage,Toast.LENGTH_SHORT).show();
-//            Snackbar mSnackbar = Snackbar.make(view, txtMessage, Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null);
-//            View mView = mSnackbar.getView();
-//            TextView mTextView = (TextView) mView.findViewById(android.support.design.R.id.snackbar_text);
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-//                mTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-//            else
-//                mTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-//            mSnackbar.show();
         }
 
+        @JavascriptInterface
+        public void startMap() {
+            Intent mIntent = new Intent();
+            ComponentName component = new ComponentName(
+                    "com.google.android.apps.maps",
+                    "com.google.android.maps.MapsActivity");
+            mIntent.setComponent(component);
+        }
+
+
+        /////
+        // Test functions(Just for testing android and js connections) :
+        @JavascriptInterface
+        public void sendToAndroid(String text) {
+            Log.d("TAG", "sendToAndroid: " + text);
+            onWebViewClickListener.onWebViewClick(text);
+        }
+
+        @JavascriptInterface
+        public void addIdToList(String text) {
+            Toast.makeText(context, "+", Toast.LENGTH_SHORT);
+            Log.e("tag", text);
+        }
 
         @JavascriptInterface
         public String getFromAndroid() {
@@ -268,21 +276,7 @@ public class WebViewManager {
             return tagToJS;
         }
 
-        @JavascriptInterface
-        public void addIdToList(String text) {//TODO ADD ID OF ITEM FROM JS TO CART LIST
-            Toast.makeText(context, "+", Toast.LENGTH_SHORT);
-            Log.e("tag", text);
-        }
-
-        @JavascriptInterface
-        public void startMap() {
-            Intent mIntent = new Intent();
-            ComponentName component = new ComponentName(
-                    "com.google.android.apps.maps",
-                    "com.google.android.maps.MapsActivity");
-            mIntent.setComponent(component);
-//            startActivity(mIntent);
-        }
+        /////
     }
 
 

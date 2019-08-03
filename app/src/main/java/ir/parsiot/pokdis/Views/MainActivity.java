@@ -42,6 +42,7 @@ import java.util.TimerTask;
 
 import ir.parsiot.pokdis.Constants.Constants;
 import ir.parsiot.pokdis.Enums.ScanModeEnum;
+import ir.parsiot.pokdis.Items.ItemClass;
 import ir.parsiot.pokdis.Listeners.OnWebViewClickListener;
 import ir.parsiot.pokdis.R;
 import ir.parsiot.pokdis.beacon.BeaconDiscovered;
@@ -64,18 +65,16 @@ public class MainActivity extends AppCompatActivity {
     WebView webView;
     WebViewManager webViewManager;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Hawk.init(getApplicationContext()).build();
         isMainPage = true;
-//        Log.e("TAG", "Main activity is created");
         setContentView(R.layout.activity_main);
         try {
             getSupportActionBar().setTitle("");
         } catch (Exception e) {
-
+            Log.e("Error:", e.getMessage());
         }
 
         initBottomBar(this, 1);
@@ -144,30 +143,25 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-//            List<ItemOfList> items = new ArrayList<ItemOfList>();
-//            Items initItems = new Items();
+//            List<ItemClass> items = new ArrayList<ItemClass>();
+//            ItemValues initItems = new ItemValues();
 //            items.add(initItems.get_item("1"));
 //            Hawk.put("items", items);
 
         }
-        List<ItemOfList> value = Hawk.get("items");
-
+        List<ItemClass> value = Hawk.get("items");
 
         // beaconDiscovered = new BeaconDiscovered(this);
-
         initViews();
 
-        //get location from albeacon
-
-//        try {
-        beaconDiscovered = new BeaconDiscovered(this);
-        beaconDiscovered.startMonitoring();
-
-        updateLocation();
-//        } catch (RuntimeException e) {
-//            Log.e("Error:", e.getMessage());
-//
-//        }
+        // Get location from beacon manager
+        try {
+            beaconDiscovered = new BeaconDiscovered(this);
+            beaconDiscovered.startMonitoring();
+            updateLocation();
+        } catch (RuntimeException e) {
+            Log.e("Error:", e.getMessage());
+        }
 
 
         //get information from SalesListActivity
@@ -181,15 +175,11 @@ public class MainActivity extends AppCompatActivity {
             isMainPage = false;
             webViewManager.addItem(locationMarker, itemId, itemName, "../" + itemImgSrc); // Todo: Sometimes
 //            webViewManager.setTagToJS(itemId);
-
 //            webViewManager.addMarker(locationMarker);
             pathToPoint(locationMarker);
             webViewManager.setTagToJS(itemId);
-
         }
-//        webViewManager.updateLocation(ConstOfMap.initLocation);
-
-
+//        webViewManager.updateLocation(MapConsts.initLocation);
     }
 
     protected void initBottomBar(final Context context, int iconNum) {
@@ -199,6 +189,8 @@ public class MainActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(iconNum); // Map icon
         menuItem.setChecked(true);
 
+
+        // This is a same function between MainActivity, SalesListActivity and CartActivity
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -206,18 +198,13 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.ic_map_page:
                         if (context.getClass() != MainActivity.class) {
                             Intent intent = new Intent(context, MainActivity.class);
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                            finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
                         break;
-
                     case R.id.ic_search_page:
                         if (context.getClass() != SalesListActivity.class) {
                             Intent intent = new Intent(context, SalesListActivity.class);
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                            finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
@@ -225,14 +212,11 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.ic_buy_page:
                         if (context.getClass() != CartActivity.class) {
                             Intent intent = new Intent(context, CartActivity.class);
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                            finish();
                             startActivity(intent);
                             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         }
                         break;
                 }
-
                 return false;
             }
         });
@@ -251,7 +235,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             Boolean isMainPageTemp = intent.getExtras().getBoolean("isMainPage");
             Log.d("isMainPageTemp: ", isMainPageTemp.toString());
-
             if (isMainPageTemp != null) {
                 isMainPage = isMainPageTemp;
                 farFromRouteCnt = 0;
@@ -271,18 +254,15 @@ public class MainActivity extends AppCompatActivity {
             isMainPage = false;
             webViewManager.addItem(locationMarker, itemId, itemName, "../" + itemImgSrc); // Todo: Sometimes
 //            webViewManager.setTagToJS(itemId);
-
 //            webViewManager.addMarker(locationMarker);
             pathToPoint(locationMarker);
             webViewManager.setTagToJS(itemId);
-
         }
     }
 
     @Override
     protected void onResume() {
         //check BLUETOOTH is enable on any start program
-
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, "Device does not support Bluetooth", Toast.LENGTH_SHORT);
@@ -296,8 +276,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateLocation() {
-        // for move marker to near beacon
-
+        // update location of marker on the map
         try {
             new Timer().schedule(new TimerTask() {
                 @Override
@@ -308,11 +287,10 @@ public class MainActivity extends AppCompatActivity {
                     if (nearBeaconLocations != null) {
                         if (nearBeaconLocations.size() > 0) {
 //                        Log.e("location:", location);
-
                             String location;
-                            if(RoutePath.size()>0){
+                            if (RoutePath.size() > 0) {
                                 location = findNearLocationByPath(nearBeaconLocations, RoutePath);
-                            }else{
+                            } else {
                                 location = nearBeaconLocations.get(0);
                             }
                             if (location != null) {
@@ -324,33 +302,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }, 6000, Constants.PERIOD_OF_GET_TOP_BEACON);
-
-
         } catch (RuntimeException e) {
 
         }
 
-    }
-
-    public String findNearLocationByPath(ArrayList<String> nearBeaconLocations, ArrayList<ArrayList<Point>> RoutePath) {
-        String firstBeaconLocation = nearBeaconLocations.get(0);
-        if (Graph.dist2Route(firstBeaconLocation, RoutePath) < MAX_PROXIMITY_TO_ROUTE_THRESHOLD) {  // estLocation is near the route graph
-            farFromRouteCnt = 0;
-            return firstBeaconLocation;
-        } else {
-            farFromRouteCnt++;
-            if (farFromRouteCnt < Constants.MIN_COUNT_TO_IGNORE_PATH) {
-                if (nearBeaconLocations.size() > 1) {
-                    String secondBeaconLocation  = nearBeaconLocations.get(1);
-                    if (Graph.dist2Route(secondBeaconLocation, RoutePath) < MAX_PROXIMITY_TO_ROUTE_THRESHOLD) {  // estLocation is near the route graph
-                        return secondBeaconLocation;
-                    }
-                }
-            } else {
-                return firstBeaconLocation;
-            }
-        }
-        return null; // Don't update location!
     }
 
     //initViews
@@ -400,49 +355,21 @@ public class MainActivity extends AppCompatActivity {
         webViewManager.destoryWebView();
     }
 
-
-    // a function for draw line between marker and point
-    //note: location of marker is  in webViewManager
-    void pathToPoint(final String dstPoint) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String srcPoint = webViewManager.getLoctionOfMarker();
-                GraphBuilder location = new GraphBuilder();
-                ArrayList<ArrayList<Point>> path = location.graph.getPath(srcPoint, dstPoint);
-                RoutePath = path;
-
-                for (ArrayList<Point> line : path) {
-                    webViewManager.drawLine(line.get(0).toString(), line.get(1).toString());
-                }
-            }
-        }, 1000);
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuItem search = menu.add("search").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-
-
                 startActivity(new Intent(MainActivity.this, SalesListActivity.class));
-
-
                 return false;
             }
         });
         search.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        search.setIcon(R.drawable.serch);
+        search.setIcon(R.drawable.search);
         MenuItem cart = menu.add("Cart").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-
-
                 startActivity(new Intent(MainActivity.this, CartActivity.class));
-
-
                 return false;
             }
         });
@@ -464,21 +391,15 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 } else {
-
                 }
                 return;
-
-
             }
             case Constants.REQUEST_CODE_READ_EXTERNAL_STORAGE: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d("tagRequest", "coarse location permission granted");
                 } else {
-
                 }
                 return;
-
-
             }
         }
     }
@@ -487,22 +408,12 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (isMainPage) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-            //builder.setTitle("Dlete ");
             builder.setMessage("آیا میخواهید از برنامه خارج شوید؟")
                     .setCancelable(false)
                     .setPositiveButton("بله",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    //1: Delete from allItems
-                                    //2: Delete from HAWK
-
                                     finish();
-
-//                                            allItems = cartItemsClient.deleteItem(filteredItems.get(position));
-//                                            filteredItems.remove(position);
-//
-//                                            notifyDataSetChanged();
                                 }
                             })
                     .setNegativeButton("خیر", new DialogInterface.OnClickListener() {
@@ -515,10 +426,54 @@ public class MainActivity extends AppCompatActivity {
             isMainPage = true;
             farFromRouteCnt = 0;
             RoutePath.clear();
-
-
             this.moveTaskToBack(true);
 //            super.onBackPressed();
         }
+    }
+
+    /////////
+    // Map related functions :
+
+    // Todo: We should create other class and place routing related function in it
+    public String findNearLocationByPath(ArrayList<String> nearBeaconLocations, ArrayList<ArrayList<Point>> RoutePath) {
+        /*
+        According to the location of the near beacon and the path between
+            source and destination of the route we find best location on the route
+         */
+        String firstBeaconLocation = nearBeaconLocations.get(0);
+        if (Graph.dist2Route(firstBeaconLocation, RoutePath) < MAX_PROXIMITY_TO_ROUTE_THRESHOLD) {  // estLocation is near the route graph
+            farFromRouteCnt = 0;
+            return firstBeaconLocation;
+        } else {
+            farFromRouteCnt++;
+            if (farFromRouteCnt < Constants.MIN_COUNT_TO_IGNORE_PATH) {
+                if (nearBeaconLocations.size() > 1) {
+                    String secondBeaconLocation = nearBeaconLocations.get(1);
+                    if (Graph.dist2Route(secondBeaconLocation, RoutePath) < MAX_PROXIMITY_TO_ROUTE_THRESHOLD) {  // estLocation is near the route graph
+                        return secondBeaconLocation;
+                    }
+                }
+            } else {
+                return firstBeaconLocation;
+            }
+        }
+        return null; // Don't update location!
+    }
+
+    // Draw line between current location and a destination point
+    void pathToPoint(final String dstPoint) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String srcPoint = webViewManager.getLoctionOfMarker();
+                GraphBuilder location = new GraphBuilder();
+                ArrayList<ArrayList<Point>> path = location.graph.getPath(srcPoint, dstPoint);
+                RoutePath = path;
+
+                for (ArrayList<Point> line : path) {
+                    webViewManager.drawLine(line.get(0).toString(), line.get(1).toString());
+                }
+            }
+        }, 1000);
     }
 }

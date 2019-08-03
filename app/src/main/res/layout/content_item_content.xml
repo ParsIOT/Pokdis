@@ -6,7 +6,7 @@ android:id="@+id/content_product_item"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 app:layout_behavior="@string/appbar_scrolling_view_behavior"
-tools:context=".Views.ItemContent"
+tools:context=".Views.ItemContentActivity"
 tools:showIn="@layout/activity_item_content">
 
 <LinearLayout

@@ -46,68 +46,6 @@ public class Edge {
         return this;
     }
 
-////for find near EDGE
-//    public float distanceFromTheLine (String point){
-//     /*   String [] loc = point.split(",");
-//
-//        float [] locOfPoint=new float[2];
-//        locOfPoint[0] = Float.valueOf(loc[0]);
-//        locOfPoint[1] = Float.valueOf(loc[1]);
-//
-//
-//        float distance = (float) ( Math.abs(m*locOfPoint[0]+locOfPoint[1]+c)/Math.sqrt(Math.pow(m,2)+1));
-//*/      Vertex  center = new Vertex();
-//        center.x = (v1.x+v2.x)/2;
-//        center.y=   (v1.y+v2.y)/2;
-//
-//
-//
-//
-//        abs((xPoint-v2.x)*(v2.y-v1.y) - (v2.x-v1.x)*(yPoint-v2.y)) / np.sqrt(np.square(xPoint-v2.x) + np.square(yPoint-v2.y))
-//
-//        float distance = center.distanceFromThis(point);
-//        return distance;
-//
-//
-//    }
-//
-
-//    public static float distBetween(float x, float y, float x1, float y1) {
-//        float xx = x1 - x;
-//        float yy = y1 - y;
-//
-//        return (float) Math.sqrt(xx * xx + yy * yy);
-//    }
-//
-//    public float distanceFromTheLine(String point) {
-//        String[] loc = point.split(",");
-//        Float[] locOfPoint = new Float[2];
-//        float x = Float.valueOf(loc[0]);
-//        float y = Float.valueOf(loc[1]);
-//        float x1,x2,y1,y2;
-//        x1 = v1.x;
-//        y1 = v1.y;
-//        x2 = v2.x;
-//        y2 = v2.y;
-//
-//
-//
-//        float AB = distBetween(x, y, x1, y1);
-//        float BC = distBetween(x1, y1, x2, y2);
-//        float AC = distBetween(x, y, x2, y2);
-//
-//        // Heron's formula
-//        float s = (AB + BC + AC) / 2;
-//        float area = (float) Math.sqrt(s * (s - AB) * (s - BC) * (s - AC));
-//
-//        // but also area == (BC * AD) / 2
-//        // BC * AD == 2 * area
-//        // AD == (2 * area) / BC
-//        // TODO: check if BC == 0
-//        float AD = (2 * area) / BC;
-//        return AD;
-//    }
-
     public float distanceFromTheLine(String point) {
         String[] loc = point.split(",");
         Float[] locOfPoint = new Float[2];
@@ -136,47 +74,6 @@ public class Edge {
         return dist;
 
     }
-
-//    public float distanceFromTheLine(String point) {
-//        String[] loc = point.split(",");
-//        Float[] locOfPoint = new Float[2];
-//        float xPoint = Float.valueOf(loc[0]);
-//        float yPoint = Float.valueOf(loc[1]);
-//
-//        float A = xPoint - v1.x; // position of point rel one end of line
-//        float B = yPoint - v1.y;
-//        float C = v2.x - v1.x; // vector along line
-//        float D = v2.y - v1.y;
-//        float E = -D; // orthogonal vector
-//        float F = C;
-//
-//        double dot = A * E + B * F;
-//        double len_sq = E * E + F * F;
-//
-//        return (float) (Math.abs(dot) / Math.sqrt(len_sq));
-//    }
-
-
-//    //TODO: This function doesn't work correctly
-//    public String pointOnLineImage(String point) {
-//        float a = -m;
-//
-//        String[] loc = point.split(",");
-//        Float[] locOfPoint = new Float[2];
-//        locOfPoint[0] = Float.valueOf(loc[0]);
-//        locOfPoint[1] = Float.valueOf(loc[1]);
-//
-//        float k = (float) ((a * locOfPoint[0] + locOfPoint[1] + c) / (Math.pow(a, 2) + 1));
-//
-//        float[] pointOnLine = new float[2];
-//
-//        pointOnLine[0] = locOfPoint[0] - a * k;
-//        pointOnLine[1] = locOfPoint[1] - k;
-//
-//        String tpoint = pointOnLine[0] + "," + pointOnLine[1];
-//
-//        return tpoint;
-//    }
 
     public String pointOnLineImage(String point)//int sx1, int sy1, int sx2, int sy2, int px, int py)
     {

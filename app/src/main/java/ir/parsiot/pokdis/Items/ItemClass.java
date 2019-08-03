@@ -1,9 +1,9 @@
-package ir.parsiot.pokdis.Views;
+package ir.parsiot.pokdis.Items;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
-public class ItemOfList {
+public class ItemClass {
     private String imageName;
     private String name;
     private String description;
@@ -18,10 +18,10 @@ public class ItemOfList {
 
 
 
-    public ItemOfList(String id, String name,
-                      String description, String longDescription, String dimens, String weight, String brand,
-                      double price, double discountPrice,
-                      String imageName, String location) {
+    public ItemClass(String id, String name,
+                     String description, String longDescription, String dimens, String weight, String brand,
+                     double price, double discountPrice,
+                     String imageName, String location) {
         this.imageName = imageName;
         this.name = name;
         this.description = description;

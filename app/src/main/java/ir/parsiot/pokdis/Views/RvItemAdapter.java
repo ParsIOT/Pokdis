@@ -31,11 +31,16 @@ import java.util.List;
 
 import ir.parsiot.pokdis.Items.CartItems;
 import ir.parsiot.pokdis.Items.CartItemsClient;
+import ir.parsiot.pokdis.Items.ItemClass;
 import ir.parsiot.pokdis.R;
 
+/*
+ List of items that loads itemClass objects
+ */
+
 public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHolder> {
-    private ArrayList<ItemOfList> allItems = new ArrayList<ItemOfList>();
-    private ArrayList<ItemOfList> filteredItems = new ArrayList<ItemOfList>();
+    private ArrayList<ItemClass> allItems = new ArrayList<ItemClass>();
+    private ArrayList<ItemClass> filteredItems = new ArrayList<ItemClass>();
     private Context context;
     private LayoutInflater layoutInflater;
     boolean showAddToCart = false;
@@ -51,7 +56,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         this.context = context;
         cartItems = new CartItems(context);
         this.cartItemsClient = cartItemsClient;
-        allItems = (ArrayList<ItemOfList>) objects;
+        allItems = (ArrayList<ItemClass>) objects;
         filteredItems.addAll(allItems);
         this.showAddToCart = showAddToCart;
         this.showNumPicker = showNumPicker;
@@ -78,7 +83,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
             return;
         }
         final int pos = position;
-        ItemOfList item = filteredItems.get(position);
+        ItemClass item = filteredItems.get(position);
         itemViewHolder.fill(item);
 
         itemViewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +105,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         if (query.equals("")) {
             filteredItems.addAll(allItems);
         } else {
-            for (ItemOfList item : allItems) {
+            for (ItemClass item : allItems) {
                 if (item.getName().toLowerCase().contains(query)) {
                     filteredItems.add(item);
                 }
@@ -153,7 +158,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         NumberPicker numPicker;
         TextView numPickerLabel;
         ImageView deleteBtn;
-        ItemOfList item;
+        ItemClass item;
 
         ItemViewHolder(final View convertView) {
             super(convertView);
@@ -236,7 +241,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
         }
 
 
-        public void fill(ItemOfList item) {
+        public void fill(ItemClass item) {
             this.item = item;
 //            itemImage.setImageResource(item.getItemImage());
             name.setText(item.getName());
@@ -276,7 +281,7 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
                     intent.putExtra("itemName", item.getName());
                     intent.putExtra("itemImgSrc", item.getImageName());
                     intent.putExtra("itemId", item.getId());
-                    Log.e("tag", item.getId());
+//                    Log.d("tag", item.getId());
                     //intent.putExtras(bundle);
                     context.startActivity(intent);
 
@@ -343,9 +348,9 @@ public class RvItemAdapter extends RecyclerView.Adapter<RvItemAdapter.ItemViewHo
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(context, ItemContent.class);
+                        Intent intent = new Intent(context, ItemContentActivity.class);
                         intent.putExtra("itemId", item.getId());
-                        Log.e("tag", item.getId());
+//                        Log.d("tag", item.getId());
                         //intent.putExtras(bundle);
                         context.startActivity(intent);
 

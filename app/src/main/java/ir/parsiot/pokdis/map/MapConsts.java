@@ -3,14 +3,16 @@ package ir.parsiot.pokdis.map;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConstOfMap {
+public class MapConsts {
 
+    // Note: change init location(latlng variable) in map.html too.
     public static String initLocation = "-320,330";
+//    public static String initLocation = "0,-150";
     public static float epsilon = 0.01f;
     public HashMap<String,String > vertexOfGraph;
 
 // vertex location on map
-    public ConstOfMap() {
+    public MapConsts() {
         vertexOfGraph = new HashMap<String, String>() {{
                                 //index as 1
             put("1","275,-380");

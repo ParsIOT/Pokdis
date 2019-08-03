@@ -45,7 +45,7 @@ public class BeaconDiscovered implements BeaconConsumer {
         //setting of beacons Manager
         beaconManager = BeaconManager.getInstanceForApplication(context);
         beaconManager.getBeaconParsers().clear();
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(Constants.ALTBEACON_LAYOUT));
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(Constants.ALT_LAYOUT));
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
@@ -305,8 +305,8 @@ public class BeaconDiscovered implements BeaconConsumer {
                 ArrayList<String> locations = new ArrayList<String>();
                 for (BLEdevice beacon : discoveredDevices){
                     String nearMac = beacon.getMac();
-                    LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
-                    Double[] location = locationOfBeacon.beaconCoordinates.get(nearMac);
+                    BeaconLocations beaconLocations = new BeaconLocations();
+                    Double[] location = beaconLocations.beaconCoordinates.get(nearMac);
                     if (location != null) {
                         String loc = location[0] + "," + location[1];
                         locations.add(loc);
@@ -322,10 +322,10 @@ public class BeaconDiscovered implements BeaconConsumer {
 //             if(discoveredDevices.get(0).getRssiAvg()
 //                    -discoveredDevices.get(1).getRssiAvg()<4){
 //                String nearMac1 = discoveredDevices.get(0).getMac();
-//                LocationOfBeacon locationOfBeacon1 = new LocationOfBeacon();
+//                BeaconLocations locationOfBeacon1 = new BeaconLocations();
 //                Double [] location1 = locationOfBeacon1.beaconCoordinates.get(nearMac1);
 //                String nearMac2 = discoveredDevices.get(1).getMac();
-//                LocationOfBeacon locationOfBeacon2 = new LocationOfBeacon();
+//                BeaconLocations locationOfBeacon2 = new BeaconLocations();
 //                Double [] location2 = locationOfBeacon2.beaconCoordinates.get(nearMac2);
 //                if(location1 != null){
 //                    String loc = ((location1[0]+location2[0])/2)+","+((location1[1]+location2[1])/2);
@@ -335,7 +335,7 @@ public class BeaconDiscovered implements BeaconConsumer {
 //
 //            }else {
 //                String nearMac = discoveredDevices.get(0).getMac();
-//                LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
+//                BeaconLocations locationOfBeacon = new BeaconLocations();
 //                Double [] location = locationOfBeacon.beaconCoordinates.get(nearMac);
 //                if(location != null){
 //                    String loc = location[0]+","+location[1];
@@ -346,8 +346,8 @@ public class BeaconDiscovered implements BeaconConsumer {
 
             if (proposedBeacon != null) {
                 String nearMac = proposedBeacon.getMac();
-                LocationOfBeacon locationOfBeacon = new LocationOfBeacon();
-                Double[] location = locationOfBeacon.beaconCoordinates.get(nearMac);
+                BeaconLocations beaconLocations = new BeaconLocations();
+                Double[] location = beaconLocations.beaconCoordinates.get(nearMac);
                 if (location != null) {
                     String loc = location[0] + "," + location[1];
                     return loc;

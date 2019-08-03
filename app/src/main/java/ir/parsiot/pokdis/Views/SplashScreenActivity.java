@@ -11,7 +11,7 @@ import com.airbnb.lottie.LottieAnimationView;
 
 import ir.parsiot.pokdis.R;
 
-public class SplashScreen extends AppCompatActivity {
+public class SplashScreenActivity extends AppCompatActivity {
 
     LottieAnimationView splashLogoAnim;
     @Override

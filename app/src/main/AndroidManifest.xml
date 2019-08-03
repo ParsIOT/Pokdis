@@ -23,7 +23,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".Views.ItemContent"
+            android:name=".Views.ItemContentActivity"
             android:label="@string/title_activity_item_content"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Views.CartActivity" />
@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Views.SplashScreen"
+            android:name=".Views.SplashScreenActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -33,10 +33,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import ir.parsiot.pokdis.Items.CartItems;
-import ir.parsiot.pokdis.Items.Items;
+import ir.parsiot.pokdis.Items.ItemClass;
+import ir.parsiot.pokdis.Items.ItemValues;
 import ir.parsiot.pokdis.R;
 
-public class ItemContent extends AppCompatActivity {
+public class ItemContentActivity extends AppCompatActivity {
 
     ImageView itemImage;
     TextView name;
@@ -46,7 +47,7 @@ public class ItemContent extends AppCompatActivity {
     TextView dimens;
     TextView weight;
     TextView brand;
-    ItemOfList item;
+    ItemClass item;
     boolean isCollapsed;
     CartItems cartItems;
     Context context;
@@ -74,8 +75,8 @@ public class ItemContent extends AppCompatActivity {
         initBottomBar(this, 0);
 
         String itemId = getIntent().getStringExtra("itemId");
-        Items items = new Items();
-        item = items.get_item(itemId);
+        ItemValues itemValues = new ItemValues();
+        item = itemValues.get_item(itemId);
         if (item != null){
 
             String nameTxt = item.getName();
@@ -153,7 +154,7 @@ public class ItemContent extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Intent intent = new Intent(ItemContent.this,MainActivity.class);
+                Intent intent = new Intent(ItemContentActivity.this,MainActivity.class);
                 intent.putExtra("locationMarker",item.getLocation());
                 intent.putExtra("itemName",item.getName());
                 intent.putExtra("itemImgSrc", item.getImageName());

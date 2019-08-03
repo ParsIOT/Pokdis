@@ -8,13 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ir.parsiot.pokdis.Constants.Constants;
-import ir.parsiot.pokdis.Views.ItemOfList;
 
 
 public class CartItems {
-    private ArrayList<ItemOfList> items;
+    private ArrayList<ItemClass> items;
     public CartItems(Context context){
-        items = new ArrayList<ItemOfList>();
+        items = new ArrayList<ItemClass>();
         if (!Hawk.isBuilt()){
             Hawk.init(context).build();
         }
@@ -29,10 +28,10 @@ public class CartItems {
         Hawk.put(Constants.CART_ITEMS_KEY, items);
     }
 
-    public boolean put_item(ItemOfList item){
+    public boolean put_item(ItemClass item){
 
         boolean notFound = true;
-        for (ItemOfList tempItem: items ){
+        for (ItemClass tempItem: items ){
             if (item.getId().equals(tempItem.getId())){
                 notFound = false;
             }
@@ -44,11 +43,11 @@ public class CartItems {
 
         return notFound;
     }
-    public List<ItemOfList> get_items(){
+    public List<ItemClass> get_items(){
         return items;
     }
 
-    public ArrayList<ItemOfList> delete_item(ItemOfList item){
+    public ArrayList<ItemClass> delete_item(ItemClass item){
        for(int i=0; i<items.size(); i++){
            if (items.get(i).getId().equals(item.getId())){
                items.remove(i);
@@ -60,7 +59,7 @@ public class CartItems {
     }
 
     public void clean(){
-        items = new ArrayList<ItemOfList>();
+        items = new ArrayList<ItemClass>();
         flush();
     }
 

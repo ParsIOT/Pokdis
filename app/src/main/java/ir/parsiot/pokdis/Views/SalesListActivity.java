@@ -13,14 +13,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
 
-import ir.parsiot.pokdis.Items.Items;
+import ir.parsiot.pokdis.Items.ItemValues;
 import ir.parsiot.pokdis.R;
 
+/*
+ Like CartActivity but shows all of items and can search among all of them
+ */
 public class SalesListActivity extends AppCompatActivity {
     private RecyclerView listItems;
-//    private ItemAdapter adapter;
     private RvItemAdapter adapter;
-    private Items items;
+    private ItemValues itemValues;
     private SearchView searchView;
 
     @Override
@@ -91,9 +93,8 @@ public class SalesListActivity extends AppCompatActivity {
     }
 
     private void refreshDisplay() {
-        items = new Items();
-//        adapter = new ItemAdapter(SalesListActivity.this,items.items,true);
-        adapter = new RvItemAdapter(SalesListActivity.this,null,items.items,true, false, true,false);
+        itemValues = new ItemValues();
+        adapter = new RvItemAdapter(SalesListActivity.this,null, itemValues.items,true, false, true,false);
         listItems.setAdapter(adapter);
     }
 

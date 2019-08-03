@@ -54,7 +54,6 @@
 <script type="text/javascript">
 
 
-
     var bounds = new L.LatLngBounds(new L.LatLng(-1400, -1400), new L.LatLng(1400, 1400));
 
 //    var map = L.map('map', {
@@ -87,6 +86,7 @@
     var pathLines =  L.featureGroup().addTo(map);
 
     latlng = [-320,330];
+//    latlng = [0,-150];
     map.setView(latlng, -0.5);
 
 //    var zoomBounds = new L.LatLngBounds(new L.LatLng(-300, -300), new L.LatLng(300, 300));
@@ -101,7 +101,7 @@
     marker.setRotationOrigin("center center");
     marker.setRotationAngle(180);
 
-    map.on('click', function (e) {
+    apap.on('click', function (e) {
         console.log(e.latlng.lat + "," + e.latlng.lng);
         var retVar = e.latlng.lat + "," + e.latlng.lng;
         //Android.sendToAndroid(retVar);
@@ -151,7 +151,7 @@ mapLayer = 0;
             var bounds = [[-1*bound0, -1*bound1], [bound0, bound1]];
             mapLayer = L.imageOverlay(image, bounds).addTo(map);
             mapLayer.getElement().classList.add('leaflet-map-layer');
-        }, 300);
+        }, 1500);
 
 //        document.addEventListener('DOMContentLoaded', function() {
 //             var bound0 = height / 2;

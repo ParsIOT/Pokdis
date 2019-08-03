@@ -21,13 +21,14 @@ import java.util.List;
 
 import ir.parsiot.pokdis.Items.CartItems;
 import ir.parsiot.pokdis.Items.CartItemsClient;
+import ir.parsiot.pokdis.Items.ItemClass;
 import ir.parsiot.pokdis.R;
 //import ir.parsiot.pokdis.ViewWidgets.StickyBottomBehavior;
 
 public class CartActivity extends AppCompatActivity implements CartItemsClient {
     private RvItemAdapter adapter;
     private RecyclerView listView;
-    private List<ItemOfList> items;
+    private List<ItemClass> items;
     Button cntButton;
     CartItems cartItems ;
 
@@ -131,7 +132,7 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
     }
 
     @Override
-    public ArrayList<ItemOfList> deleteItem(ItemOfList item){
+    public ArrayList<ItemClass> deleteItem(ItemClass item){
         return cartItems.delete_item(item);
     }
 
