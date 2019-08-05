@@ -34,6 +34,7 @@ dependencies {
     implementation "com.orhanobut:hawk:2.0.1"
     implementation 'com.shawnlin:number-picker:2.4.6'
     implementation 'com.airbnb.android:lottie:3.0.7'
+    implementation group: "com.navisens", name: "motiondnaapi", version: "1.8.7", changing: true
 //    implementation files('libs/android-beacon-library-2.16.3-beta4.aar')
     implementation 'org.altbeacon:android-beacon-library:2.16.2'
 

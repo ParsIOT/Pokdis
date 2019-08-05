@@ -101,7 +101,7 @@
     marker.setRotationOrigin("center center");
     marker.setRotationAngle(180);
 
-    apap.on('click', function (e) {
+    map.on('click', function (e) {
         console.log(e.latlng.lat + "," + e.latlng.lng);
         var retVar = e.latlng.lat + "," + e.latlng.lng;
         //Android.sendToAndroid(retVar);
@@ -191,23 +191,25 @@ mapLayer = 0;
         lng = latlng.lng
         movDist = Math.sqrt(Math.pow(lat - x, 2) + Math.pow(lng - y,2))
 
-      //  if (movDist > 20){
-     //      marker.slideTo([x, y], {
-      //           duration: movDist*6,
-       //         keepAtCenter: false
-        //       });
-        //    changeAccuracy(movDist);
-        //}else{
-          // marker.slideTo([x, y], {
-          // duration: 100,
-          // keepAtCenter: false
-          // });
-        //}
+//        if (movDist > 20){
+//           marker.slideTo([x, y], {
+//                 duration: movDist*6,
+//                keepAtCenter: false
+//               });
+//            changeAccuracy(movDist);
+//        }else{
+//           marker.slideTo([x, y], {
+//           duration: 100,
+//           keepAtCenter: false
+//           });
+//        }
 
          marker.slideTo([x, y], {
-             duration: delay,
+             duration: 100,
             keepAtCenter: false
          });
+
+
     }
 
     function rotateMarker(arg){

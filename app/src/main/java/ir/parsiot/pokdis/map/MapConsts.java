@@ -1,12 +1,22 @@
 package ir.parsiot.pokdis.map;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MapConsts {
 
     // Note: change init location(latlng variable) in map.html too.
+    public static double initHeading = 90.0;
     public static String initLocation = "-320,330";
+    public static ArrayList<Float> getInitLocationFloat(){
+        String[] loc = initLocation.split(",");
+        ArrayList<Float> initLocFloat = new ArrayList<Float>();
+        initLocFloat.add(Float.valueOf(loc[0]));
+        initLocFloat.add(Float.valueOf(loc[1]));
+        return initLocFloat;
+    }
+
 //    public static String initLocation = "0,-150";
     public static float epsilon = 0.01f;
     public HashMap<String,String > vertexOfGraph;

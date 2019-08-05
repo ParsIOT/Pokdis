@@ -142,6 +142,34 @@ public class WebViewManager {
         }
     }
 
+    public void updateHeading(String heading){
+        final String js_location = String.format("javascript:rotateMarker(\"%s\")", heading);
+        //  webView.loadUrl(js_location);
+        if (context != null && webView != null) {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    webView.loadUrl(js_location);
+                }
+            });
+        }
+    }
+
+    public void updateLocationAndHeading(String locationXY, String heading) {
+//        final String js_location = String.format("javascript:moveMarker(\'%s\')", locationXY);
+        final String js_location = String.format("javascript:moveMarker(\"%s\");rotateMarker(\"%s\")", locationXY, heading);
+        //  webView.loadUrl(js_location);
+        if (context != null && webView != null) {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    webView.loadUrl(js_location);
+                }
+            });
+        }
+    }
+
+
     public String getLoctionOfMarker() {
         return loctionOfMarker;
     }
