@@ -25,7 +25,7 @@ public class Constants {
     public static final String CART_ITEMS_KEY = "cart_items_key";
 
     public static final long PERIOD_OF_GET_TOP_BEACON = 1000l;
-    public static final long DELAY_ON_SHOW_TOP_BEACON = 2000l;
+    public static final long DELAY_ON_SHOW_TOP_BEACON = 0l;
 
 
     // Note: Map constants are in map folder files

@@ -25,6 +25,7 @@ public class NaviSettings {
     public int rssThreshold = -70;
     public int bySideRssThreshold = -63;
 
+
     // Note: Change it in sharvand proj
     public int maxBeaconDelayms = 10 * 1000; // 10sec  // If we don't see a beacon for this time ,We delete it from history
     public int beaconDirectionRssThresholdDiff = -2; // Todo: It's so weak and breakable logic behind it, change it.

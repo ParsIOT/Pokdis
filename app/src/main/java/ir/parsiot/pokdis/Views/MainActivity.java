@@ -123,6 +123,8 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
     HashMap<String, Integer> beaconCountFar = new HashMap<String, Integer>();
     HashMap<String, Long> sideBySideLastTime = new HashMap<String, Long>();
 
+    private String lastLocationXY = null;
+    private String lastHeading = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -517,11 +519,9 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
 
             // Starts a foreground service to ensure that the
             // App continues to sample the sensors in background
-            motionDnaServiceIntent = new Intent(getAppContext(), MotionDnaForegroundService.class);
-            getAppContext().startService(motionDnaServiceIntent);
 
             // Start the MotionDna Core
-            startMotionDna();
+//            startMotionDna();
         }
     }
 
@@ -674,7 +674,7 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
         //    fast our SDK can provide results, but usually setting a slower update rate improves results.
         //    Setting the rate to 0ms will output estimation results at our maximum rate.
 
-        motionDnaApplication.setCallbackUpdateRateInMs(0);
+        motionDnaApplication.setCallbackUpdateRateInMs(1);
 
         //    When setLocationNavisens is enabled and setBackpropagationEnabled is called, once Navisens
         //    has initialized you will not only get the current position, but also a set of latitude
@@ -687,10 +687,13 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
         //    If the user wants to see everything that happened before Navisens found an initial
         //    position, he can adjust the amount of the trajectory to see before the initial
         //    position was set automatically.
-        motionDnaApplication.setBackpropagationBufferSize(2000);
+        motionDnaApplication.setBackpropagationBufferSize(200000); //Todo : It was 2000 by default
         motionDnaApplication.setLocalHeadingOffsetInDegrees(MapConsts.initHeading);
         //    Enables AR mode. AR mode publishes orientation quaternion at a higher rate.
 //        motionDnaApplication.setARModeEnabled(true);
+        motionDnaServiceIntent = new Intent(getAppContext(), MotionDnaForegroundService.class);
+        getAppContext().startService(motionDnaServiceIntent);
+
     }
 
     //    This event receives the estimation results using a MotionDna object.
@@ -795,8 +798,13 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
             String locationXY = String.format("%d,%d", (int) (this.y + MapConsts.getInitLocationFloat().get(0)), (int) (this.x + MapConsts.getInitLocationFloat().get(1)));
             String heading = String.format("%d", (int) Convert2zeroto360(-1 * getMainHeading() + 180));
 
+            if (!(locationXY.equals(lastLocationXY) && heading.equals(lastHeading))){
+                Log.e("updateLocationAndH",locationXY);
+                webViewManager.updateLocationAndHeading(locationXY, heading);
+            }
 
-            webViewManager.updateLocationAndHeading(locationXY, heading);
+            lastLocationXY = locationXY;
+            lastHeading = heading;
 
 //            // Using findNearLocationByPathIMUVersion :
 //            if (RoutePath.size() > 0) {

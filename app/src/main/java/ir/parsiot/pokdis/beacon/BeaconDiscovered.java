@@ -16,6 +16,8 @@ import org.altbeacon.beacon.Region;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -376,11 +378,18 @@ public class BeaconDiscovered implements BeaconConsumer {
         rangeNotifier = new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beacons.size());
 
-                List<Beacon> list = new ArrayList<Beacon>(beacons);
+                List<Beacon> beaconList = new ArrayList<Beacon>(beacons);
                 if (beacons.size() > 0 && callback != null) {
-                    for (Beacon beacon : beacons) {
+                    // Sort beacon according to the rssi
+                    Collections.sort(beaconList, new Comparator<Beacon>(){
+                        public int compare(Beacon b1, Beacon b2) {
+                            return ((Integer)b1.getRssi()).compareTo((Integer)b2.getRssi());
+                        }
+                    });
+
+                    for (Beacon beacon : beaconList) {
+                        Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beaconList.toString());
                             final String beaconName = beacon.getBluetoothAddress();
                             HashMap<String, Double[]> beaconCoordinates = beaconLocations.beaconCoordinates;
                             if (beaconCoordinates.containsKey(beaconName)){
