@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MapConsts {
+    public static double scale = 100;
 
     // Note: change init location(latlng variable) in map.html too.
     public static double initHeading = 90.0;

@@ -16,14 +16,18 @@ import org.altbeacon.beacon.Region;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ir.parsiot.pokdis.Constants.Constants;
 
 import static ir.parsiot.pokdis.Constants.Constants.MIN_RSS_TO_RELOCATE;
 
 public class BeaconDiscovered implements BeaconConsumer {
-
+    BeaconLocations beaconLocations = new BeaconLocations();
+    private BeaconCallback callback;
 
     private ArrayList<BLEdevice> discoveredDevices;
     private BeaconManager beaconManager = null;
@@ -215,7 +219,7 @@ public class BeaconDiscovered implements BeaconConsumer {
 //            beaconManager.addRangeNotifier(rangeNotifier);
 
         } catch (RemoteException e) {
-            Log.e("beacon_manager",e.getMessage());
+            Log.e("beacon_manager", e.getMessage());
         }
 
 
@@ -299,11 +303,11 @@ public class BeaconDiscovered implements BeaconConsumer {
     }
 
 
-    public ArrayList<String> getAllSortedDiscoveredBeaconLocations(){
-        if(discoveredDevices != null){
-            if (discoveredDevices.size() > 0){
+    public ArrayList<String> getAllSortedDiscoveredBeaconLocations() {
+        if (discoveredDevices != null) {
+            if (discoveredDevices.size() > 0) {
                 ArrayList<String> locations = new ArrayList<String>();
-                for (BLEdevice beacon : discoveredDevices){
+                for (BLEdevice beacon : discoveredDevices) {
                     String nearMac = beacon.getMac();
                     BeaconLocations beaconLocations = new BeaconLocations();
                     Double[] location = beaconLocations.beaconCoordinates.get(nearMac);
@@ -317,6 +321,7 @@ public class BeaconDiscovered implements BeaconConsumer {
         }
         return null;
     }
+
     public String getNearLocationToString() {
         try {
 //             if(discoveredDevices.get(0).getRssiAvg()
@@ -363,4 +368,141 @@ public class BeaconDiscovered implements BeaconConsumer {
         return null;
     }
 
+//    private final Lock _mutex = new ReentrantLock(true);
+
+    // MotionDna:
+    public void startMonitoringNearMotionDna() {
+
+        rangeNotifier = new RangeNotifier() {
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beacons.size());
+
+                List<Beacon> list = new ArrayList<Beacon>(beacons);
+                if (beacons.size() > 0 && callback != null) {
+                    for (Beacon beacon : beacons) {
+                            final String beaconName = beacon.getBluetoothAddress();
+                            HashMap<String, Double[]> beaconCoordinates = beaconLocations.beaconCoordinates;
+                            if (beaconCoordinates.containsKey(beaconName)){
+                                callback.onBeaconDetection(beacon);
+                            }
+                    }
+
+//
+//
+//
+//                    //covert collection<beacon> to list<beacon> for access to beacons
+//                    List<Beacon> list = new ArrayList<Beacon>(beacons);
+//
+//                    if (list.size() > 0) {
+//
+//                        for (int i = 0; i < list.size(); i++) {
+//                            Beacon beacon = list.get(i);
+//                            boolean flag = false;
+//
+//                            for (int j = 0; j < discoveredDevices.size(); j++) {
+//                                Integer a = beacon.getId3().toInt();
+//                                Integer b = Integer.valueOf(discoveredDevices.get(j).getMinor());
+//
+//                                if (a.equals(b)
+//                                ) {
+//                                    discoveredDevices.get(j).InsertRssi(beacon.getRssi());
+//
+//                                    Log.i("beacon", "minor: " + discoveredDevices.get(j).getMac() + " add rssi=" + beacon.getRssi());
+//                                    flag = true;
+//
+//
+//                                }
+//                            }
+//
+//                            if (!flag) {
+//
+//
+//                                Log.i("beacon", "add minor=" + beacon.getId3().toString());
+//                                BLEdevice blEdevice = new BLEdevice();
+//                                blEdevice.setUUID(beacon.getId1().toString());
+//                                blEdevice.setMajor(beacon.getId2().toString());
+//                                blEdevice.setMinor(beacon.getId3().toString());
+//                                blEdevice.InsertRssi(beacon.getRssi());
+//                                blEdevice.setMac(beacon.getBluetoothAddress());
+//                                Log.i("beacon", "mac" + blEdevice.getMac());
+//                                discoveredDevices.add(blEdevice);
+//
+//
+//                            }
+//
+//
+//                        }
+//
+//                        //add zero to devices that no discovering in this scan
+//                        for (int j = 0; j < discoveredDevices.size(); j++) {
+//                            boolean flagOfExit = false;
+//
+//                            for (int i = 0; i < list.size(); i++) {
+//                                Beacon beacon = list.get(i);
+//                                if (beacon.getId3().equals(discoveredDevices.get(j).getMinor())) {
+//                                    flagOfExit = true;
+//                                }
+//                            }
+//                            if (flagOfExit) {
+//                                discoveredDevices.get(j).InsertRssi(0);
+//                            }
+//                        }
+//                        //remove devices that all their rssis = 0
+//                        for (int i = 0; i < discoveredDevices.size(); i++) {
+//                            if (discoveredDevices.get(i).canThatCanRemoveThisDivice()) {
+//                                discoveredDevices.remove(i);
+//                            }
+//                        }
+//
+//                        sortDiscoveredDevices();
+//
+//
+//
+//                        /*if(proposedBeacon == null){
+//                            proposedBeacon = discoveredDevices.get(0);
+//                            Toast.makeText(context,"proposedBeacon Minor"+proposedBeacon.getMinor(),Toast.LENGTH_SHORT);
+//                        }else {
+//                            if(!discoveredDevices.get(0).getMac().equals(proposedBeacon.getMac()))
+//                                if( discoveredDevices.get(1).getMac().equals(proposedBeacon.getMac())){
+//                                   proposedBeacon = discoveredDevices.get(1);
+//                                    Toast.makeText(context,"proposedBeacon Minor"+proposedBeacon.getMinor(),Toast.LENGTH_SHORT);
+//                                }else if(!discoveredDevices.get(1).getMac().equals(proposedBeacon.getMac())){
+//                                    proposedBeacon = discoveredDevices.get(0);
+//                                    Toast.makeText(context,"proposedBeacon Minor"+proposedBeacon.getMinor(),Toast.LENGTH_SHORT);
+//                                }
+//                        }*/
+////                        Log.d("beaconData:",String.valueOf(discoveredDevices.get(0).getRssiAvg()));
+//
+//                        if (discoveredDevices.get(0).getRssiAvg() >= MIN_RSS_TO_RELOCATE) {
+//                            proposedBeacon = discoveredDevices.get(0);
+//                        }
+
+
+//                    }
+                }
+            }
+
+        };
+
+
+        try {
+
+            //set uuid of beacons and their major for better discovering
+            beaconRegion = new Region("beacon", Identifier.parse(Constants.COMMON_UUID_BEACON), null, null);
+            beaconManager.startRangingBeaconsInRegion(beaconRegion);
+//            beaconManager.addRangeNotifier(rangeNotifier);
+            beaconManager.startRangingBeaconsInRegion(beaconRegion);
+//            beaconManager.addRangeNotifier(rangeNotifier);
+
+        } catch (RemoteException e) {
+            Log.e("beacon_manager", e.getMessage());
+        }
+
+
+    }
+
+    public void setCallback(BeaconCallback beaconCallback) {
+        callback = beaconCallback;
+    }
 }

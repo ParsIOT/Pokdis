@@ -39,7 +39,11 @@ import com.navisens.motiondnaapi.MotionDnaApplication;
 import com.navisens.motiondnaapi.MotionDnaInterface;
 import com.orhanobut.hawk.Hawk;
 
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.Identifier;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -47,6 +51,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ir.parsiot.pokdis.Constants.Constants;
 import ir.parsiot.pokdis.Enums.ScanModeEnum;
@@ -55,7 +62,9 @@ import ir.parsiot.pokdis.Listeners.OnWebViewClickListener;
 import ir.parsiot.pokdis.MotionDna.MotionDnaForegroundService;
 import ir.parsiot.pokdis.MotionDna.NaviSettings;
 import ir.parsiot.pokdis.R;
+import ir.parsiot.pokdis.beacon.BeaconCallback;
 import ir.parsiot.pokdis.beacon.BeaconDiscovered;
+import ir.parsiot.pokdis.beacon.BeaconLocations;
 import ir.parsiot.pokdis.map.MapConsts;
 import ir.parsiot.pokdis.map.MapDetail;
 import ir.parsiot.pokdis.map.GraphBuilder;
@@ -65,10 +74,13 @@ import ir.parsiot.pokdis.map.WebViewManager;
 
 import static android.os.SystemClock.elapsedRealtime;
 import static ir.parsiot.pokdis.Constants.Constants.MAX_PROXIMITY_TO_ROUTE_THRESHOLD;
+import static ir.parsiot.pokdis.MotionDna.NaviSettings.MAX_PROXIMITY_TO_ROUTE_THRESHOLD_IMU;
 import static ir.parsiot.pokdis.MotionDna.Utils.Convert2zeroto360;
 import static ir.parsiot.pokdis.MotionDna.Utils.DegreeDiff;
+import static ir.parsiot.pokdis.MotionDna.Utils.findCloseDot;
+import static ir.parsiot.pokdis.MotionDna.Utils.round;
 
-public class MainActivity extends AppCompatActivity implements MotionDnaInterface{
+public class MainActivity extends AppCompatActivity implements MotionDnaInterface {
 
     private BeaconDiscovered beaconDiscovered;
 
@@ -83,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
     MotionDnaApplication motionDnaApplication;
     Hashtable<String, MotionDna> networkUsers = new Hashtable<String, MotionDna>();
     Hashtable<String, Double> networkUsersTimestamps = new Hashtable<String, Double>();
-    private static final int REQUEST_MDNA_PERMISSIONS=1;
+    private static final int REQUEST_MDNA_PERMISSIONS = 1;
     Intent motionDnaServiceIntent;
     // Custom MotionDna :
     NaviSettings naviSettings = new NaviSettings();
@@ -101,6 +113,16 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
     public double localOffsetX = 0;
     public double localOffsetY = 0;
     public double localOffsetH = 0;
+
+
+    // Relocation Algorithm Parameters:
+    HashMap<String, ArrayList<Long>> beaconTimestamps = new HashMap<String, ArrayList<Long>>();
+    HashMap<String, HashMap<Long, Integer>> beaconHistories = new HashMap<String, HashMap<Long, Integer>>();
+    HashMap<String, Integer> beaconCount = new HashMap<String, Integer>();
+    HashMap<String, Integer> beaconCountSideBySide = new HashMap<String, Integer>();
+    HashMap<String, Integer> beaconCountFar = new HashMap<String, Integer>();
+    HashMap<String, Long> sideBySideLastTime = new HashMap<String, Long>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
 
         //Permission
         // MotionDna:
-        ActivityCompat.requestPermissions(this,MotionDnaApplication.needsRequestingPermissions()
+        ActivityCompat.requestPermissions(this, MotionDnaApplication.needsRequestingPermissions()
                 , REQUEST_MDNA_PERMISSIONS);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -201,8 +223,11 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
         // Get location from beacon manager
         try {
             beaconDiscovered = new BeaconDiscovered(this);
+
             //Todo: enable it when use beacon
 //            beaconDiscovered.startMonitoring();
+            beaconDiscovered.startMonitoringNearMotionDna();
+            beaconDiscovered.setCallback(new MyBeaconCallback());
 //            updateLocation();
         } catch (RuntimeException e) {
             Log.e("Error:", e.getMessage());
@@ -362,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
                         }
                     }
                 }
-            }, 6000, Constants.PERIOD_OF_GET_TOP_BEACON);
+            }, Constants.DELAY_ON_SHOW_TOP_BEACON, Constants.PERIOD_OF_GET_TOP_BEACON);
         } catch (RuntimeException e) {
 
         }
@@ -433,7 +458,6 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
             getAppContext().stopService(motionDnaServiceIntent);
         }
         //
-
 
 
         super.onDestroy();
@@ -557,6 +581,30 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
         return null; // Don't update location!
     }
 
+    public String findNearLocationByPathIMUVersion(String location, String heading, ArrayList<ArrayList<Point>> RoutePath) {
+        /*
+        According to the location ...
+         */
+        if (Graph.dist2Route(location, RoutePath) < MAX_PROXIMITY_TO_ROUTE_THRESHOLD_IMU) {  // estLocation is near the route graph
+            farFromRouteCnt = 0;
+            return location;
+        }
+//        } else {
+//            farFromRouteCnt++;
+//            if (farFromRouteCnt < Constants.MIN_COUNT_TO_IGNORE_PATH) {
+//                if (nearBeaconLocations.size() > 1) {
+//                    String secondBeaconLocation = nearBeaconLocations.get(1);
+//                    if (Graph.dist2Route(secondBeaconLocation, RoutePath) < MAX_PROXIMITY_TO_ROUTE_THRESHOLD) {  // estLocation is near the route graph
+//                        return secondBeaconLocation;
+//                    }
+//                }
+//            } else {
+//                return firstBeaconLocation;
+//            }
+//        }
+        return null; // Don't update location!
+    }
+
     // Draw line between current location and a destination point
     void pathToPoint(final String dstPoint) {
         new Handler().postDelayed(new Runnable() {
@@ -652,31 +700,33 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
     public void receiveNetworkData(MotionDna.NetworkCode networkCode, Map<String, ?> map) {
 
     }
+
     public double getMainHeading() {
         return Convert2zeroto360(h + localOffsetH);
     }
+
     @Override
     public void receiveNetworkData(MotionDna motionDna) {
 
-        networkUsers.put(motionDna.getID(),motionDna);
+        networkUsers.put(motionDna.getID(), motionDna);
         double timeSinceBootSeconds = elapsedRealtime() / 1000.0;
-        networkUsersTimestamps.put(motionDna.getID(),timeSinceBootSeconds);
+        networkUsersTimestamps.put(motionDna.getID(), timeSinceBootSeconds);
         StringBuilder activeNetworkUsersStringBuilder = new StringBuilder();
         List<String> toRemove = new ArrayList();
 
         activeNetworkUsersStringBuilder.append("Network Shared Devices:\n");
-        for (MotionDna user: networkUsers.values()) {
+        for (MotionDna user : networkUsers.values()) {
             if (timeSinceBootSeconds - networkUsersTimestamps.get(user.getID()) > 2.0) {
                 toRemove.add(user.getID());
             } else {
                 activeNetworkUsersStringBuilder.append(user.getDeviceName());
                 MotionDna.XYZ location = user.getLocation().localLocation;
-                activeNetworkUsersStringBuilder.append(String.format(" (%.2f, %.2f, %.2f)",location.x, location.y, location.z));
+                activeNetworkUsersStringBuilder.append(String.format(" (%.2f, %.2f, %.2f)", location.x, location.y, location.z));
                 activeNetworkUsersStringBuilder.append("\n");
             }
 
         }
-        for (String key: toRemove) {
+        for (String key : toRemove) {
             networkUsers.remove(key);
             networkUsersTimestamps.remove(key);
         }
@@ -685,8 +735,7 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
     }
 
     @Override
-    public void receiveMotionDna(MotionDna motionDna)
-    {
+    public void receiveMotionDna(MotionDna motionDna) {
         // mupdate
 //        Log.e("receiveMotionDna:", "receiveMotionDna");
 
@@ -740,20 +789,25 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
                 LastCornerCandidateX = this.x;
                 LastCornerCandidateY = this.y;
             }
-            Log.e("location.heading", String.valueOf(location.heading));
+//            Log.e("location.heading", String.valueOf(location.heading));
             this.h = Convert2zeroto360(Convert2zeroto360(-1 * location.heading) + 90.0D + MapConsts.initHeading);
 
-
-//            String script = String.format(Locale.getDefault(), "moveMarker(\"%d,%d\");rotateMarker(\"%d\")", , );
-            String locationXY = String.format("%d,%d",(int) (this.y + MapConsts.getInitLocationFloat().get(0)), (int) (this.x + MapConsts.getInitLocationFloat().get(1)));
+            String locationXY = String.format("%d,%d", (int) (this.y + MapConsts.getInitLocationFloat().get(0)), (int) (this.x + MapConsts.getInitLocationFloat().get(1)));
             String heading = String.format("%d", (int) Convert2zeroto360(-1 * getMainHeading() + 180));
-//            (int) Convert2zeroto360(-1 * getMainHeading() + 180)
 
-//            final String str = String.format("%.2f,%.2f",
-//                    location.y + MapConsts.getInitLocationFloat().get(0),
-//                    location.x + MapConsts.getInitLocationFloat().get(1));
 
             webViewManager.updateLocationAndHeading(locationXY, heading);
+
+//            // Using findNearLocationByPathIMUVersion :
+//            if (RoutePath.size() > 0) {
+//                if (findNearLocationByPathIMUVersion(locationXY, heading, RoutePath) != null){
+//                    webViewManager.updateLocationAndHeading(locationXY, heading);
+//                }else{
+//                    webViewManager.updateHeading(heading);
+//                }
+//            } else {
+//                webViewManager.updateLocationAndHeading(locationXY, heading);
+//            }
 //            webViewManager.updateLocation(str);
         }
 
@@ -761,12 +815,12 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
 //        str += "motionType: " + motionDna.getMotion().motionType + "\n";
 //        textView.setTextColor(Color.BLACK);
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-//                Log.e("Location:", str);
-            }
-        });
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+////                Log.e("Location:", str);
+//            }
+//        });
     }
 
     @Override
@@ -798,5 +852,324 @@ public class MainActivity extends AppCompatActivity implements MotionDnaInterfac
     @Override
     public Context getAppContext() {
         return getApplicationContext();
+    }
+
+
+    // MotionDna beacon :
+    public class MyBeaconCallback implements BeaconCallback {
+
+
+        public MyBeaconCallback() {
+        }
+
+        private final Lock _mutex = new ReentrantLock(true);
+
+        @Override
+        public void onBeaconDetection(final Beacon beacon) {
+            try {
+//                Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beacon.getBluetoothAddress());
+
+                //log params to see the modification;;
+                _mutex.lock();
+
+                final String beaconName = beacon.getBluetoothAddress();
+                BeaconLocations beaconLocations = new BeaconLocations();
+                HashMap<String, Double[]> beaconCoordinates = beaconLocations.beaconCoordinates;
+
+                Double[] coordinates = beaconCoordinates.get(beaconName);
+                final double beaconY = coordinates[0] - MapConsts.getInitLocationFloat().get(0);
+                final double beaconX = coordinates[1] - MapConsts.getInitLocationFloat().get(1);
+//                final double beaconX = MapConsts.getInitLocationFloat().get(0);
+//                final double beaconY = MapConsts.getInitLocationFloat().get(1);
+                double currentX = x;
+                double currentY = y;
+
+
+                long currentTime = System.currentTimeMillis();
+                int currentRss = 0;
+                if (!beaconTimestamps.containsKey(beaconName)) { //initializations
+                    beaconTimestamps.put(beaconName, new ArrayList<Long>());
+                    beaconHistories.put(beaconName, new HashMap<Long, Integer>());
+                    beaconCount.put(beaconName, 0);
+                    beaconCountSideBySide.put(beaconName, 0);
+                    beaconCountFar.put(beaconName, 0);
+                    sideBySideLastTime.put(beaconName, 0l);
+                }
+
+                ArrayList<Long> timestamps = beaconTimestamps.get(beaconName);
+                HashMap<Long, Integer> beaconHistory = beaconHistories.get(beaconName);
+
+                int count = beaconCount.get(beaconName);
+                int countSBS = beaconCountSideBySide.get(beaconName);
+
+                boolean emptyTimestamps;
+                long lastBeaconSeenTime = 0;
+                if (timestamps.size() == 0) {
+                    emptyTimestamps = true;
+                } else {
+                    emptyTimestamps = false;
+                    lastBeaconSeenTime = timestamps.get(timestamps.size() - 1);
+                }
+
+                // Avoid some near detections to change the counter suddenly, so just change last rss according to them(calculate average of current rss and last rss)
+                if (!emptyTimestamps && currentTime - lastBeaconSeenTime < naviSettings.minTimeToDetectNewRssi) {
+                    int lastRss = beacon.getRssi();
+                    currentRss = (beaconHistory.get(lastBeaconSeenTime) + lastRss) / 2;
+                    beaconHistory.put(lastBeaconSeenTime, currentRss);
+                    beaconTimestamps.put(beaconName, timestamps);
+                    beaconHistories.put(beaconName, beaconHistory);
+
+                } else {
+                    // Add rss to beaconHistory
+                    if (timestamps.size() < naviSettings.rssHistoryMaxLen) {
+                        timestamps.add(currentTime);
+                        beaconHistory.put(currentTime, beacon.getRssi());
+                    } else { //Delete older timestamp and the related rss
+                        beaconHistory.remove(timestamps.get(0));
+                        timestamps.remove(0); //delete older timestamp
+
+                        beaconHistory.put(currentTime, beacon.getRssi());
+                        timestamps.add(currentTime);
+                    }
+
+
+                    // Delete very old beacon data & Change or reset count and countSBS according to the history
+                    int timestampSize = timestamps.size(); // We'll replace it with `timestamps` variable
+                    ArrayList<Long> tempTimestamps = new ArrayList<Long>();
+                    Long lastTime = currentTime;
+                    Long tempTime;
+                    tempTimestamps.add(lastTime); // Add current time to tempTimestamp (because current time isn't old!)
+
+                    boolean deleteRemains = false; // It acts as a `break` command, but we should clear beaconHistory, So we can't use `break`
+                    // Check and delete old rssi
+                    for (int i = timestampSize - 2; i >= 0; i--) {
+                        tempTime = timestamps.get(i);
+
+                        if (!deleteRemains) {
+                            if (lastTime - tempTime > naviSettings.maxBeaconDelayms) {
+                                if (i == timestampSize - 2) { //just current rss is new
+                                    count = 0;
+                                    countSBS = 0;
+                                }
+                                if (count > 0) {
+                                    count--; // It's like a punishment!
+                                }
+                                if (countSBS > 0) {
+                                    countSBS--; // It's like a punishment!
+                                }
+                                deleteRemains = true; // Ignore old rssi
+                                continue;
+                            }
+                            tempTimestamps.add(0, tempTime);
+                        } else {
+                            beaconHistory.remove(tempTime);
+                            if (count > 0) {
+                                count--; // It's like a punishment!
+                            }
+                            if (countSBS > 0) {
+                                countSBS--; // It's like a punishment!
+                            }
+                        }
+                    }
+                    timestamps = tempTimestamps;
+
+                    // Renew beaconTimestamps and beaconHistories after delete the old data
+                    beaconTimestamps.put(beaconName, timestamps);
+                    beaconHistories.put(beaconName, beaconHistory);
+
+
+                    int rssHistoryLen = tempTimestamps.size();
+
+                    ArrayList<Integer> beaconHistoryDebug = new ArrayList<Integer>();
+                    currentRss = 0; // Actually, It's average of the saved and current rssi
+                    for (int i = 0; i <= rssHistoryLen - 1; i++) {
+                        tempTime = timestamps.get(i);
+                        Integer tempRss = beaconHistory.get(tempTime);
+                        currentRss += tempRss;
+                        beaconHistoryDebug.add(tempRss);
+                    }
+                    currentRss /= rssHistoryLen;
+
+                    final int currentRss1 = currentRss;
+                    final int count1 = count;
+//                        Log.d(this.getClass().getSimpleName(), "Beacon: " + beaconName + " CurrentRssi: " + currentRss);
+
+
+                    // on beacon direction detection:
+                    double toBeaconVector = Math.sqrt(Math.pow(beaconX - currentX, 2) + Math.pow(beaconY - currentY, 2));
+                    double toBeaconVectorHeading = 0;
+
+                    // Calculate degree difference between the motion sensor heading and the line between current location and location of detected beacon
+                    if (beaconY - currentY >= 0) {
+                        toBeaconVectorHeading = Math.toDegrees(Math.acos(beaconX - currentX / toBeaconVector));
+                    } else {
+                        toBeaconVectorHeading = 360 - Math.toDegrees(Math.acos(beaconX - currentX / toBeaconVector));
+                    }
+                    double toBeaconVectorhDiff = DegreeDiff(getMainHeading(), toBeaconVectorHeading);
+
+                    double tempRssThreshold = naviSettings.rssThreshold;
+                    if (toBeaconVectorhDiff < naviSettings.maxtoBeaconVectorhDiff) {
+                        tempRssThreshold += naviSettings.beaconDirectionRssThresholdDiff; // Mitigate rssThreshold when we turn to the beacon
+                    }
+
+                    if (currentRss >= tempRssThreshold) { // The main if that check current(average) rss to the RssThreshold
+
+                        count++; // We increase `count` if we see that we see the beacon
+                        beaconCountFar.put(beaconName, 0); // We don't know that the beacon is far or not, So we just consider it as far until now
+//                            Log.d(this.getClass().getSimpleName(), "Count: " + count);
+
+                        // We should reset count when we are in the adjacencyCircle for a long time
+                        if (count > naviSettings.maxValidCountInAdjacency && Math.pow(currentX - beaconX, 2.0) + Math.pow(currentY - beaconY, 2.0) < naviSettings.adjacencyCircle) {
+                            count = 0;
+                        }
+
+                        // Check that we aren't side by side a beacon but we see the beacon and we should react properly according to it
+                        if (currentRss < naviSettings.bySideRssThreshold && count >= naviSettings.countThreshold) {
+                            // If we are side by side a beacon but motion sensor shows we are out of adjacency circle
+                            if (Math.pow(currentX - beaconX, 2.0) + Math.pow(currentY - beaconY, 2.0) > naviSettings.adjacencyCircle) {
+
+                                Double[] dstDot = new Double[]{};
+                                Double[] refDot = new Double[]{LastCornerX, LastCornerY};
+                                Double[] curDot = new Double[]{currentX, currentY};
+                                Double[] nearDot = new Double[]{(currentX + beaconX) / 2, (currentY + beaconY) / 2};
+
+                                dstDot = findCloseDot(refDot, curDot, nearDot);
+
+                                if (!dstDot[0].isNaN() && !dstDot[1].isNaN()) {
+                                    double relocationVectorX, relocationVectorY;
+                                    double dstx, dsty;
+//                                        Log.d(this.getClass().getSimpleName(), "dstDot: " + dstDot[0] + "," + dstDot[1]);
+                                    dstx = dstDot[0];
+                                    dsty = dstDot[1];
+
+                                    relocationVectorX = dstx - currentX;
+                                    relocationVectorY = dsty - currentY;
+
+                                    double relocationVectorLen = Math.sqrt(Math.pow(relocationVectorX, 2) + Math.pow(relocationVectorY, 2));
+                                    double relocationHeading = 0;
+                                    if (relocationVectorY >= 0) {
+                                        relocationHeading = Math.toDegrees(Math.acos(relocationVectorX / relocationVectorLen));
+                                    } else {
+                                        relocationHeading = 360 - Math.toDegrees(Math.acos(relocationVectorX / relocationVectorLen));
+                                    }
+                                    double hDiff = DegreeDiff(getMainHeading(), relocationHeading);
+
+                                    final double mainHeading = round(getMainHeading(), 0);
+                                    final double relocationHeading1 = round(relocationHeading, 0);
+
+                                    if (hDiff < naviSettings.maxValidRelocationHDiff) { // Avoid rollback replacings
+                                        localOffsetX += relocationVectorX;
+                                        localOffsetY += relocationVectorY;
+
+                                        if (motionDnaApplication != null) {
+                                            motionDnaApplication.setCartesianOffsetInMeters(localOffsetX / naviSettings.scale, localOffsetY / naviSettings.scale);
+                                        } else {
+                                            Log.d(this.getClass().getSimpleName(), "Core motion var is null!");
+
+                                        }
+                                        for (String otherBeaconName : beaconCount.keySet()) { // Reset other beacon counts
+                                            if (!otherBeaconName.equals(beaconName)) {
+                                                beaconCount.put(otherBeaconName, 0);
+                                            }
+                                        }
+                                        for (String otherBeaconName : beaconCountSideBySide.keySet()) { // Reset other beacon SBS count
+                                            if (!otherBeaconName.equals(beaconName)) {
+                                                beaconCountSideBySide.put(otherBeaconName, 0);
+                                            }
+                                        }
+//                                            Log.d(this.getClass().getSimpleName(), "relocation");
+
+                                    }
+                                } else {
+                                    Log.e(this.getClass().getSimpleName(), "New Location x,y are NaN");
+                                }
+                                count = 0;
+                            }
+
+
+                        } else if (currentRss >= naviSettings.bySideRssThreshold) { // We are side by side a beacon
+
+                            countSBS++;
+                            if (countSBS >= naviSettings.bySideCountThreshold) {
+                                Log.d(this.getClass().getSimpleName(), "side by side the beacon, dstDot: " + beaconX + "," + beaconY);
+
+                                long lastBeaconSideBySideRelocation = sideBySideLastTime.get(beaconName);
+                                // Check sidebyside relocation history and avoid relocation if we did it `minTimeBetweenSameSidebySide` [seconds] ago
+                                if (currentTime - lastBeaconSideBySideRelocation > naviSettings.minTimeBetweenSameSidebySide) {
+
+//                                    localOffsetX += (4 * beaconX + currentX) / 5 - currentX;
+//                                    localOffsetY += (4 * beaconY + currentY) / 5 - currentY;
+                                    localOffsetX += beaconX - currentX;
+                                    localOffsetY += beaconY - currentY;
+
+                                    Log.e("beacon", "SideBySide occurs on :  " + beacon.getBluetoothAddress()+" new Location: "+localOffsetX+","+localOffsetY);
+
+                                    if (motionDnaApplication != null) { // relocate the motionsonser xy to the beacon loaction
+                                        motionDnaApplication.setCartesianOffsetInMeters(localOffsetX / naviSettings.scale, localOffsetY / naviSettings.scale);
+                                    }
+
+                                    Log.d(this.getClass().getSimpleName(), "sideBySide");
+
+//                                    NavisensMaps.context.runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+////                                    NavisensMaps.context.menuItem.setTitle(mainHeading + " : " + relocationHeading1);
+//                                            NavisensMaps.context.menuItem.setTitle(String.format(Locale.getDefault(), "side:%s", Constants.beaconMacNameMap.get(beaconName)));
+//
+//                                        }
+//                                    });
+
+
+                                    sideBySideLastTime.put(beaconName, currentTime);
+                                    for (String otherBeaconName : beaconCount.keySet()) { // Reset other beacon counts
+                                        if (!otherBeaconName.equals(beaconName)) {
+                                            beaconCount.put(otherBeaconName, 0);
+                                        }
+                                    }
+                                    for (String otherBeaconName : beaconCountSideBySide.keySet()) { // Reset other beacon SBS count
+                                        if (!otherBeaconName.equals(beaconName)) {
+                                            beaconCountSideBySide.put(otherBeaconName, 0);
+                                        }
+                                    }
+
+                                    countSBS = 0; // Reset the countSBS
+                                    count = 0;  // Reset the count
+                                }
+                            }
+//
+                        }
+
+                    } else if (currentRss < tempRssThreshold) { // If condition is ineffective, but I added it for readability
+
+                        // Punish beacon adjacency counts( count & countSBS) when we receive weak rssi from the beacon.
+                        Integer countFar = beaconCountFar.get(beaconName);
+                        countFar++;
+                        beaconCountFar.put(beaconName, countFar);
+                        if (count > 0) {
+                            count -= 2;
+                        }
+                        if (countSBS > 0) {
+                            countSBS -= 2;
+                        }
+                        if (countFar >= naviSettings.maxCountFar) {
+                            beaconCountFar.put(beaconName, 0);
+                            countSBS = 0;
+                            count = 0;
+                        }
+                    }
+
+                    beaconCount.put(beaconName, count);
+                    beaconCountSideBySide.put(beaconName, countSBS);
+                }
+
+
+            } catch (Exception e) {
+                Log.e(this.getClass().getSimpleName(), e.getMessage());
+            } finally {
+                _mutex.unlock();
+            }
+
+
+        }
     }
 }
