@@ -51,6 +51,7 @@
 <script src="js/easy-button.js" type="text/javascript"></script>
 <script src="js/grid-toolbar.js" type="text/javascript"></script>
 <script src="js/leaflet.rotatedMarker.js"></script>
+<script src="js/leaflet-triangle-marker.min.js"></script>
 <script type="text/javascript">
 
 
@@ -84,8 +85,10 @@
 
     var arbitraryMarkersLayer = L.featureGroup().addTo(map);
     var pathLines =  L.featureGroup().addTo(map);
+    var particlesLayer = L.featureGroup().addTo(map);
 
     latlng = [-320,330];
+    heading = 0;
 //    latlng = [0,-150];
     map.setView(latlng, -0.5);
 
@@ -99,7 +102,7 @@
     marker.addTo(map);
 
     marker.setRotationOrigin("center center");
-    marker.setRotationAngle(180);
+    marker.setRotationAngle(heading);
 
     map.on('click', function (e) {
         console.log(e.latlng.lat + "," + e.latlng.lng);
@@ -383,12 +386,47 @@ function clearPathLines(){
     pathLines = L.featureGroup().addTo(map);
 }
 
+function clearParticlesLayer(){
+    map.removeLayer(particlesLayer);
+    particlesLayer = L.featureGroup().addTo(map);
+}
+
 function clearArbitraryMarkers(){
     map.removeLayer(arbitraryMarkersLayer);
     arbitraryMarkersLayer = L.featureGroup().addTo(map);
 }
 
+var particlesM;
 
+function showParticles(particles){
+    particlesM = particles;
+//    var particles = ParticlesDataInterface.getData();
+    clearParticlesLayer();
+
+    var renderer = L.canvas();
+    particles.forEach(function(particle, index){
+        latLng = L.latLng(particle[0], particle[1]),
+        myTriangleMarker = L.triangleMarker(latLng, {
+            renderer:   renderer,   // your canvas renderer (default: L.canvas())
+            rotation:   particle[2],         // triangle rotation in degrees (default: 0)
+            width:      4,         // width of the base of triangle (default: 24)
+            height:     4,          // height of triangle (default: 24)
+            color:      'red',
+        }).addTo(particlesLayer);
+    });
+}
+
+sampleParticles = [
+    [
+        0,0,'90.0',
+    ],
+    [
+        '100','0.0',0,
+    ],
+    [
+        -50,'-50',45,
+    ]
+]
 
 </script>
 </body>

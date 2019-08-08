@@ -1,4 +1,4 @@
-package ir.parsiot.pokdis.MotionDna;
+package ir.parsiot.pokdis.Localization.MotionDna;
 
 import android.annotation.TargetApi;
 import android.app.Notification;

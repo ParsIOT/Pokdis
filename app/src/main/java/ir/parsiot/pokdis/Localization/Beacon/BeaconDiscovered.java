@@ -1,4 +1,4 @@
-package ir.parsiot.pokdis.beacon;
+package ir.parsiot.pokdis.Localization.Beacon;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import ir.parsiot.pokdis.Constants.Constants;
 
@@ -114,7 +112,7 @@ public class BeaconDiscovered implements BeaconConsumer {
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
 
                 if (beacons.size() > 0) {
-                    Log.i("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beacons.size());
+//                    Log.i("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beacons.size());
 
                     //covert collection<beacon> to list<beacon> for access to beacons
                     List<Beacon> list = new ArrayList<Beacon>(beacons);
@@ -389,7 +387,7 @@ public class BeaconDiscovered implements BeaconConsumer {
                     });
 
                     for (Beacon beacon : beaconList) {
-                        Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beaconList.toString());
+//                        Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beaconList.toString());
                             final String beaconName = beacon.getBluetoothAddress();
                             HashMap<String, Double[]> beaconCoordinates = beaconLocations.beaconCoordinates;
                             if (beaconCoordinates.containsKey(beaconName)){

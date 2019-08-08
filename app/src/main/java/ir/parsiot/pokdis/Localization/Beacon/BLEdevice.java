@@ -1,4 +1,4 @@
-package ir.parsiot.pokdis.beacon;
+package ir.parsiot.pokdis.Localization.Beacon;
 
 import ir.parsiot.pokdis.Constants.Constants;
 

@@ -1,4 +1,4 @@
-package ir.parsiot.pokdis.beacon;
+package ir.parsiot.pokdis.Localization.Beacon;
 
 public class RssiList {
     private  int MAX_RSSI_LIST_SIZE =6;

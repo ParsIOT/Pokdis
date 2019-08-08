@@ -1,9 +1,4 @@
-package ir.parsiot.pokdis.MotionDna;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+package ir.parsiot.pokdis.Localization.MotionDna;
 
 import ir.parsiot.pokdis.map.MapConsts;
 

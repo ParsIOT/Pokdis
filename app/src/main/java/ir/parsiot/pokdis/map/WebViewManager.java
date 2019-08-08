@@ -13,6 +13,9 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 
+import org.json.JSONArray;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -37,7 +40,7 @@ public class WebViewManager {
     private ScanModeEnum scanMode;
     private OnWebViewClickListener onWebViewClickListener;
     private String tagToJS;
-
+//    private ParticlesDataInterface particlesDataInterface = new ParticlesDataInterface();
     private String loctionOfMarker = MapConsts.initLocation;
 
     public WebViewManager(WebView webView) {
@@ -49,6 +52,15 @@ public class WebViewManager {
 
     }
 
+    public interface LocationUpdateCallback {
+        public void onLocationUpdate(String locationXY, String heading);
+        public void onLocationUpdate(String locationXY);
+        public void onHeadingUpdate(String locationXY);
+        public void onUpdateParticles(ArrayList<ArrayList<String>> particles);
+    }
+
+
+
     public void setScanMode(ScanModeEnum scanMode) {
         this.scanMode = scanMode;
     }
@@ -56,6 +68,18 @@ public class WebViewManager {
     public void setContext(Context context) {
         this.context = context;
     }
+
+//    final class ParticlesDataInterface {
+//        ArrayList<ArrayList<String>> particles = new ArrayList<ArrayList<String>>();
+//        public void changeData(ArrayList<ArrayList<String>> particles){
+//            this.particles = particles;
+//        }
+//
+//        @JavascriptInterface
+//        public ArrayList<ArrayList<String>> getData() {
+//            return particles;
+//        }
+//    }
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     public void setupManager(Context context, ScanModeEnum scanMode, OnWebViewClickListener listener) {
@@ -66,7 +90,7 @@ public class WebViewManager {
         mWebSettings.setJavaScriptEnabled(true);
         webView.loadUrl("file:///android_asset/leaflet/map.html");
         webView.addJavascriptInterface(new WebAppInterface(context), "Android");
-
+//        webView.addJavascriptInterface(particlesDataInterface, "ParticlesDataInterface");
 
     }
 
@@ -169,6 +193,21 @@ public class WebViewManager {
         }
     }
 
+
+
+    public void updateParticles(ArrayList<ArrayList<String>> particles){
+//        particlesDataInterface.changeData(particles);
+        final String js_location = String.format("javascript:showParticles(%s)",new JSONArray(particles));
+        //  webView.loadUrl(js_location);
+        if (context != null && webView != null) {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    webView.loadUrl(js_location);
+                }
+            });
+        }
+    }
 
     public String getLoctionOfMarker() {
         return loctionOfMarker;

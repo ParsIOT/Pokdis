@@ -1,12 +1,12 @@
-package ir.parsiot.pokdis.MotionDna;
+package ir.parsiot.pokdis.Localization.MotionDna;
 
 public class Utils {
     public static double Convert2zeroto360(double h) {
         while (true) {
             if (h < 0) {
-                h += 360;
-            } else if (h > 360) {
-                h -= 360;
+                h += 360d;
+            } else if (h > 360d) {
+                h -= 360d;
             } else {
                 return h;
             }
@@ -17,7 +17,7 @@ public class Utils {
         double diff = 0;
         diff = Math.abs(d1 - d2);
         if (diff > 180) {
-            diff = 365 - diff;
+            diff = 360 - diff;
         }
         return diff;
     }

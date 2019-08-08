@@ -6,6 +6,8 @@ import java.util.Map;
 
 public class MapConsts {
     public static double scale = 100;
+    public static int MAP_WIDTH = 909 , MAP_HEIGHT = 769;
+
 
     // Note: change init location(latlng variable) in map.html too.
     public static double initHeading = 90.0;
@@ -15,6 +17,14 @@ public class MapConsts {
         ArrayList<Float> initLocFloat = new ArrayList<Float>();
         initLocFloat.add(Float.valueOf(loc[0]));
         initLocFloat.add(Float.valueOf(loc[1]));
+        return initLocFloat;
+    }
+
+    public static ArrayList<Double> getInitLocationDouble(){
+        String[] loc = initLocation.split(",");
+        ArrayList<Double> initLocFloat = new ArrayList<Double>();
+        initLocFloat.add(Double.valueOf(loc[0]));
+        initLocFloat.add(Double.valueOf(loc[1]));
         return initLocFloat;
     }
 
