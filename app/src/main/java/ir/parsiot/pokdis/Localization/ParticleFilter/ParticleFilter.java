@@ -7,8 +7,10 @@ import java.util.Random;
 import static ir.parsiot.pokdis.Localization.ParticleFilter.ParticleFilterMath.circle;
 
 public class ParticleFilter {
-    Particle[] particles;
+    ArrayList<Particle> particles;
     int numParticles = 0;
+    int numInitParticles = 0;
+
     Random gen = new Random();
     private  ArrayList<Double> initScatterFactor;
     public int worldWidth;
@@ -20,6 +22,7 @@ public class ParticleFilter {
 
 
     public ParticleFilter(int numParticles, ArrayList<Double> initScatterFactor, HashMap<String, Double[]> landmarks, int width, int height) {
+        this.numInitParticles = numParticles;
         this.numParticles = numParticles;
         this.initScatterFactor = initScatterFactor;
         this.worldWidth = width;
@@ -38,7 +41,7 @@ public class ParticleFilter {
             throw new Exception("Should setNoise before createParticles");
         }
 
-        particles = new Particle[numParticles];
+        particles = new ArrayList<Particle>();
         gen = new Random();
 
         for (int i = 0; i < numParticles; i++) {
@@ -46,15 +49,26 @@ public class ParticleFilter {
             particleInitState.add(initState.get(0) + initScatterFactor.get(0) * (gen.nextFloat()-0.5));
             particleInitState.add(initState.get(1) + initScatterFactor.get(1) * (gen.nextFloat()-0.5));
             particleInitState.add(circle(initState.get(2) + initScatterFactor.get(2) * (gen.nextFloat()-0.5)));
-            particles[i] = new Particle(particleInitState, this.landmarks, this.worldWidth, this.worldHeight, Fnoise, Tnoise, Snoise);
+            particles.add(new Particle(particleInitState, this.landmarks, this.worldWidth, this.worldHeight, Fnoise, Tnoise, Snoise));
         }
     }
 
 
     public void move(Double dx, Double dy, Double dh) {
-        for (int i = 0; i < numParticles; i++) {
-            particles[i].move(dx, dy, dh);
+        ArrayList<Particle> tempParticles = new ArrayList<Particle>();
+        this.numParticles = 0;
+
+        for (Particle particle: this.particles){
+            Double[][] collideWall = particle.move(dx, dy, dh);
+            if (collideWall == null){
+                tempParticles.add(particle);
+                this.numParticles++;
+            }
         }
+        if (this.numParticles == minParticleThreshold){
+            resample()
+        }
+        particles = tempParticles;
     }
 
 //    public void resample(Double[] measurement) throws Exception {
@@ -83,10 +97,10 @@ public class ParticleFilter {
 
 
     public Particle getBestParticle() {
-        Particle particle = particles[0];
+        Particle particle = particles.get(0);
         for (int i = 0; i < numParticles; i++) {
-            if (particles[i].probability > particle.probability) {
-                particle = particles[i];
+            if (particles.get(i).probability > particle.probability) {
+                particle = particles.get(i);
             }
         }
         return particle;
@@ -96,10 +110,12 @@ public class ParticleFilter {
         Particle p = new Particle();
         Double x = 0d, y = 0d, h = 0d, prob = 0d;
         for(int i=0;i<numParticles;i++) { //Todo: probability must be multiply to x,y and h
-            x += particles[i].x;
-            y += particles[i].y;
-            h += particles[i].h;
-            prob += particles[i].probability;
+
+            Particle particle = particles.get(i);
+            x += particle.x;
+            y += particle.y;
+            h += particle.h;
+            prob += particle.probability;
         }
         x /= numParticles;
         y /= numParticles;
@@ -111,7 +127,7 @@ public class ParticleFilter {
 //            Logger.getLogger(Particle.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        p.setNoise(particles[0].Fnoise, particles[0].Tnoise, particles[0].Snoise);
+        p.setNoise(particles.get(0).Fnoise, particles.get(0).Tnoise, particles.get(0).Snoise);
 
         return p;
     }
@@ -132,7 +148,7 @@ public class ParticleFilter {
     public String toString() {
         String res = "";
         for (int i = 0; i < numParticles; i++) {
-            res += particles[i].toString() + "\n";
+            res += particles.get(i).toString() + "\n";
         }
         return res;
     }

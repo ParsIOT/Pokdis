@@ -285,7 +285,7 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
             String heading = String.format("%.2f", newMotionstate.get(2));
 
             if (!(locationXY.equals(lastLocationXY) && heading.equals(lastHeading))) {
-                Log.e("updateLocationAndH", locationXY);
+//                Log.e("heading ", heading);
                 pfFilter.onSensedMotionData(newMotionstate);
 //
 //                locationUpdateCallback.onLocationUpdate(locationXY, heading);

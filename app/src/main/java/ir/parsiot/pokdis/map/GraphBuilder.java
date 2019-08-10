@@ -8,8 +8,8 @@ public class GraphBuilder {
 
     public GraphBuilder() {
 
-
-         graph = new Graph();
+        // Route:
+        graph = new Graph();
 
 
         graph.addEdge("1","2");
@@ -31,11 +31,6 @@ public class GraphBuilder {
 
         graph.addEdge("4","8");
         graph.addEdge("8","12");
-
-
-
-
-
 
     }
 

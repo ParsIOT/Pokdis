@@ -14,7 +14,7 @@ public class ParticleFilterRunner {
     private int SHOW_PARTICLE_COUNTER_THRESHOLD= 50;
 
     HashMap<String, Double[]> beaconCoordinates = BeaconLocations.beaconCoordinates;
-    final int NUM_PARTICLES = 2000;
+    final int NUM_PARTICLES = 2;
     double Fnoise=0.05d, Tnoise=0.05d, Snoise=5d;
     ArrayList<Double> initScatterFactor = new ArrayList<Double>(){{
         add(400d);

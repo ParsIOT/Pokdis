@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import ir.parsiot.pokdis.map.MapConsts;
+
+import static ir.parsiot.pokdis.Localization.MotionDna.Utils.Convert2zeroto360;
 import static ir.parsiot.pokdis.Localization.ParticleFilter.ParticleFilterMath.circle;
 
 public class Particle {
@@ -14,6 +17,8 @@ public class Particle {
     public int worldHeight;
     public double probability = 0;
     public HashMap<String, Double[]> landmarks;
+
+    private static MapConsts mapConsts = new MapConsts();
     Random random = new Random();
 
     public Particle(ArrayList<Double> initState, HashMap<String, Double[]> landmarks, int width, int height, Double Fnoise, Double Tnoise, Double Snoise) {
@@ -29,6 +34,10 @@ public class Particle {
         x = initState.get(0);
         y = initState.get(1);
         h = initState.get(2);
+    }
+
+    public Double get_carteian_heading(){
+        return Convert2zeroto360(Convert2zeroto360(-1 * 180));
     }
 
     public Particle(){
@@ -83,11 +92,16 @@ public class Particle {
 //        y = circle(y, (double)worldHeight);
 //    }
 
-    public void move(Double dx, Double dy, Double dh) {
+    public Double[][] move(Double dx, Double dy, Double dh) {
         h += dh + (Double) random.nextGaussian() * Tnoise;
         h = circle(h);
+
+        Double lastx = x;
+        Double lasty = y;
         x += dx + random.nextGaussian() * Fnoise;
         y += dy + random.nextGaussian() * Fnoise;
+        Double[][] collidedWall = mapConsts.wallGraph.Get_collision(new Double[]{lastx, lasty}, new Double[]{x, y});
+        return collidedWall;
     }
 
     public double measurementProb(Double[] measurement) {
