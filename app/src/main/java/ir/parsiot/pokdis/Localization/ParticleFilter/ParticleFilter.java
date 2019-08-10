@@ -43,9 +43,9 @@ public class ParticleFilter {
 
         for (int i = 0; i < numParticles; i++) {
             ArrayList<Double> particleInitState = new ArrayList<Double>();
-            particleInitState.add(initState.get(0) + initScatterFactor.get(0) * gen.nextFloat());
-            particleInitState.add(initState.get(1) + initScatterFactor.get(1) * gen.nextFloat());
-            particleInitState.add(circle(initState.get(2) + initScatterFactor.get(2) * gen.nextFloat()));
+            particleInitState.add(initState.get(0) + initScatterFactor.get(0) * (gen.nextFloat()-0.5));
+            particleInitState.add(initState.get(1) + initScatterFactor.get(1) * (gen.nextFloat()-0.5));
+            particleInitState.add(circle(initState.get(2) + initScatterFactor.get(2) * (gen.nextFloat()-0.5)));
             particles[i] = new Particle(particleInitState, this.landmarks, this.worldWidth, this.worldHeight, Fnoise, Tnoise, Snoise);
         }
     }
@@ -95,7 +95,7 @@ public class ParticleFilter {
     public Particle getAverageParticle() {
         Particle p = new Particle();
         Double x = 0d, y = 0d, h = 0d, prob = 0d;
-        for(int i=0;i<numParticles;i++) {
+        for(int i=0;i<numParticles;i++) { //Todo: probability must be multiply to x,y and h
             x += particles[i].x;
             y += particles[i].y;
             h += particles[i].h;

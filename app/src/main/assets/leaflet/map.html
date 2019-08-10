@@ -408,7 +408,7 @@ function showParticles(particles){
         latLng = L.latLng(particle[0], particle[1]),
         myTriangleMarker = L.triangleMarker(latLng, {
             renderer:   renderer,   // your canvas renderer (default: L.canvas())
-            rotation:   particle[2],         // triangle rotation in degrees (default: 0)
+            rotation:   particle[2]-90.0,         // triangle rotation in degrees (default: 0)
             width:      4,         // width of the base of triangle (default: 24)
             height:     4,          // height of triangle (default: 24)
             color:      'red',

@@ -14,12 +14,12 @@ public class ParticleFilterRunner {
     private int SHOW_PARTICLE_COUNTER_THRESHOLD= 50;
 
     HashMap<String, Double[]> beaconCoordinates = BeaconLocations.beaconCoordinates;
-    final int NUM_PARTICLES = 20;
-    double Fnoise=0.05d, Tnoise=0.05d, Snoise=4d;
+    final int NUM_PARTICLES = 2000;
+    double Fnoise=0.05d, Tnoise=0.05d, Snoise=5d;
     ArrayList<Double> initScatterFactor = new ArrayList<Double>(){{
-        add(100d);
-        add(100d);
-        add(10d);
+        add(400d);
+        add(400d);
+        add(40d);
     }
     };
 
@@ -50,7 +50,7 @@ public class ParticleFilterRunner {
         Double dh = newMotionState.get(2) - lastMotionState.get(2);
         lastMotionState = newMotionState;
 
-        filter.move(dx, dy, dh); // Todo : This function may take times, So we should run particlefilterRunner on a thread
+        filter.move(dx, dy, dh); // Todo : This function may takFe times, So we should run particlefilterRunner on a thread
 
         Particle resParticle = filter.getAverageParticle();
 

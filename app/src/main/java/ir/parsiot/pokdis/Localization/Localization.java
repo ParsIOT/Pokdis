@@ -275,17 +275,19 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
         if (this.locationUpdateCallback != null && pfFilter != null) {
             MotionDna.Location location = motionDna.getLocation();
             ArrayList<Double> newMotionstate = new ArrayList<Double>();
-            newMotionstate.add(location.localLocation.x * naviSettings.scale + MapConsts.getInitLocationFloat().get(0));
-            newMotionstate.add(location.localLocation.y * naviSettings.scale + MapConsts.getInitLocationFloat().get(1));
-            newMotionstate.add(Convert2zeroto360(-1 * (Convert2zeroto360(-1 * location.heading) + MapConsts.initHeading)));
-
+            newMotionstate.add(location.localLocation.y * naviSettings.scale + MapConsts.getInitLocationFloat().get(0));
+            newMotionstate.add(location.localLocation.x * naviSettings.scale + MapConsts.getInitLocationFloat().get(1));
+//            newMotionstate.add(Convert2zeroto360(-1 * (Convert2zeroto360(-1 * location.heading) + MapConsts.initHeading)));
+            newMotionstate.add(
+                    Convert2zeroto360(-1 * (Convert2zeroto360(Convert2zeroto360(-1 * location.heading) + 90.0D)) + 180 - MapConsts.initHeading)
+            );
             String locationXY = String.format("%.2f,%.2f", newMotionstate.get(0), newMotionstate.get(1));
             String heading = String.format("%.2f", newMotionstate.get(2));
 
             if (!(locationXY.equals(lastLocationXY) && heading.equals(lastHeading))) {
                 Log.e("updateLocationAndH", locationXY);
                 pfFilter.onSensedMotionData(newMotionstate);
-
+//
 //                locationUpdateCallback.onLocationUpdate(locationXY, heading);
             }
         }
