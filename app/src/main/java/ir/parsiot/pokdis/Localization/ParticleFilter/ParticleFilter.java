@@ -59,7 +59,7 @@ public class ParticleFilter {
                 Double[] xy = new Double[]{y,x};
 
                 if(!mapConsts.mapBorderRect.inArea(xy)){
-                    Log.d("ParticleFilter", mapConsts.mapBorderRect.toString()+" Particle is in denied areas1 "+xy.toString());
+//                    Log.d("ParticleFilter", mapConsts.mapBorderRect.toString()+" Particle is in denied areas1 "+xy.toString());
 //                    mapConsts.mapBorderRect.inArea(xy);
                     continue;
                 }

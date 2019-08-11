@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements WebViewManager.Lo
 
             // Starts a foreground service to ensure that the
             // App continues to sample the sensors in background
-            localization = new Localization(this, getPackageManager(), getApplicationContext());
+            localization = new Localization(this, getPackageManager(), getApplicationContext(), this);
             localization.InitAndStart();
         }
 

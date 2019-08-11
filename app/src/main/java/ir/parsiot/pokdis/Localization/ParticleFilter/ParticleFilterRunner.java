@@ -14,10 +14,10 @@ public class ParticleFilterRunner extends Thread {
     private static final String TAG = "ParticleFilterRunner";
     ParticleFilter filter;
     private int ShowParticleCounter = 0;
-    private int SHOW_PARTICLE_COUNTER_THRESHOLD = 50;
+    private int SHOW_PARTICLE_COUNTER_THRESHOLD = 10;
 
     HashMap<String, Double[]> beaconCoordinates = BeaconLocations.beaconCoordinates;
-    final int NUM_PARTICLES = 20;
+    final int NUM_PARTICLES = 400;
     double Fnoise = 0.05d, Tnoise = 0.05d, Snoise = 5d;
     ArrayList<Double> initScatterFactor = new ArrayList<Double>() {
         {
@@ -35,9 +35,9 @@ public class ParticleFilterRunner extends Thread {
     ArrayList<Double> lastMotionState = new ArrayList<Double>();
     ArrayList<Double> newMotionState = new ArrayList<Double>();
     ParticleFilterCallback callback;
-    Context appContext;
+    Activity appContext;
 
-    public ParticleFilterRunner(ParticleFilterCallback callback, Context appContext) {
+    public ParticleFilterRunner(ParticleFilterCallback callback, Activity appContext) {
         this.callback = callback;
         this.appContext = appContext;
         lastMotionState = MapConsts.getInitLocationDouble();
@@ -135,6 +135,7 @@ public class ParticleFilterRunner extends Thread {
     private void resumeRunner() {
         synchronized (semaphore) {
             mPaused = false;
+            semaphore.notifyAll();
         }
     }
 

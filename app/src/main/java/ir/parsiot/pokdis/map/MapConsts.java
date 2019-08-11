@@ -41,15 +41,13 @@ public class MapConsts {
     //    public static String initLocation = "0,-150";
     public static float epsilon = 0.01f;
     public HashMap<String, String> vertexOfGraph;
-    public HashMap<String, String> wallGraphVertexes;
-    public ArrayList<ArrayList<String>> wallGraphEdges;
 
     public RectObstacle mapBorderRect;
     public ArrayList<Double[][]> standaloneWalls;
     public ArrayList<Double[][]> obstacleVertexes;
     public ArrayList<Double[][]> allWalls = new ArrayList<Double[][]>();
     public ArrayList<RectObstacle> rectObstacles = new ArrayList<RectObstacle>();
-    public static WallGraph wallGraph;
+    public WallGraph wallGraph;
 
     // vertex location on map
     public MapConsts() {

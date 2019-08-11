@@ -1,5 +1,6 @@
 package ir.parsiot.pokdis.Localization;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -104,14 +105,18 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
     }
 
 
-    public Localization(WebViewManager.LocationUpdateCallback locationUpdateCallback, PackageManager packageManager, Context context) {
+    public Localization(WebViewManager.LocationUpdateCallback locationUpdateCallback, PackageManager packageManager, Context context, Activity activity) {
         this.locationUpdateCallback = locationUpdateCallback;
         this.packageManager = packageManager;
         this.context = context;
 
-        pfFilter = new ParticleFilterRunner(this, context);
-        pfFilter.startRunner();
-
+        pfFilter = new ParticleFilterRunner(this, activity);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                pfFilter.startRunner();
+            }
+        }, 2000);
 
         drawObstacleWalls();
         // Get location from beacon manager
@@ -138,7 +143,9 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
 
     public void onDestory() {
         //for particle filter runner
-        pfFilter.stopRunner();
+        if (pfFilter != null){
+            pfFilter.stopRunner();
+        }
 
         //for unbind beaconDiscovered
         if (beaconDiscovered != null) {
