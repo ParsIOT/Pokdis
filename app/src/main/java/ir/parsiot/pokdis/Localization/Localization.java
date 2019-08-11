@@ -109,7 +109,7 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
         this.context = context;
 
         pfFilter = new ParticleFilterRunner(this);
-
+        pfFilter.startRunner();
         // Get location from beacon manager
         try {
             beaconDiscovered = new BeaconDiscovered(this.context);
@@ -133,6 +133,9 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
     }
 
     public void onDestory() {
+        //for particle filter runner
+        pfFilter.stopRunner();
+
         //for unbind beaconDiscovered
         if (beaconDiscovered != null) {
             try {

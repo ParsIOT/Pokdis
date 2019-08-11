@@ -65,9 +65,9 @@ public class ParticleFilter {
                 this.numParticles++;
             }
         }
-        if (this.numParticles == minParticleThreshold){
-            resample()
-        }
+//        if (this.numParticles == minParticleThreshold){
+//            resample();
+//        }
         particles = tempParticles;
     }
 
