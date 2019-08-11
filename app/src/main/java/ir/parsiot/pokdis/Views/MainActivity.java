@@ -39,6 +39,8 @@ import com.orhanobut.hawk.Hawk;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ir.parsiot.pokdis.Constants.Constants;
 import ir.parsiot.pokdis.Enums.ScanModeEnum;
@@ -51,6 +53,7 @@ import ir.parsiot.pokdis.map.MapDetail;
 import ir.parsiot.pokdis.map.GraphBuilder;
 import ir.parsiot.pokdis.map.Objects.Graph;
 import ir.parsiot.pokdis.map.Objects.Point;
+import ir.parsiot.pokdis.map.WallGraph.RectObstacle;
 import ir.parsiot.pokdis.map.WebViewManager;
 
 import static ir.parsiot.pokdis.Constants.Constants.MAX_PROXIMITY_TO_ROUTE_THRESHOLD;
@@ -191,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements WebViewManager.Lo
             localization = new Localization(this, getPackageManager(), getApplicationContext());
             localization.InitAndStart();
         }
+
     }
 
     protected void initBottomBar(final Context context, int iconNum) {
@@ -426,7 +430,6 @@ public class MainActivity extends AppCompatActivity implements WebViewManager.Lo
     }
 
 
-
     // Draw line between current location and a destination point
     void pathToPoint(final String dstPoint) {
         new Handler().postDelayed(new Runnable() {
@@ -447,22 +450,31 @@ public class MainActivity extends AppCompatActivity implements WebViewManager.Lo
 
 
     @Override
-    public void onLocationUpdate(String locationXY, String heading){
+    public void onLocationUpdate(String locationXY, String heading) {
         webViewManager.updateLocationAndHeading(locationXY, heading);
     }
 
     @Override
-    public void onLocationUpdate(String locationXY){
+    public void onLocationUpdate(String locationXY) {
         webViewManager.updateLocation(locationXY);
     }
 
+    public void drawConstLine(final String dot1, final String dot2) {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                webViewManager.drawConstLine(dot1, dot2);
+            }
+        }, 3000);
+    }
+
     @Override
-    public void onHeadingUpdate(String heading){
+    public void onHeadingUpdate(String heading) {
         webViewManager.updateHeading(heading);
     }
 
     @Override
-    public void onUpdateParticles(ArrayList<ArrayList<String>> particles){
+    public void onUpdateParticles(ArrayList<ArrayList<String>> particles) {
         webViewManager.updateParticles(particles);
     }
 

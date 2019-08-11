@@ -13,21 +13,17 @@ public class Particle {
 
     public Double Fnoise, Tnoise, Snoise;
     public Double x, y, h;
-    public int worldWidth;
-    public int worldHeight;
     public double probability = 0;
     public HashMap<String, Double[]> landmarks;
 
     private static MapConsts mapConsts = new MapConsts();
     Random random = new Random();
 
-    public Particle(ArrayList<Double> initState, HashMap<String, Double[]> landmarks, int width, int height, Double Fnoise, Double Tnoise, Double Snoise) {
+    public Particle(ArrayList<Double> initState, HashMap<String, Double[]> landmarks, Double Fnoise, Double Tnoise, Double Snoise) {
         this.landmarks = landmarks;
         this.Fnoise = Fnoise;
         this.Tnoise = Tnoise;
         this.Snoise = Snoise;
-        worldHeight = height;
-        worldWidth = width;
 //        x = random.nextDouble() * width;
 //        y = random.nextDouble() * height;
 //        h = random.nextDouble() * 360d;
@@ -45,8 +41,6 @@ public class Particle {
         this.Fnoise = 0d;
         this.Tnoise = 0d;
         this.Snoise = 0d;
-        worldHeight = 0;
-        worldWidth = 0;
         x = 0d;
         y = 0d;
         h = 0d;
@@ -100,7 +94,7 @@ public class Particle {
         Double lasty = y;
         x += dx + random.nextGaussian() * Fnoise;
         y += dy + random.nextGaussian() * Fnoise;
-        Double[][] collidedWall = mapConsts.wallGraph.Get_collision(new Double[]{lastx, lasty}, new Double[]{x, y});
+        Double[][] collidedWall = mapConsts.wallGraph.getCollision(new Double[]{lastx, lasty}, new Double[]{x, y});
         return collidedWall;
     }
 

@@ -57,6 +57,8 @@ public class WebViewManager {
         public void onLocationUpdate(String locationXY);
         public void onHeadingUpdate(String locationXY);
         public void onUpdateParticles(ArrayList<ArrayList<String>> particles);
+//        public void onDrawRect(String topLeftDot, String bottomRightDot, String topRightDot, String bottomLeftDot);
+        public void drawConstLine(String dot1, String dot2);
     }
 
 
@@ -139,6 +141,8 @@ public class WebViewManager {
     }
 
     public void drawLine(String location1, String location2) {
+        Log.e("Line:"," "+location1+"  "+location2);
+
         final String js_location = String.format("javascript:drawLine(\"%s\",\"%s\")", location1, location2);
         //  webView.loadUrl(js_location);
         if (context != null) {
@@ -151,6 +155,30 @@ public class WebViewManager {
         }
 
     }
+
+    public void drawConstLine(String location1, String location2) {
+        Log.e("Line:"," "+location1+"  "+location2);
+
+        final String js_location = String.format("javascript:drawConstLine(\"%s\",\"%s\")", location1, location2);
+        //  webView.loadUrl(js_location);
+        if (context != null) {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    webView.loadUrl(js_location);
+                }
+            });
+        }
+
+    }
+
+
+//    public void drawRect(String topLeftDot, String bottomRightDot, String topRightDot, String bottomLeftDot){
+//        drawLine(topLeftDot, topRightDot);
+//        drawLine(topLeftDot, bottomLeftDot);
+//        drawLine(bottomRightDot, topRightDot);
+//        drawLine(bottomRightDot, bottomLeftDot);
+//    }
 
     public void updateLocation(String location) {
         loctionOfMarker = location;

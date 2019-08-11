@@ -31,6 +31,7 @@ import ir.parsiot.pokdis.Localization.ParticleFilter.ParticleFilterRunner;
 import ir.parsiot.pokdis.map.MapConsts;
 import ir.parsiot.pokdis.map.Objects.Graph;
 import ir.parsiot.pokdis.map.Objects.Point;
+import ir.parsiot.pokdis.map.WallGraph.RectObstacle;
 import ir.parsiot.pokdis.map.WebViewManager;
 
 import static android.os.SystemClock.elapsedRealtime;
@@ -110,14 +111,15 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
 
         pfFilter = new ParticleFilterRunner(this);
 
+        drawObstacleWalls();
         // Get location from beacon manager
         try {
-            beaconDiscovered = new BeaconDiscovered(this.context);
+//            beaconDiscovered = new BeaconDiscovered(this.context);
 
             //Todo: enable it when use beacon
 //            beaconDiscovered.startMonitoring();
 //            beaconDiscovered.startMonitoringNearMotionDna();
-            beaconDiscovered.setCallback(new MyBeaconCallback());
+//            beaconDiscovered.setCallback(new MyBeaconCallback());
 //            updateLocationJustBeacon();
         } catch (RuntimeException e) {
             Log.e("Error:", e.getMessage());
@@ -845,6 +847,29 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
             particlesData.add(particleStrList);
         }
         locationUpdateCallback.onUpdateParticles(particlesData);
+    }
+
+    public void drawObstacleWalls(){
+        MapConsts mapConsts = new MapConsts();
+        for(RectObstacle rectObstacle: mapConsts.rectObstacles){
+            ArrayList<ArrayList<String>> walls = new ArrayList<ArrayList<String>>();
+            for (Double[][] wall : rectObstacle.getWalls()){
+                String dot1 = String.format("%.2f,%.2f", wall[0][1], wall[0][0]);
+                String dot2 = String.format("%.2f,%.2f", wall[1][1], wall[1][0]);
+                Log.d("Obstacle1:",dot1 +" "+dot2);
+                locationUpdateCallback.drawConstLine(dot1, dot2);
+            }
+        }
+
+
+        ArrayList<ArrayList<String>> walls = new ArrayList<ArrayList<String>>();
+        for (Double[][] wall : mapConsts.mapBorderRect.getWalls()){
+            String dot1 = String.format("%.2f,%.2f", wall[0][1], wall[0][0]);
+            String dot2 = String.format("%.2f,%.2f", wall[1][1], wall[1][0]);
+            Log.d("Obstacle1:",dot1 +" "+dot2);
+            locationUpdateCallback.drawConstLine(dot1, dot2);
+        }
+
     }
 
 }

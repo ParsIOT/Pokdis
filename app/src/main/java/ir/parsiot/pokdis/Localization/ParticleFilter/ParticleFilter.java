@@ -1,8 +1,13 @@
 package ir.parsiot.pokdis.Localization.ParticleFilter;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+
+import ir.parsiot.pokdis.map.MapConsts;
+import ir.parsiot.pokdis.map.WallGraph.RectObstacle;
 
 import static ir.parsiot.pokdis.Localization.ParticleFilter.ParticleFilterMath.circle;
 
@@ -13,20 +18,18 @@ public class ParticleFilter {
 
     Random gen = new Random();
     private  ArrayList<Double> initScatterFactor;
-    public int worldWidth;
-    public int worldHeight;
     public HashMap<String, Double[]> landmarks;
     private Double Fnoise;
     private Double Tnoise;
     private Double Snoise;
 
+    private static MapConsts mapConsts = new MapConsts();
 
-    public ParticleFilter(int numParticles, ArrayList<Double> initScatterFactor, HashMap<String, Double[]> landmarks, int width, int height) {
+
+    public ParticleFilter(int numParticles, ArrayList<Double> initScatterFactor, HashMap<String, Double[]> landmarks) {
         this.numInitParticles = numParticles;
         this.numParticles = numParticles;
         this.initScatterFactor = initScatterFactor;
-        this.worldWidth = width;
-        this.worldHeight = height;
         this.landmarks = landmarks;
     }
 
@@ -46,10 +49,39 @@ public class ParticleFilter {
 
         for (int i = 0; i < numParticles; i++) {
             ArrayList<Double> particleInitState = new ArrayList<Double>();
-            particleInitState.add(initState.get(0) + initScatterFactor.get(0) * (gen.nextFloat()-0.5));
-            particleInitState.add(initState.get(1) + initScatterFactor.get(1) * (gen.nextFloat()-0.5));
+            Boolean isBeaconOk = false;
+            while(!isBeaconOk){
+                particleInitState.clear();
+
+                Double x = initState.get(0) + initScatterFactor.get(0) * (gen.nextFloat()-0.5);
+                Double y = initState.get(1) + initScatterFactor.get(1) * (gen.nextFloat()-0.5);
+//                particleInitState.add(initState.get(1) + initScatterFactor.get(1) * (gen.nextFloat()-0.5));
+                Double[] xy = new Double[]{y,x};
+
+                if(!mapConsts.mapBorderRect.inArea(xy)){
+                    Log.d("ParticleFilter", mapConsts.mapBorderRect.toString()+" Particle is in denied areas1 "+xy.toString());
+//                    mapConsts.mapBorderRect.inArea(xy);
+                    continue;
+                }
+
+                Boolean inRectObstacle = false;
+                for (RectObstacle rectObstacle: mapConsts.rectObstacles){
+                    if(rectObstacle.inArea(xy)){
+//                        Log.d("ParticleFilter", "Particle is in denied areas2");
+                        inRectObstacle = true;
+                        break;
+                    }
+                }
+                if (inRectObstacle){
+                    continue;
+                }
+
+                particleInitState.add(x);
+                particleInitState.add(y);
+                isBeaconOk = true;
+            }
             particleInitState.add(circle(initState.get(2) + initScatterFactor.get(2) * (gen.nextFloat()-0.5)));
-            particles.add(new Particle(particleInitState, this.landmarks, this.worldWidth, this.worldHeight, Fnoise, Tnoise, Snoise));
+            particles.add(new Particle(particleInitState, this.landmarks, Fnoise, Tnoise, Snoise));
         }
     }
 
@@ -65,9 +97,9 @@ public class ParticleFilter {
                 this.numParticles++;
             }
         }
-        if (this.numParticles == minParticleThreshold){
-            resample()
-        }
+//        if (this.numParticles == minParticleThreshold){
+//            resample()
+//        } //Todo: resmapling
         particles = tempParticles;
     }
 

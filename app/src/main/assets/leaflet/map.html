@@ -85,6 +85,7 @@
 
     var arbitraryMarkersLayer = L.featureGroup().addTo(map);
     var pathLines =  L.featureGroup().addTo(map);
+    var constLines =  L.featureGroup().addTo(map);
     var particlesLayer = L.featureGroup().addTo(map);
 
     latlng = [-320,330];
@@ -375,6 +376,40 @@ function drawLine(arg1,arg2){
 
 
 	}
+
+var testConstLine = [];
+	function drawConstLine(arg1,arg2){
+	   var pattern = /(.*),(.*)/;
+        var match = pattern.exec(arg1);
+        var x = match[1];
+        var y = match[2];
+ 	    match = pattern.exec(arg2);
+        var x2 = match[1];
+        var y2 = match[2];
+
+     var polylineOptions = {
+               color: 'blue',
+               weight: 7,
+               opacity: 0.6,
+		dashArray: '6,16'
+             };
+
+
+	var latlngs = Array();
+
+	//Get latlng from first marker
+	latlngs.push([x,y]);
+
+	//Get latlng from first marker
+	latlngs.push([x2,y2]);
+	var polyline = L.polyline(latlngs, polylineOptions).addTo(constLines);
+	testConstLine.push(latlngs);
+//    pathLines.push(polyline)
+	// zoom the map to the polyline
+//	map.fitBounds(polyline.getBounds());
+
+    	}
+
 
 function clearItemDetails(){
     clearPathLines();

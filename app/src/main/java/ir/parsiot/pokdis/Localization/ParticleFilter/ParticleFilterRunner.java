@@ -14,11 +14,11 @@ public class ParticleFilterRunner {
     private int SHOW_PARTICLE_COUNTER_THRESHOLD= 50;
 
     HashMap<String, Double[]> beaconCoordinates = BeaconLocations.beaconCoordinates;
-    final int NUM_PARTICLES = 2;
+    final int NUM_PARTICLES = 20;
     double Fnoise=0.05d, Tnoise=0.05d, Snoise=5d;
     ArrayList<Double> initScatterFactor = new ArrayList<Double>(){{
-        add(400d);
-        add(400d);
+        add(4000d);
+        add(4000d);
         add(40d);
     }
     };
@@ -32,7 +32,7 @@ public class ParticleFilterRunner {
         lastMotionState = MapConsts.getInitLocationDouble();
         lastMotionState.add(MapConsts.initHeading);
 
-        filter = new ParticleFilter(NUM_PARTICLES, initScatterFactor, beaconCoordinates, MapConsts.MAP_WIDTH, MapConsts.MAP_HEIGHT);
+        filter = new ParticleFilter(NUM_PARTICLES, initScatterFactor, beaconCoordinates);
         filter.setNoise(Fnoise, Tnoise, Snoise);
         try {
             filter.createParticles(lastMotionState);

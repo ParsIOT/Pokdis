@@ -7,28 +7,19 @@ public class WallGraph {
     HashMap<String, Double[]> wallGraphVertexes = new HashMap<String, Double[]>();
     ArrayList<ArrayList<String>> wallGraphEdge = new ArrayList<ArrayList<String>>();
 
-    public WallGraph(HashMap<String, String> wallGraphVertexes, ArrayList<ArrayList<String>> wallGraphEdge) {
-//        this.wallGraphVertexes = wallGraphVertexes;
-        for (String vertex : wallGraphVertexes.keySet()) {
-            String vertexDimStr = wallGraphVertexes.get(vertex);
+    Double[][][] walls;
 
-            String[] vertexDimsStrSplited = vertexDimStr.split(",");
-            Double[] vertexDims = new Double[]{
-                    Double.valueOf(vertexDimsStrSplited[0]),
-                    Double.valueOf(vertexDimsStrSplited[1]),
-            };
-            this.wallGraphVertexes.put(vertex, vertexDims);
-        }
-        this.wallGraphEdge = wallGraphEdge;
+    public WallGraph(Double[][][] walls) {
+        this.walls = walls;
     }
 
-    public Double[][] get_edge_vertexes(ArrayList<String> wall){
-        Double[][] vertexes = new Double[][]{
-                wallGraphVertexes.get(wall.get(0)),
-                wallGraphVertexes.get(wall.get(1)),
-        };
-        return vertexes;
-    }
+//    public Double[][] getEdgeVertexes(ArrayList<String> wall){
+//        Double[][] vertexes = new Double[][]{
+//                wallGraphVertexes.get(wall.get(0)),
+//                wallGraphVertexes.get(wall.get(1)),
+//        };
+//        return vertexes;
+//    }
 
     public boolean onSegment(Double[] p, Double[] q, Double[] r){
         if (q[0] <= Math.max(p[0], r[0]) && q[0] >= Math.min(p[0], r[0]) && q[1] <= Math.max(p[1], r[1]) && q[1] >= Math.min(p[1], r[1])){
@@ -51,7 +42,7 @@ public class WallGraph {
         }
     }
 
-    public boolean HaveIntersect(Double[][] line1, Double[][] line2){
+    public boolean haveIntersect(Double[][] line1, Double[][] line2){
         Double[] p1 = line1[0];
         Double[] q1 = line1[1];
         Double[] p2 = line2[0];
@@ -77,17 +68,15 @@ public class WallGraph {
     }
 
 
+    public Double[][] getCollision(final Double[] src, final Double[] dst){
+        for(Double[][] wall : this.walls){
 
-
-    public Double[][] Get_collision(final Double[] src, final Double[] dst){
-        for (ArrayList<String> wall: wallGraphEdge){
-            Double[][] edgeVertexes = get_edge_vertexes(wall);
             Double[][] relocationLine = new Double[][]{
                    src,
                    dst,
             };
-            if(HaveIntersect( edgeVertexes, relocationLine) ){
-                return edgeVertexes;
+            if(haveIntersect( wall, relocationLine) ){
+                return wall;
             }
         }
         return null;
