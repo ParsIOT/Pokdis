@@ -73,7 +73,7 @@ public class ParticleFilterRunner extends Thread {
             lastMotionState = newMotionState;
 
 
-        filter.move(dx, dy, dh); // Todo : This function may takFe times, So we should run particlefilterRunner on a thread
+            filter.move(dx, dy, dh); // Todo : This function may takFe times, So we should run particlefilterRunner on a thread
 
             Particle resParticle = filter.getAverageParticle();
 
@@ -115,6 +115,7 @@ public class ParticleFilterRunner extends Thread {
     private void resumeRunner() {
         synchronized (semaphore) {
             mPaused = false;
+            semaphore.notifyAll();
         }
     }
 
