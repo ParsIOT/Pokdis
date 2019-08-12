@@ -7,20 +7,20 @@ import java.util.Random;
 import ir.parsiot.pokdis.map.MapConsts;
 
 import static ir.parsiot.pokdis.Localization.MotionDna.Utils.Convert2zeroto360;
-import static ir.parsiot.pokdis.Localization.ParticleFilter.ParticleFilterMath.circle;
 
 public class Particle {
 
     public Double Fnoise, Tnoise, Snoise;
     public Double x, y, h;
-    public double probability = 0;
+    public float probability = 0;
     public HashMap<String, Double[]> landmarks;
 
     private static MapConsts mapConsts = new MapConsts();
     Random random = new Random();
 
-    public Particle(ArrayList<Double> initState, HashMap<String, Double[]> landmarks, Double Fnoise, Double Tnoise, Double Snoise) {
+    public Particle(ArrayList<Double> initState, float probability, HashMap<String, Double[]> landmarks, Double Fnoise, Double Tnoise, Double Snoise) {
         this.landmarks = landmarks;
+        this.probability = probability;
         this.Fnoise = Fnoise;
         this.Tnoise = Tnoise;
         this.Snoise = Snoise;
@@ -52,7 +52,7 @@ public class Particle {
         this.Snoise = Snoise;
     }
 
-    public void set(Double x, Double y, Double h, double prob) throws Exception {
+    public void set(Double x, Double y, Double h, float prob) throws Exception {
         this.x = x;
         this.y = y;
         this.h = h;
@@ -76,7 +76,7 @@ public class Particle {
 //            throw new Exception("Robot cannot move backwards");
 //        }
 //        h = h + turn + (Double)random.nextGaussian() * Tnoise;
-//        h = circle(h);
+//        h = Convert2zeroto360(h);
 //
 //        double dist = forward + random.nextGaussian() * Fnoise;
 //
@@ -88,13 +88,13 @@ public class Particle {
 
     public Double[][] move(Double dx, Double dy, Double dh) {
         h += dh + (Double) random.nextGaussian() * Tnoise;
-        h = circle(h);
+        h = Convert2zeroto360(h);
 
         Double lastx = x;
         Double lasty = y;
         x += dx + random.nextGaussian() * Fnoise;
         y += dy + random.nextGaussian() * Fnoise;
-        Double[][] collidedWall = mapConsts.wallGraph.getCollision(new Double[]{lastx, lasty}, new Double[]{x, y});
+        Double[][] collidedWall = mapConsts.wallGraph.getCollision(new Double[]{lasty, lastx}, new Double[]{y, x});
         return collidedWall;
     }
 

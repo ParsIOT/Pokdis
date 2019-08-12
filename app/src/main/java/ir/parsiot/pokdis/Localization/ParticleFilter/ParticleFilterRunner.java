@@ -17,13 +17,22 @@ public class ParticleFilterRunner extends Thread {
     private int SHOW_PARTICLE_COUNTER_THRESHOLD = 10;
 
     HashMap<String, Double[]> beaconCoordinates = BeaconLocations.beaconCoordinates;
-    final int NUM_PARTICLES = 400;
-    double Fnoise = 0.05d, Tnoise = 0.05d, Snoise = 5d;
+    public final int NUM_PARTICLES = 400;
+    public final int divisionResampleParticleNumThreshold = 3;
+    double Fnoise = 0.05d, Tnoise = 0.05d, Snoise = 0.05d;
     ArrayList<Double> initScatterFactor = new ArrayList<Double>() {
         {
             add(4000d);
             add(4000d);
             add(40d);
+        }
+    };
+
+    ArrayList<Double> resampleScatterFactor = new ArrayList<Double>() {
+        {
+            add(60d);
+            add(60d);
+            add(10d);
         }
     };
 
@@ -43,7 +52,7 @@ public class ParticleFilterRunner extends Thread {
         lastMotionState = MapConsts.getInitLocationDouble();
         lastMotionState.add(MapConsts.initHeading);
 
-        filter = new ParticleFilter(NUM_PARTICLES, initScatterFactor, beaconCoordinates);
+        filter = new ParticleFilter(NUM_PARTICLES, divisionResampleParticleNumThreshold, initScatterFactor, resampleScatterFactor, beaconCoordinates);
         filter.setNoise(Fnoise, Tnoise, Snoise);
         try {
             filter.createParticles(lastMotionState);
@@ -85,7 +94,7 @@ public class ParticleFilterRunner extends Thread {
             curState.add(resParticle.y);
             curState.add(resParticle.h);
 
-            Log.e("particleFilter", curState.toString());
+//            Log.e("particleFilter", curState.toString());
 
             if (appContext != null) {
                 ((Activity) appContext).runOnUiThread(new Runnable() {
@@ -98,7 +107,9 @@ public class ParticleFilterRunner extends Thread {
 //            callback.onLocationUpdate(curState.get(0), curState.get(1), curState.get(2));
 
             if (ShowParticleCounter > SHOW_PARTICLE_COUNTER_THRESHOLD) {
+
 //                callback.onParticleLocationUpdate(filter.getParticles());
+
                 if (appContext != null) {
                     ((Activity) appContext).runOnUiThread(new Runnable() {
                         @Override
@@ -107,6 +118,8 @@ public class ParticleFilterRunner extends Thread {
                         }
                     });
                 }
+
+
                 ShowParticleCounter = -1;
             }
             ShowParticleCounter++;
