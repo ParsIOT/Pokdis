@@ -227,12 +227,13 @@ public class ParticleFilter {
     private int[] systematic_resample() {
 
         Random random = new Random();
-        float rand = (float) (random.nextFloat()/ numInitParticles);
+//        float rand = (float) (random.nextFloat()/ numInitParticles);
         float splitLine = (float) (1.0 / numInitParticles);
 
         float[] positions = new float[numInitParticles];
         for (int i = 0; i < numInitParticles; i++) {
-            positions[i] = (float) (i * splitLine) + rand;
+//            positions[i] = (float) (i * splitLine) + rand;
+            positions[i] = (float) (i * splitLine) + (float) (random.nextFloat()/ numInitParticles);
         }
 
         float[] cumsumWeight = new float[numParticles];
