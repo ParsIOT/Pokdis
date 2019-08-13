@@ -1,11 +1,11 @@
 package ir.parsiot.pokdis.Localization.ParticleFilter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import ir.parsiot.pokdis.Localization.Beacon.BeaconLocations;
 import ir.parsiot.pokdis.map.MapConsts;
@@ -16,22 +16,25 @@ public class ParticleFilterRunner extends Thread {
     private int ShowParticleCounter = 0;
     private int SHOW_PARTICLE_COUNTER_THRESHOLD = 10;
 
-    HashMap<String, Double[]> beaconCoordinates = BeaconLocations.beaconCoordinates;
+    BeaconLocations beaconLocations = new BeaconLocations();
+    HashMap<String, Double[]> beaconCoordinates = beaconLocations.beaconCoordinates;
     public final int NUM_PARTICLES = 400;
     public final int divisionResampleParticleNumThreshold = 3;
-    double Fnoise = 0.05d, Tnoise = 0.05d, Snoise = 0.05d;
+    double Fnoise = 0.05d, Tnoise = 0.05d, Snoise = 100d;
     ArrayList<Double> initScatterFactor = new ArrayList<Double>() {
         {
-            add(4000d);
-            add(4000d);
+//            add(4000d);
+//            add(4000d);
+            add(100d);
+            add(100d);
             add(40d);
         }
     };
 
     ArrayList<Double> resampleScatterFactor = new ArrayList<Double>() {
         {
-            add(60d);
-            add(60d);
+            add(100d);
+            add(100d);
             add(10d);
         }
     };
@@ -42,9 +45,13 @@ public class ParticleFilterRunner extends Thread {
 
     ArrayList<Double> curState = new ArrayList<Double>();
     ArrayList<Double> lastMotionState = new ArrayList<Double>();
-    ArrayList<Double> newMotionState = new ArrayList<Double>();
+    ArrayList<Double> motionState = new ArrayList<Double>();
+    Boolean motionStateUpdated = false;
     ParticleFilterCallback callback;
     Activity appContext;
+
+    HashMap<String, Double> landmarkMeasurements = new HashMap<>();
+    Boolean landmarkMeasurementsUpdated = false;
 
     public ParticleFilterRunner(ParticleFilterCallback callback, Activity appContext) {
         this.callback = callback;
@@ -55,7 +62,8 @@ public class ParticleFilterRunner extends Thread {
         filter = new ParticleFilter(NUM_PARTICLES, divisionResampleParticleNumThreshold, initScatterFactor, resampleScatterFactor, beaconCoordinates);
         filter.setNoise(Fnoise, Tnoise, Snoise);
         try {
-            filter.createParticles(lastMotionState);
+//            filter.createParticles(lastMotionState);
+            filter.createParticles(MapConsts.constInitState);
         } catch (Exception ex) {
             Log.e("ParticleFilter", ex.getMessage());
         }
@@ -78,14 +86,23 @@ public class ParticleFilterRunner extends Thread {
                 }
             }
 
-            Double dx = newMotionState.get(0) - lastMotionState.get(0);
-            Double dy = newMotionState.get(1) - lastMotionState.get(1);
-            Double dh = newMotionState.get(2) - lastMotionState.get(2);
+            if (motionStateUpdated) {
+                Double dx = motionState.get(0) - lastMotionState.get(0);
+                Double dy = motionState.get(1) - lastMotionState.get(1);
+                Double dh = motionState.get(2) - lastMotionState.get(2);
 
-            lastMotionState = newMotionState;
+                lastMotionState = motionState;
 
+                filter.move(dx, dy, dh);
 
-            filter.move(dx, dy, dh); // Todo : This function may takFe times, So we should run particlefilterRunner on a thread
+                motionStateUpdated = false;
+            }
+            if (landmarkMeasurementsUpdated){
+
+                filter.applyLandmarkMeasurements(landmarkMeasurements);
+
+                landmarkMeasurementsUpdated = false;
+            }
 
             Particle resParticle = filter.getAverageParticle();
 
@@ -161,15 +178,20 @@ public class ParticleFilterRunner extends Thread {
     }
 
 
-    public void onSensedMotionData(ArrayList<Double> newMotionState) {
-        this.newMotionState = newMotionState;
+    public void onSensedMotionData(ArrayList<Double> motionState) {
+        this.motionState = motionState;
+        this.motionStateUpdated = true;
 //        Log.d("Pf thread:","OK");
         this.resumeRunner();
 //        this.start();
     }
 
-    public void onSensedLandmarkData(ArrayList<String> newMotionstate) {
 
+
+    public void onSensedLandmarkData(HashMap<String, Double> landmarkMeasurements) {
+        this.landmarkMeasurements = landmarkMeasurements;
+        this.landmarkMeasurementsUpdated = true;
+        this.resumeRunner();
     }
 
 

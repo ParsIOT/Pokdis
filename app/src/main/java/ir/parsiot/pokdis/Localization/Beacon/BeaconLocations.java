@@ -3,7 +3,7 @@ package ir.parsiot.pokdis.Localization.Beacon;
 import java.util.HashMap;
 
 public class BeaconLocations {
-  public static HashMap<String, Double[]> beaconCoordinates;
+  public HashMap<String, Double[]> beaconCoordinates;
 
 
 

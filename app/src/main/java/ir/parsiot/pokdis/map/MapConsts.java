@@ -15,12 +15,19 @@ import ir.parsiot.pokdis.map.WallGraph.WallGraph;
 
 public class MapConsts {
     public static double scale = 100;
-    public static int MAP_WIDTH = 909, MAP_HEIGHT = 769;
+//    public static int MAP_WIDTH = 909, MAP_HEIGHT = 769;
+    public static int MAP_WIDTH = 1320, MAP_HEIGHT = 1200;
 
 
     // Note: change init location(latlng variable) in map.html too.
     public static double initHeading = 90.0;
-    public static String initLocation = "-320,330";
+//    public static String initLocation = "-320,330";
+    public static String initLocation = "-500,490";
+    public static ArrayList<Double> constInitState = new ArrayList<Double>(){{
+        add(-500d);
+        add(490d);
+        add(90d);
+    }};
 
     public static ArrayList<Float> getInitLocationFloat() {
         String[] loc = initLocation.split(",");
@@ -71,10 +78,12 @@ public class MapConsts {
             // put("01:17:C5:97:37:39", new Double[]{700d,-888d }); //10
         }};
 
-//        Double[] leftTopBorderDot = new Double[]{340d,-450d};
-//        Double[] rightBottomBorderDot = new Double[]{-380d,405d};
-        Double[] leftTopBorderDot = new Double[]{-450d, 340d};
-        Double[] rightBottomBorderDot = new Double[]{405d, -380d};
+
+
+//        Double[] leftTopBorderDot = new Double[]{-450d, 340d};
+//        Double[] rightBottomBorderDot = new Double[]{405d, -380d};
+        Double[] leftTopBorderDot = new Double[]{-660d, 535d};
+        Double[] rightBottomBorderDot = new Double[]{595d, -600d};
 
         mapBorderRect = new RectObstacle(leftTopBorderDot, rightBottomBorderDot);
 
@@ -86,21 +95,38 @@ public class MapConsts {
         }};
 
         // Obstacles
+//        obstacleVertexes = new ArrayList<Double[][]>() {{
+//            add(new Double[][]{
+//                    new Double[]{165d, 200d},
+//                    new Double[]{265d, -250d},
+//            });
+//
+//
+//            add(new Double[][]{
+//                    new Double[]{-75d, 200d},
+//                    new Double[]{30d, -250d},
+//            });
+//
+//            add(new Double[][]{
+//                    new Double[]{-310d, 200d},
+//                    new Double[]{-210d, -250d},
+//            });
+//        }};
         obstacleVertexes = new ArrayList<Double[][]>() {{
             add(new Double[][]{
-                    new Double[]{165d, 200d},
-                    new Double[]{265d, -250d},
+                    new Double[]{240d, 315d},
+                    new Double[]{385d, -390d},
             });
 
 
             add(new Double[][]{
-                    new Double[]{-75d, 200d},
-                    new Double[]{30d, -250d},
+                    new Double[]{-105d, 315d},
+                    new Double[]{40d, -390d},
             });
 
             add(new Double[][]{
-                    new Double[]{-310d, 200d},
-                    new Double[]{-210d, -250d},
+                    new Double[]{-450d, 315d},
+                    new Double[]{-305d, -390d},
             });
         }};
 

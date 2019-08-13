@@ -1,5 +1,7 @@
 package ir.parsiot.pokdis.Localization.ParticleFilter;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -36,7 +38,7 @@ public class Particle {
         return Convert2zeroto360(Convert2zeroto360(-1 * 180));
     }
 
-    public Particle(){
+    public Particle(){ // Note: Don't use it for particle creation, It's just for presenting average of particles
         this.landmarks = new HashMap<String, Double[]>();
         this.Fnoise = 0d;
         this.Tnoise = 0d;
@@ -98,18 +100,15 @@ public class Particle {
         return collidedWall;
     }
 
-    public double measurementProb(Double[] measurement) {
-        double prob = 1.0;
-//        for(int i=0;i<landmarks.length;i++) {
-//            Double dist = (Double) ParticleFilterMath.distance(x, y,
-//                    landmarks[i].x,
-//                    landmarks[i].y);
-//            prob *= ParticleFilterMath.Gaussian(dist, Snoise, measurement[i]);
-//        }
-//
-//        probability = prob;
-
-        return prob;
+    public void updateProbs(HashMap<String, Double> measurements) {
+        for(String landmarkName: measurements.keySet()){
+            Double[] landmarkLoc = this.landmarks.get(landmarkName);
+            Double dist = (Double) ParticleFilterMath.distance(x, y,
+                    landmarkLoc[0],
+                    landmarkLoc[1]);
+            this.probability *= (float)ParticleFilterMath.Gaussian(dist, Snoise, measurements.get(landmarkName));
+            Log.e("","");
+        }
     }
 
     @Override

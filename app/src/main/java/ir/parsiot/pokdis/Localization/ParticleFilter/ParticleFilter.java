@@ -84,8 +84,13 @@ public class ParticleFilter {
             ArrayList<Double> particleInitState = new ArrayList<Double>();
             Boolean isParticleOk = false;
             while (!isParticleOk) {
+//                Double x = initState.get(0) + initScatterFactor.get(0) * 2 * (gen.nextFloat() - 0.5);
+//                Double y = initState.get(1) + initScatterFactor.get(1) * 2 * (gen.nextFloat() - 0.5);
+
                 Double x = initState.get(0) + initScatterFactor.get(0) * 2 * (gen.nextFloat() - 0.5);
                 Double y = initState.get(1) + initScatterFactor.get(1) * 2 * (gen.nextFloat() - 0.5);
+
+
 //                particleInitState.add(initState.get(1) + initScatterFactor.get(1) * (gen.nextFloat()-0.5));
 //                Double[] xy = new Double[]{y, x};
 //
@@ -136,9 +141,8 @@ public class ParticleFilter {
         this.particles = tempParticles;
         this.numParticles = this.particles.size();
 
-        Log.e(TAG, "Threshold: " + numParticlesThreshold);
-        Log.e(TAG, "Number of particles : " + numParticles);
-        Log.e(TAG, "InitNumber of particles : " + numInitParticles);
+//        Log.e(TAG, "Threshold: " + numParticlesThreshold);
+//        Log.e(TAG, "Number of particles : " + numParticles);
 
         if (this.numParticles == 0) {
             particles.clear();
@@ -149,7 +153,7 @@ public class ParticleFilter {
         if (this.numParticles < numParticlesThreshold) {
             resample();
         }
-        Log.e(TAG, "After resample Number of particles : " + numParticles);
+//        Log.e(TAG, "After resample Number of particles : " + numParticles);
 
         particlesHistory = new ArrayList<Particle>();
         particlesHistory.addAll(particles);
@@ -190,7 +194,6 @@ public class ParticleFilter {
 //        this.numParticles = particles.size();
 //    }
 
-    // Todo: normalize the weights after weight update and resamapling
 
 
     private void resample() {
@@ -263,22 +266,6 @@ public class ParticleFilter {
         return indexes;
     }
 
-    //    def systematic_resample(weights):
-//    N = len(weights)
-//
-//            positions = (np.arange(N) + random()) / N
-//
-//    indexes = np.zeros(N, 'i')
-//    cumulative_sum = np.cumsum(weights)
-//    i, j = 0, 0
-//            while i < N:
-//            if positions[i] < cumulative_sum[j]:
-//    indexes[i] = j
-//    i += 1
-//            else:
-//    j += 1
-//            return indexes
-//
     private int circle(int num, int length) {
         while (num > length - 1) {
             num -= length;
@@ -328,21 +315,20 @@ public class ParticleFilter {
     public Particle getAverageParticle() {
         Particle p = new Particle();
         Double x = 0d, y = 0d, h = 0d;
-        float prob = 0f;
+        double probSum = 0d;
         for (int i = 0; i < numParticles; i++) { //Todo: probability must be multiply to x,y and h
 
             Particle particle = particles.get(i);
-            x += particle.x;
-            y += particle.y;
-            h += particle.h;
-            prob += particle.probability;
+            x += particle.x * particle.probability;
+            y += particle.y * particle.probability;
+            h += particle.h * particle.probability;
+            probSum += particle.probability;
         }
-        x /= numParticles;
-        y /= numParticles;
-        h /= numParticles;
-        prob /= numParticles;
+        x /= probSum;
+        y /= probSum;
+        h /= probSum;
         try {
-            p.set(x, y, h, prob);
+            p.set(x, y, h, 1);
         } catch (Exception ex) {
 //            Logger.getLogger(Particle.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -351,6 +337,16 @@ public class ParticleFilter {
 
 
         return p;
+    }
+
+    public void applyLandmarkMeasurements(HashMap<String, Double> measurements){
+        for(Particle particle: this.particles){
+            Log.e(TAG, "Prob before update:"+particle.probability);
+            particle.updateProbs(measurements);
+            Log.e(TAG, "Prob after update:"+particle.probability);
+        }
+        // Todo: normalize the weights after weight update and resamapling
+        // Todo: Check probabilities and resample according to the Neff, if it's needed.
     }
 
     public ArrayList<ArrayList<Double>> getParticles() {
