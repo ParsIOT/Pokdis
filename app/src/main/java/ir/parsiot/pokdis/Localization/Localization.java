@@ -23,6 +23,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import ir.parsiot.pokdis.Constants.Constants;
+import ir.parsiot.pokdis.Localization.Beacon.BLEdevice;
 import ir.parsiot.pokdis.Localization.MotionDna.MotionDnaForegroundService;
 import ir.parsiot.pokdis.Localization.MotionDna.NaviSettings;
 import ir.parsiot.pokdis.Localization.Beacon.BeaconCallback;
@@ -37,13 +38,9 @@ import ir.parsiot.pokdis.map.WebViewManager;
 
 import static android.os.SystemClock.elapsedRealtime;
 import static ir.parsiot.pokdis.Constants.Constants.MAX_PROXIMITY_TO_ROUTE_THRESHOLD;
-import static ir.parsiot.pokdis.Localization.Beacon.RssiList.convertRssToDist1;
-import static ir.parsiot.pokdis.Localization.Beacon.RssiList.convertRssToDist2;
+import static ir.parsiot.pokdis.Constants.Constants.MIN_VALID_PROXIMITY_RSS;
 import static ir.parsiot.pokdis.Localization.MotionDna.NaviSettings.MAX_PROXIMITY_TO_ROUTE_THRESHOLD_IMU;
 import static ir.parsiot.pokdis.Localization.MotionDna.Utils.Convert2zeroto360;
-import static ir.parsiot.pokdis.Localization.MotionDna.Utils.DegreeDiff;
-import static ir.parsiot.pokdis.Localization.MotionDna.Utils.findCloseDot;
-import static ir.parsiot.pokdis.Localization.MotionDna.Utils.round;
 
 public class Localization implements MotionDnaInterface, ParticleFilterRunner.ParticleFilterCallback {
 
@@ -58,6 +55,8 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
 
     // Beacon:
     private BeaconDiscovered beaconDiscovered;
+    Hashtable<String, ArrayList<Double>> beaconHistories = new Hashtable<String, ArrayList<Double>>();
+
     private int farFromRouteCnt = 0;
 
 
@@ -122,22 +121,27 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
 
         drawObstacleWalls();
         // Get location from beacon manager
-        try {
-            beaconDiscovered = new BeaconDiscovered(this.context);
 
-            //Todo: enable it when use beacon
-//            beaconDiscovered.startMonitoring();
-//            beaconDiscovered.startMonitoringNearMotionDna();
-//            beaconDiscovered.setCallback(new MyBeaconCallback());
-//            updateLocationJustBeacon();
-        } catch (RuntimeException e) {
-            Log.e("Error:", e.getMessage());
-        }
     }
 
     public void InitAndStart() {
         motionDnaServiceIntent = new Intent(getAppContext(), MotionDnaForegroundService.class);
         getAppContext().startService(motionDnaServiceIntent);
+
+
+
+        try {
+            beaconDiscovered = new BeaconDiscovered(this.context);
+
+            //Todo: enable it when use beacon
+            beaconDiscovered.startMonitoring();
+//            beaconDiscovered.startMonitoring();
+//            beaconDiscovered.startMonitoringNearMotionDna();
+            beaconDiscovered.setCallback(new MyBeaconCallback());
+//            updateLocationJustBeacon();
+        } catch (RuntimeException e) {
+            Log.e("Error:", e.getMessage());
+        }
 
         // Start the MotionDna Core
         startMotionDna();
@@ -307,97 +311,6 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
 //                locationUpdateCallback.onLocationUpdate(locationXY, heading);
             }
         }
-//        // mupdate
-////        Log.e("receiveMotionDna:", "receiveMotionDna");
-//
-////        String str = "Navisens MotionDna Location Data:\n";
-////        str += "Lat: " + motionDna.getLocation().globalLocation.latitude + " Lon: " + motionDna.getLocation().globalLocation.longitude + "\n";
-////        MotionDna.XYZ location = motionDna.getLocation().localLocation;
-////        str += String.format(" (%.2f, %.2f, %.2f)\n",location.x*scale, location.y*scale, location.z);
-//
-//        if (this.locationUpdateCallback != null) {
-//            MotionDna.Location location = motionDna.getLocation();
-//
-////            final String str = String.format("%.2f,%.2f",
-////                    location.y*scale + MapConsts.getInitLocationFloat().get(0),
-////                    location.x*scale + MapConsts.getInitLocationFloat().get(1));
-//
-//
-//            this.x = location.localLocation.x * naviSettings.scale;
-//            this.y = location.localLocation.y * naviSettings.scale;
-//            this.deltaH = DegreeDiff(this.h, Convert2zeroto360(Convert2zeroto360(-1 * location.heading) + 90.0D));
-//
-//            int deltaHsSize = deltaHs.size();
-//            if (deltaHsSize <= naviSettings.maxDeltaHsLen2) {
-//                deltaHs.add(this.deltaH);
-//            } else {
-//                deltaHs.remove(0); //delete older h
-//                deltaHs.add(this.deltaH);
-//            }
-//
-//            double cumulativeDelta1 = 0;
-//            double cumulativeDelta2 = 0;
-//            for (int i = deltaHsSize - 1; i >= 0; i--) {
-//                cumulativeDelta2 += deltaHs.get(i);
-//                if (i <= naviSettings.maxDeltaHsLen2 / naviSettings.maxDeltaHsLen1) {
-//                    cumulativeDelta1 += deltaHs.get(i);
-//                }
-//            }
-//
-//
-//            if (Math.sqrt(Math.pow(LastCornerX - this.x, 2) + Math.pow(LastCornerY - this.y, 2)) > naviSettings.cornerCandidateDiff) {
-//                LastCornerCandidateX = this.x;
-//                LastCornerCandidateY = this.y;
-//            }
-//            if (Math.sqrt(Math.pow(LastCornerX - this.x, 2) + Math.pow(LastCornerY - this.y, 2)) > naviSettings.cornerDistanceDiff) {
-//                LastCornerX = LastCornerCandidateX;
-//                LastCornerY = LastCornerCandidateY;
-//            }
-//            if (cumulativeDelta1 > naviSettings.cornerDetectionTreshold1 && cumulativeDelta2 > naviSettings.cornerDetectionTreshold2) {
-//                // Find corner
-//                LastCornerX = this.x;
-//                LastCornerY = this.y;
-//                LastCornerCandidateX = this.x;
-//                LastCornerCandidateY = this.y;
-//            }
-////            Log.e("location.heading", String.valueOf(location.heading));
-//            this.h = Convert2zeroto360(Convert2zeroto360(-1 * location.heading) + 90.0D + MapConsts.initHeading);
-//
-//            String locationXY = String.format("%d,%d", (int) (this.y + MapConsts.getInitLocationFloat().get(0)), (int) (this.x + MapConsts.getInitLocationFloat().get(1)));
-//            String heading = String.format("%d", (int) Convert2zeroto360(-1 * getMainHeading() + 180));
-//
-//            if (!(locationXY.equals(lastLocationXY) && heading.equals(lastHeading))){
-//                Log.e("updateLocationAndH",locationXY);
-//                locationUpdateCallback.onLocationUpdate(locationXY, heading);
-////                webViewManager.updateLocationAndHeading(locationXY, heading);
-//            }
-//
-//            lastLocationXY = locationXY;
-//            lastHeading = heading;
-//
-////            // Using findNearLocationByPathIMUVersion :
-////            if (routePath.size() > 0) {
-////                if (findNearLocationByPathIMUVersion(locationXY, heading, routePath) != null){
-////                    webViewManager.updateLocationAndHeading(locationXY, heading);
-////                }else{
-////                    webViewManager.updateHeading(heading);
-////                }
-////            } else {
-////                webViewManager.updateLocationAndHeading(locationXY, heading);
-////            }
-////            webViewManager.updateLocation(str);
-//        }
-//
-//        str += "Hdg: " + motionDna.getLocation().heading +  " \n";
-//        str += "motionType: " + motionDna.getMotion().motionType + "\n";
-//        textView.setTextColor(Color.BLACK);
-//
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-////                Log.e("Location:", str);
-//            }
-//        });
     }
 
     @Override
@@ -431,17 +344,33 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
         private final Lock _mutex = new ReentrantLock(true);
 
         @Override
-        public void onBeaconDetection(final ArrayList<Beacon> beacons) {
+        public void onBeaconDetection(final ArrayList<BLEdevice> sortedDiscoveredDevices) {
             try {
                 _mutex.lock();
 
-                HashMap<String, Double> measurements = new HashMap<>();
-
-                for(Beacon beacon: beacons){
-                    measurements.put(beacon.getBluetoothAddress(), convertRssToDist1(beacon.getRssi())*MapConsts.scale);
+//                HashMap<String, Double> measurements = new HashMap<>();
+                ArrayList<BLEdevice> importantNearBeacons = new ArrayList<>();
+                if (sortedDiscoveredDevices.size()>0) {
+                    if (sortedDiscoveredDevices.get(0).getRssiAvg() >= MIN_VALID_PROXIMITY_RSS) {
+//                    measurements.put(sortedDiscoveredDevices.get(0).getMac(), PROXIMITY_DISTANCE * MapConsts.scale);
+                        importantNearBeacons.add(sortedDiscoveredDevices.get(0));
+                    }
+                    if (sortedDiscoveredDevices.size() > 1) {
+                        if (sortedDiscoveredDevices.get(1).getRssiAvg() >= MIN_VALID_PROXIMITY_RSS) {
+//                    measurements.put(sortedDiscoveredDevices.get(0).getMac(), PROXIMITY_DISTANCE * MapConsts.scale);
+                            importantNearBeacons.add(sortedDiscoveredDevices.get(1));
+                        }
+                    }
                 }
-                if (pfFilter != null){
-                    pfFilter.onSensedLandmarkData(measurements);
+
+
+//                for(BLEdevice bleDevice: sortedDiscoveredDevices){
+////                    beaconHistories.get(beacon).
+//                    measurements.put(bleDevice.getMac(), convertRssToDist1(beacon.getRssi())*MapConsts.scale);
+////                }
+                if (pfFilter != null && importantNearBeacons.size()>0){
+//                    pfFilter.onSensedLandmarkData(measurements);
+                    pfFilter.onSensedLandmarkProxmity(importantNearBeacons);
                 }
 
             } catch (Exception e) {
@@ -456,38 +385,38 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
 
 
 
-    private void updateLocationJustBeacon() {
-        // update location of marker on the map
-        try {
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-//                    String location = beaconDiscovered.getNearLocationToString();
-                    ArrayList<String> nearBeaconLocations = beaconDiscovered.getAllSortedDiscoveredBeaconLocations();
-
-                    if (nearBeaconLocations != null) {
-                        if (nearBeaconLocations.size() > 0) {
-//                        Log.e("location:", location);
-                            String location;
-                            if (routePath.size() > 0) {
-                                location = findNearLocationByPath(nearBeaconLocations, routePath);
-                            } else {
-                                location = nearBeaconLocations.get(0);
-                            }
-                            if (location != null) {
-                                locationUpdateCallback.onLocationUpdate(location);
-                            } else {
-                                Log.d("MainActivity", "Estimated location is far from route path");
-                            }
-                        }
-                    }
-                }
-            }, Constants.DELAY_ON_SHOW_TOP_BEACON, Constants.PERIOD_OF_GET_TOP_BEACON);
-        } catch (RuntimeException e) {
-
-        }
-
-    }
+//    private void updateLocationJustBeacon() {
+//        // update location of marker on the map
+//        try {
+//            new Timer().schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+////                    String location = beaconDiscovered.getNearLocationToString();
+//                    ArrayList<String> nearBeaconLocations = beaconDiscovered.getAllSortedDiscoveredBeaconLocations();
+//
+//                    if (nearBeaconLocations != null) {
+//                        if (nearBeaconLocations.size() > 0) {
+////                        Log.e("location:", location);
+//                            String location;
+//                            if (routePath.size() > 0) {
+//                                location = findNearLocationByPath(nearBeaconLocations, routePath);
+//                            } else {
+//                                location = nearBeaconLocations.get(0);
+//                            }
+//                            if (location != null) {
+//                                locationUpdateCallback.onLocationUpdate(location);
+//                            } else {
+//                                Log.d("MainActivity", "Estimated location is far from route path");
+//                            }
+//                        }
+//                    }
+//                }
+//            }, Constants.DELAY_ON_SHOW_TOP_BEACON, Constants.PERIOD_OF_GET_TOP_BEACON);
+//        } catch (RuntimeException e) {
+//
+//        }
+//
+//    }
 
 
     // Map related functions :

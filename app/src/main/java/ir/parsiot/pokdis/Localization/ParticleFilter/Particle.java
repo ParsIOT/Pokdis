@@ -4,10 +4,14 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
+import ir.parsiot.pokdis.Localization.Beacon.BLEdevice;
 import ir.parsiot.pokdis.map.MapConsts;
 
+import static ir.parsiot.pokdis.Constants.Constants.PROXIMITY_DISTANCE;
+import static ir.parsiot.pokdis.Constants.Constants.PROXIMITY_PARTICLE_FACTOR;
 import static ir.parsiot.pokdis.Localization.MotionDna.Utils.Convert2zeroto360;
 
 public class Particle {
@@ -100,14 +104,48 @@ public class Particle {
         return collidedWall;
     }
 
-    public void updateProbs(HashMap<String, Double> measurements) {
-        for(String landmarkName: measurements.keySet()){
-            Double[] landmarkLoc = this.landmarks.get(landmarkName);
-            Double dist = (Double) ParticleFilterMath.distance(x, y,
-                    landmarkLoc[0],
-                    landmarkLoc[1]);
-            this.probability *= (float)ParticleFilterMath.Gaussian(dist, Snoise, measurements.get(landmarkName));
-            Log.e("","");
+//    public void updateProbs(HashMap<String, Double> measurements) {
+//        for(String landmarkName: measurements.keySet()){
+//            Double[] landmarkLoc = this.landmarks.get(landmarkName);
+//            Double dist = (Double) ParticleFilterMath.distance(x, y,
+//                    landmarkLoc[0],
+//                    landmarkLoc[1]);
+//            this.probability *= (float)ParticleFilterMath.Gaussian(dist, Snoise, measurements.get(landmarkName));
+//            Log.e("","");
+//        }
+//    }
+
+//    public void updateProbs(ArrayList<BLEdevice> importantNearBeacons) {
+//
+//        BLEdevice firstNearBeacon = importantNearBeacons.get(0);
+//
+//
+//        Double[] landmarkLoc = this.landmarks.get(firstNearBeacon.getMac());
+//        Double dist = (Double) ParticleFilterMath.distance(x, y,
+//                landmarkLoc[0],
+//                landmarkLoc[1]);
+//        if (dist < PROXIMITY_DISTANCE * MapConsts.scale) {
+//            this.probability *= PROXIMITY_PARTICLE_FACTOR;
+//        }
+//    }
+
+    public void updateProbs(ArrayList<BLEdevice> importantNearBeacons) {
+
+        BLEdevice firstNearBeacon = importantNearBeacons.get(0);
+
+
+        Double[] landmarkLoc = this.landmarks.get(firstNearBeacon.getMac());
+        Double dist = (Double) ParticleFilterMath.distance(x, y,
+                landmarkLoc[0],
+                landmarkLoc[1]);
+        try {
+            this.probability *= 1.0 / dist;
+        }catch (ArithmeticException ae){
+            if(dist == 0d){
+                this.probability *= 1.0;
+            }else{
+                Log.e("UpdateProbs :",ae.getMessage());
+            }
         }
     }
 

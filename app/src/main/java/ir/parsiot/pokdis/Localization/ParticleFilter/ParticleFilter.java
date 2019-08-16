@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import ir.parsiot.pokdis.Localization.Beacon.BLEdevice;
 import ir.parsiot.pokdis.map.MapConsts;
 import ir.parsiot.pokdis.map.WallGraph.RectObstacle;
 
@@ -253,8 +254,8 @@ public class ParticleFilter {
 
         int[] indexes = new int[numInitParticles];
         while (i < numInitParticles) {
-            Log.e(TAG, "i:"+i+", j:"+j);
-            Log.e(TAG, "positions[i]:"+positions[i]+", cumsumWeight[j]:"+cumsumWeight[j]);
+//            Log.e(TAG, "i:"+i+", j:"+j);
+//            Log.e(TAG, "positions[i]:"+positions[i]+", cumsumWeight[j]:"+cumsumWeight[j]);
             if (positions[i] < cumsumWeight[j]) {
                 indexes[i] = j;
                 i++;
@@ -339,12 +340,22 @@ public class ParticleFilter {
         return p;
     }
 
-    public void applyLandmarkMeasurements(HashMap<String, Double> measurements){
+//    public void applyLandmarkMeasurements(HashMap<String, Double> measurements){
+//        for(Particle particle: this.particles){
+//            Log.e(TAG, "Prob before update:"+particle.probability);
+//            particle.updateProbs(measurements);
+//            Log.e(TAG, "Prob after update:"+particle.probability);
+//        }
+//        // Todo: normalize the weights after weight update and resamapling
+//        // Todo: Check probabilities and resample according to the Neff, if it's needed.
+//    }
+    public void applyLandmarkProximityMeasurements(ArrayList<BLEdevice> importantNearBeacons){
         for(Particle particle: this.particles){
             Log.e(TAG, "Prob before update:"+particle.probability);
-            particle.updateProbs(measurements);
+            particle.updateProbs(importantNearBeacons);
             Log.e(TAG, "Prob after update:"+particle.probability);
         }
+        normalizeWeigths();
         // Todo: normalize the weights after weight update and resamapling
         // Todo: Check probabilities and resample according to the Neff, if it's needed.
     }
@@ -360,6 +371,20 @@ public class ParticleFilter {
         }
         return particlesData;
     }
+
+    public void normalizeWeigths(){
+        Double sumWeight = 0d;
+        for(Particle particle: this.particles){
+            sumWeight += particle.probability;
+        }
+        for(Particle particle: this.particles){
+            particle.probability /= sumWeight;
+        }
+        particlesHistory = new ArrayList<Particle>();
+        particlesHistory.addAll(particles);
+    }
+
+
 
     @Override
     public String toString() {

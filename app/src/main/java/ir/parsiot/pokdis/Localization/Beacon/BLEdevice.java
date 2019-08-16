@@ -4,7 +4,6 @@ import ir.parsiot.pokdis.Constants.Constants;
 
 public class BLEdevice {
 
-    private String name;
     private String UUID;
     private String major;
     private String minor;
@@ -16,11 +15,21 @@ public class BLEdevice {
     private String distance ="far";
     private int rss;
 
-    public boolean canThatCanRemoveThisDivice(){
+    public boolean isAllRssiZero(){
         if(data.getCountOfZero() ==Constants.MAX_RSSI_LIST_SIZE){
             return true;
         }
         return false;
+    }
+
+    public BLEdevice(String mac, String UUID, String major, String minor) {
+        this.mac = mac;
+        this.UUID = UUID;
+        this.major = major;
+        this.minor = minor;
+    }
+
+    public BLEdevice() {
     }
 
     public String getDistance() {
@@ -29,15 +38,6 @@ public class BLEdevice {
 
     public void setDistance(String distance) {
         this.distance = distance;
-    }
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getUUID() {

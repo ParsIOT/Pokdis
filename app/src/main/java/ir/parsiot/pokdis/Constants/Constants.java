@@ -8,8 +8,10 @@ public class Constants {
 
 
     public static final int MAX_RSSI_LIST_SIZE = 6;
-    public static final int MIN_RSS_TO_RELOCATE = -56;
-//    public static final int MIN_RSS_TO_RELOCATE = -69;
+    public static final int MIN_VALID_PROXIMITY_RSS = -75;
+    public static final double PROXIMITY_DISTANCE = 1.0;
+    public static final double PROXIMITY_PARTICLE_FACTOR = 100.0;
+//    public static final int MIN_VALID_PROXIMITY_RSS = -69;
 
     public static final int MAX_PROXIMITY_TO_ROUTE_THRESHOLD = 200;
     public static final int MIN_COUNT_TO_IGNORE_PATH = 20;

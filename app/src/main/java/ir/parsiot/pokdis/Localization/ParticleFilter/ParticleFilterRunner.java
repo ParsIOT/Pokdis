@@ -5,8 +5,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
+import ir.parsiot.pokdis.Localization.Beacon.BLEdevice;
 import ir.parsiot.pokdis.Localization.Beacon.BeaconLocations;
 import ir.parsiot.pokdis.map.MapConsts;
 
@@ -23,10 +23,10 @@ public class ParticleFilterRunner extends Thread {
     double Fnoise = 0.05d, Tnoise = 0.05d, Snoise = 100d;
     ArrayList<Double> initScatterFactor = new ArrayList<Double>() {
         {
-//            add(4000d);
-//            add(4000d);
-            add(100d);
-            add(100d);
+            add(4000d);
+            add(4000d);
+//            add(100d);
+//            add(100d);
             add(40d);
         }
     };
@@ -50,8 +50,10 @@ public class ParticleFilterRunner extends Thread {
     ParticleFilterCallback callback;
     Activity appContext;
 
-    HashMap<String, Double> landmarkMeasurements = new HashMap<>();
-    Boolean landmarkMeasurementsUpdated = false;
+//    HashMap<String, Double> landmarkMeasurements = new HashMap<>();
+    ArrayList<BLEdevice> importantNearBeacons = new ArrayList<>();
+//    Boolean landmarkMeasurementsUpdated = false;
+    Boolean importantNearBeaconsUpdated = false;
 
     public ParticleFilterRunner(ParticleFilterCallback callback, Activity appContext) {
         this.callback = callback;
@@ -97,11 +99,18 @@ public class ParticleFilterRunner extends Thread {
 
                 motionStateUpdated = false;
             }
-            if (landmarkMeasurementsUpdated){
+//            if (landmarkMeasurementsUpdated){
+//
+//                filter.applyLandmarkMeasurements(landmarkMeasurements);
+//
+//                landmarkMeasurementsUpdated = false;
+//            }
+            if (importantNearBeaconsUpdated){
 
-                filter.applyLandmarkMeasurements(landmarkMeasurements);
+//                filter.applyLandmarkMeasurements(proximityMeasurements);
+                filter.applyLandmarkProximityMeasurements(importantNearBeacons);
 
-                landmarkMeasurementsUpdated = false;
+                importantNearBeaconsUpdated = false;
             }
 
             Particle resParticle = filter.getAverageParticle();
@@ -117,7 +126,11 @@ public class ParticleFilterRunner extends Thread {
                 ((Activity) appContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        callback.onLocationUpdate(curState.get(0), curState.get(1), curState.get(2));
+                        try {
+                            callback.onLocationUpdate(curState.get(0), curState.get(1), curState.get(2));
+                        }catch(Exception ex){
+                            Log.e("ParticleFilter", ex.getMessage());
+                        }
                     }
                 });
             }
@@ -188,9 +201,16 @@ public class ParticleFilterRunner extends Thread {
 
 
 
-    public void onSensedLandmarkData(HashMap<String, Double> landmarkMeasurements) {
-        this.landmarkMeasurements = landmarkMeasurements;
-        this.landmarkMeasurementsUpdated = true;
+//    public void onSensedLandmarkData(HashMap<String, Double> landmarkMeasurements) {
+//        this.landmarkMeasurements = landmarkMeasurements;
+//        this.landmarkMeasurementsUpdated = true;
+//        this.resumeRunner();
+//    }
+
+
+    public void onSensedLandmarkProxmity(ArrayList<BLEdevice> importantNearBeacons) {
+        this.importantNearBeacons = importantNearBeacons;
+        this.importantNearBeaconsUpdated = true;
         this.resumeRunner();
     }
 
