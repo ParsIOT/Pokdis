@@ -2,6 +2,7 @@ package ir.parsiot.pokdis.Localization.ParticleFilter;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -15,4 +16,5 @@ public class ParticleFilterTest {
         float num = (float) (random.nextFloat() / 100);
         System.out.println(num);
     }
+
 }

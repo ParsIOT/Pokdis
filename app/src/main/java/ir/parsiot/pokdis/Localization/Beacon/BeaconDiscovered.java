@@ -309,7 +309,7 @@ public class BeaconDiscovered implements BeaconConsumer {
         RangeNotifier rangeNotifier = new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beacons.toString());
+//                Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beacons.toString());
 
                 List<Beacon> beaconList = new ArrayList<Beacon>(beacons);
                 if (beacons.size() > 0 && callback != null) {

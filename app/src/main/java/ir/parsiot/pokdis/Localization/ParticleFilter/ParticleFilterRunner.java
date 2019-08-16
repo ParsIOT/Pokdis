@@ -18,8 +18,9 @@ public class ParticleFilterRunner extends Thread {
 
     BeaconLocations beaconLocations = new BeaconLocations();
     HashMap<String, Double[]> beaconCoordinates = beaconLocations.beaconCoordinates;
-    public final int NUM_PARTICLES = 400;
-    public final int divisionResampleParticleNumThreshold = 3;
+    public final int NUM_PARTICLES = 100;
+//    public final int divisionResampleParticleNumThreshold = 3;
+    public final float resampleThresholdDevision = 2.0f / 3.0f;
     double Fnoise = 0.05d, Tnoise = 0.05d, Snoise = 100d;
     ArrayList<Double> initScatterFactor = new ArrayList<Double>() {
         {
@@ -61,7 +62,7 @@ public class ParticleFilterRunner extends Thread {
         lastMotionState = MapConsts.getInitLocationDouble();
         lastMotionState.add(MapConsts.initHeading);
 
-        filter = new ParticleFilter(NUM_PARTICLES, divisionResampleParticleNumThreshold, initScatterFactor, resampleScatterFactor, beaconCoordinates);
+        filter = new ParticleFilter(NUM_PARTICLES, resampleThresholdDevision, initScatterFactor, resampleScatterFactor, beaconCoordinates);
         filter.setNoise(Fnoise, Tnoise, Snoise);
         try {
 //            filter.createParticles(lastMotionState);

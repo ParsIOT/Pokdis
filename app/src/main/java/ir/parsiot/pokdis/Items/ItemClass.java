@@ -9,7 +9,7 @@ public class ItemClass {
     private String description;
     private String longDescription;
     private String dimens;
-    private String weigth;
+    private String weight;
     private String brand;
     private double price;
     private double discountPrice;
@@ -31,7 +31,7 @@ public class ItemClass {
         this.location = location;
         this.id = id;
         this.dimens = dimens;
-        this.weigth = weight;
+        this.weight = weight;
         this.brand = brand;
     }
 
@@ -76,12 +76,12 @@ public class ItemClass {
     }
 
 
-    public String getWeigth() {
-        return weigth;
+    public String getWeight() {
+        return weight;
     }
 
-    public void setWeigth(String weigth) {
-        this.weigth = weigth;
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 
     public String getBrand() {

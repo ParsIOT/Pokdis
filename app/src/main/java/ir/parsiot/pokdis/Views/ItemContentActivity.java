@@ -93,7 +93,7 @@ public class ItemContentActivity extends AppCompatActivity {
             }
 
             dimens.setText(item.getDimens());
-            weight.setText(item.getWeigth());
+            weight.setText(item.getWeight());
             brand.setText(item.getBrand());
 
 

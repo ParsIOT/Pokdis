@@ -32,10 +32,10 @@ public class ParticleFilter {
     private static MapConsts mapConsts = new MapConsts();
 
 
-    public ParticleFilter(int numParticles, int divisionResampleParticleNumThreshold, ArrayList<Double> initScatterFactor, ArrayList<Double> resampleScatterFactor, HashMap<String, Double[]> landmarks) {
+    public ParticleFilter(int numParticles, float resampleThresholdDevision, ArrayList<Double> initScatterFactor, ArrayList<Double> resampleScatterFactor, HashMap<String, Double[]> landmarks) {
         this.numInitParticles = numParticles;
         this.numParticles = numParticles;
-        this.numParticlesThreshold = this.numInitParticles / divisionResampleParticleNumThreshold;
+        this.numParticlesThreshold = (int)((double)this.numInitParticles * (double)resampleThresholdDevision);
         this.initScatterFactor = initScatterFactor;
         this.resampleScatterFactor = resampleScatterFactor;
         this.landmarks = landmarks;
@@ -355,9 +355,17 @@ public class ParticleFilter {
             particle.updateProbs(importantNearBeacons);
             Log.e(TAG, "Prob after update:"+particle.probability);
         }
-        normalizeWeigths();
-        // Todo: normalize the weights after weight update and resamapling
-        // Todo: Check probabilities and resample according to the Neff, if it's needed.
+        normalizeWeights();
+
+
+        // Todo: I didn't research about influence of Neff and its related resampling effects
+        double Neff = calc_Neff();
+
+        if (this.numParticles < Neff){
+            resample();
+            particlesHistory = new ArrayList<Particle>();
+            particlesHistory.addAll(particles);
+        }
     }
 
     public ArrayList<ArrayList<Double>> getParticles() {
@@ -372,7 +380,7 @@ public class ParticleFilter {
         return particlesData;
     }
 
-    public void normalizeWeigths(){
+    public void normalizeWeights(){
         Double sumWeight = 0d;
         for(Particle particle: this.particles){
             sumWeight += particle.probability;
@@ -384,7 +392,13 @@ public class ParticleFilter {
         particlesHistory.addAll(particles);
     }
 
-
+    public double calc_Neff(){
+        double sumSqrProb = 0d;
+        for (Particle particle: this.particles){
+            sumSqrProb += Math.sqrt(particle.probability);
+        }
+        return 1.0d/ sumSqrProb;
+    }
 
     @Override
     public String toString() {
