@@ -8,7 +8,7 @@ public class Constants {
 
 
     public static final int MAX_RSSI_LIST_SIZE = 6;
-    public static final int MIN_VALID_PROXIMITY_RSS = -75;
+    public static final int MIN_VALID_PROXIMITY_RSS = -80;
     public static final double PROXIMITY_DISTANCE = 1.0;
     public static final double PROXIMITY_PARTICLE_FACTOR = 100.0;
 //    public static final int MIN_VALID_PROXIMITY_RSS = -69;
@@ -19,7 +19,6 @@ public class Constants {
     public  static  final String ALT_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25";
     public static  final long PERIOD_TIME_BETWEEN_SCAN = 150l;
 //    private static final long PERIOD_TIME_BETWEEN = 150l;
-
 
     public static  final String COMMON_UUID_BEACON = "23a01af0-232a-4518-9c0e-323fb773f5ef";
     public static  final String COMMON_MAJOR_BEACON = "1";

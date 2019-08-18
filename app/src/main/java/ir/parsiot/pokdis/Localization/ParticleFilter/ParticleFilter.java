@@ -351,9 +351,9 @@ public class ParticleFilter {
 //    }
     public void applyLandmarkProximityMeasurements(ArrayList<BLEdevice> importantNearBeacons){
         for(Particle particle: this.particles){
-            Log.e(TAG, "Prob before update:"+particle.probability);
+//            Log.e(TAG, "Prob before update:"+particle.probability);
             particle.updateProbs(importantNearBeacons);
-            Log.e(TAG, "Prob after update:"+particle.probability);
+//            Log.e(TAG, "Prob after update:"+particle.probability);
         }
         normalizeWeights();
 

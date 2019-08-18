@@ -208,6 +208,7 @@ public class WebViewManager {
     }
 
     public void updateLocationAndHeading(String locationXY, String heading) {
+        loctionOfMarker = locationXY;
 //        final String js_location = String.format("javascript:moveMarker(\'%s\')", locationXY);
         final String js_location = String.format("javascript:moveMarker(\"%s\");rotateMarker(\"%s\")", locationXY, heading);
         //  webView.loadUrl(js_location);

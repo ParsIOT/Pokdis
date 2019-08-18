@@ -10,12 +10,29 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            // Default ABI list for this app, can be over-ridden by providing an abiList property
+            // e.g. gradle -PabiList=x86 clean assembleDebug
+            abiFilters ((project.findProperty('abiList') ?: 'armeabi-v7a, arm64-v8a, x86').split(/,\s*/))
+        }
     }
+    archivesBaseName = rootProject.projectDir.getName()
+
+    // Ensure that Vuforia Engine datasets placed in the assets folder do not get compressed as
+    // this can significantly increase their loading time
+    aaptOptions {
+        noCompress 'dat'
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    sourceSets.main {
+        jni.srcDirs = []
+        jniLibs.srcDir "vuforia_sdk/build/lib"
     }
 }
 
@@ -37,5 +54,7 @@ dependencies {
     implementation group: "com.navisens", name: "motiondnaapi", version: "1.8.7", changing: true
 //    implementation files('libs/android-beacon-library-2.16.3-beta4.aar')
     implementation 'org.altbeacon:android-beacon-library:2.16.2'
+
+    implementation files("vuforia_sdk/build/java/Vuforia/Vuforia.jar")
 
 }
