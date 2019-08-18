@@ -115,10 +115,17 @@
     //     console.log(e.latlng.lat + "," + e.latlng.lng);
     // });
 
+   var toggleShowParticles = "ذرات";
+    L.easyButton('fa-angle-up fa-2x',function(btn,map){
+       Android.toggleShowParticles();
+       clearParticlesLayer();
+    },toggleShowParticles,"toggle-show-particles-btn").addTo(map);
+
     var homeBtnTxt = "مکان فعلی";
     L.easyButton('fa-map-marker fa-2x',function(btn,map){
       map.setView(latlng, -0.5);
     },homeBtnTxt,"home-btn").addTo(map);
+
     /*var grid = new L.GridToolbar(latlng, 1,
         {
             mode: 'indoor',
@@ -447,6 +454,23 @@ function showParticles(particles){
             width:      4,         // width of the base of triangle (default: 24)
             height:     4,          // height of triangle (default: 24)
             color:      'red',
+        }).addTo(particlesLayer);
+    });
+}
+
+function showKmeansClusterCenter(clusterCenters){
+//    var particles = ParticlesDataInterface.getData();
+//    clearParticlesLayer();
+
+    var renderer = L.canvas();
+    clusterCenters.forEach(function(clusterCenter, index){
+        latLng = L.latLng(clusterCenter[0], clusterCenter[1]),
+        myTriangleMarker = L.triangleMarker(latLng, {
+            renderer:   renderer,   // your canvas renderer (default: L.canvas())
+            rotation:   0.0,         // triangle rotation in degrees (default: 0)
+            width:      15,         // width of the base of triangle (default: 24)
+            height:     15,          // height of triangle (default: 24)
+            color:      'blue',
         }).addTo(particlesLayer);
     });
 }

@@ -241,6 +241,12 @@ public class Graph {
 
     }
 
+    public String getNearestDot(String dot){
+        Edge dotEdge = this.findNearEdge(dot);
+
+        String dotEdgePoint = dotEdge.pointOnLineImage(dot);
+        return dotEdgePoint;
+    }
 
     public ArrayList<ArrayList<Point>> getPath(String srcPoint, String dstPoint){
         MapConsts mapConsts = new MapConsts();

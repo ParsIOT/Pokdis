@@ -16,9 +16,17 @@ public class ParticleFilterRunner extends Thread {
     private int ShowParticleCounter = 0;
     private int SHOW_PARTICLE_COUNTER_THRESHOLD = 10;
 
+    public int getRelocationByProximityCnt() {
+        return filter.relocationByProximityCnt;
+    }
+
+    public void setRelocationByProximityCnt(int relocationByProximityCnt) {
+        filter.relocationByProximityCnt = relocationByProximityCnt;
+    }
+
     BeaconLocations beaconLocations = new BeaconLocations();
     HashMap<String, Double[]> beaconCoordinates = beaconLocations.beaconCoordinates;
-    public final int NUM_PARTICLES = 100;
+    public final int NUM_PARTICLES = 400;
 //    public final int divisionResampleParticleNumThreshold = 3;
     public final float resampleThresholdDevision = 2.0f / 3.0f;
     double Fnoise = 0.05d, Tnoise = 0.05d, Snoise = 100d;
@@ -135,7 +143,10 @@ public class ParticleFilterRunner extends Thread {
                     }
                 });
             }
-//            callback.onLocationUpdate(curState.get(0), curState.get(1), curState.get(2));
+            callback.onLocationUpdate(curState.get(0), curState.get(1), curState.get(2));
+
+
+            // Show particles
 
             if (ShowParticleCounter > SHOW_PARTICLE_COUNTER_THRESHOLD) {
 
@@ -145,7 +156,8 @@ public class ParticleFilterRunner extends Thread {
                     ((Activity) appContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            callback.onParticleLocationUpdate(filter.getParticles());
+                            callback.onParticleLocationUpdate(filter.getParticles(1));
+                            callback.onShowParticleClusterCenters(filter.clusterCenters);
                         }
                     });
                 }
@@ -154,6 +166,9 @@ public class ParticleFilterRunner extends Thread {
                 ShowParticleCounter = -1;
             }
             ShowParticleCounter++;
+
+
+
 
         }
     }
@@ -220,6 +235,7 @@ public class ParticleFilterRunner extends Thread {
         public void onLocationUpdate(Double x, Double y, Double h);
 
         public void onParticleLocationUpdate(ArrayList<ArrayList<Double>> particles);
+        public void onShowParticleClusterCenters(Double[][] clusterCenters);
     }
 
 

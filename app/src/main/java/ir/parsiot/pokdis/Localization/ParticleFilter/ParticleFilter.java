@@ -7,9 +7,12 @@ import java.util.HashMap;
 import java.util.Random;
 
 import ir.parsiot.pokdis.Localization.Beacon.BLEdevice;
+import ir.parsiot.pokdis.map.GraphBuilder;
 import ir.parsiot.pokdis.map.MapConsts;
+import ir.parsiot.pokdis.map.Objects.Point;
 import ir.parsiot.pokdis.map.WallGraph.RectObstacle;
 
+import static ir.parsiot.pokdis.Constants.Constants.MIN_CLUSTER_CENTER_DIST;
 import static ir.parsiot.pokdis.Localization.MotionDna.Utils.Convert2zeroto360;
 
 public class ParticleFilter {
@@ -17,9 +20,17 @@ public class ParticleFilter {
 
     ArrayList<Particle> particles;
     ArrayList<Particle> particlesHistory;
+
+
+    public Double[][] clusterCenters = new Double[][]{};
+    private boolean instantRelocateByBeacon = false;
+
+
     int numParticles = 0;
     int numInitParticles = 0;
     int numParticlesThreshold;
+    boolean firstAggregation = false;
+    public int relocationByProximityCnt = 0;
 
     Random gen = new Random();
     private ArrayList<Double> initScatterFactor;
@@ -35,7 +46,7 @@ public class ParticleFilter {
     public ParticleFilter(int numParticles, float resampleThresholdDevision, ArrayList<Double> initScatterFactor, ArrayList<Double> resampleScatterFactor, HashMap<String, Double[]> landmarks) {
         this.numInitParticles = numParticles;
         this.numParticles = numParticles;
-        this.numParticlesThreshold = (int)((double)this.numInitParticles * (double)resampleThresholdDevision);
+        this.numParticlesThreshold = (int) ((double) this.numInitParticles * (double) resampleThresholdDevision);
         this.initScatterFactor = initScatterFactor;
         this.resampleScatterFactor = resampleScatterFactor;
         this.landmarks = landmarks;
@@ -196,7 +207,6 @@ public class ParticleFilter {
 //    }
 
 
-
     private void resample() {
         ArrayList<Particle> tempParticles = new ArrayList<Particle>();
 
@@ -237,17 +247,17 @@ public class ParticleFilter {
         float[] positions = new float[numInitParticles];
         for (int i = 0; i < numInitParticles; i++) {
 //            positions[i] = (float) (i * splitLine) + rand;
-            positions[i] = (float) (i * splitLine) + (float) (random.nextFloat()/ numInitParticles);
+            positions[i] = (float) (i * splitLine) + (float) (random.nextFloat() / numInitParticles);
         }
 
         float[] cumsumWeight = new float[numParticles];
 
-        float convertFactor = ((float) numInitParticles/(float) numParticles); // Manytimes numParticles is lower than numInitParticles. So it causes that sum of particle probabilities not to be 1
+        float convertFactor = ((float) numInitParticles / (float) numParticles); // Manytimes numParticles is lower than numInitParticles. So it causes that sum of particle probabilities not to be 1
         cumsumWeight[0] = particles.get(0).probability * convertFactor;
         for (int i = 1; i < numParticles; i++) {
             cumsumWeight[i] = cumsumWeight[i - 1] + particles.get(i).probability * convertFactor;
         }
-        cumsumWeight[numParticles-1] = 1.0f; // Ensures sum is exactly one
+        cumsumWeight[numParticles - 1] = 1.0f; // Ensures sum is exactly one
 
         int i = 0;
         int j = 0;
@@ -328,6 +338,45 @@ public class ParticleFilter {
         x /= probSum;
         y /= probSum;
         h /= probSum;
+
+
+        Double[] xy = new Double[]{y, x};
+        Boolean inRectObstacle = false;
+        for (RectObstacle rectObstacle : mapConsts.rectObstacles) {
+            if (rectObstacle.inArea(xy)) {
+//                        Log.d("ParticleFilter", "Particle is in denied areas2");
+                inRectObstacle = true;
+                break;
+            }
+        }
+
+        clusterCenters = new Double[][]{};
+        Double[] bestKmeans2Cluster = selectBestKmeans2Cluster();
+
+        if (inRectObstacle) {
+//            GraphBuilder location = new GraphBuilder();
+//            String dot = String.format("%.2f,%.2f", x, y);
+//            String resDot = location.graph.getNearestDot(dot);
+//
+//            String[] srcPointStrList = resDot.split(",");
+//            x += Double.valueOf(srcPointStrList[0]) ;
+//            x /= 2;
+//            y += Double.valueOf(srcPointStrList[1]) ;
+//            y /= 2;
+
+////            relocationByProximityCnt = 3;
+            if (instantRelocateByBeacon) {
+                relocationByProximityCnt -= 1;
+                instantRelocateByBeacon = false;
+            }
+
+            if (firstAggregation) {
+                x = bestKmeans2Cluster[0];
+                y = bestKmeans2Cluster[1];
+            }
+        }
+
+
         try {
             p.set(x, y, h, 1);
         } catch (Exception ex) {
@@ -349,8 +398,92 @@ public class ParticleFilter {
 //        // Todo: normalize the weights after weight update and resamapling
 //        // Todo: Check probabilities and resample according to the Neff, if it's needed.
 //    }
-    public void applyLandmarkProximityMeasurements(ArrayList<BLEdevice> importantNearBeacons){
-        for(Particle particle: this.particles){
+
+    private Double[] selectBestKmeans2Cluster() {
+        int KMEANS_PERIOD = 50;
+        ArrayList<Particle> cluster1 = new ArrayList<Particle>();
+        ArrayList<Particle> cluster2 = new ArrayList<Particle>();
+
+        Double[] cluster1Center = new Double[]{(double) (MapConsts.MAP_HEIGHT / 2), 0d};
+        Double[] cluster2Center = new Double[]{(double) (-1 * MapConsts.MAP_HEIGHT / 2), 0d};
+
+        for (int i = 0; i < KMEANS_PERIOD; i++) {
+            cluster1.clear();
+            cluster2.clear();
+
+            for (Particle particle : this.particles) {
+                Double dist1 = (Double) ParticleFilterMath.distance(particle.x, particle.y,
+                        cluster1Center[0],
+                        cluster1Center[1]);
+
+                Double dist2 = (Double) ParticleFilterMath.distance(particle.x, particle.y,
+                        cluster2Center[0],
+                        cluster2Center[1]);
+
+                if (dist1 < dist2) {
+                    cluster1.add(particle);
+                } else {
+                    cluster2.add(particle);
+                }
+            }
+
+            // Calculate cluster1Center
+            cluster1Center = new Double[]{0d, 0d};
+            for (Particle particle : cluster1) {
+                cluster1Center[0] += particle.x;
+                cluster1Center[1] += particle.y;
+            }
+            cluster1Center[0] /= cluster1.size();
+            cluster1Center[1] /= cluster1.size();
+
+            // Calculate cluster2Center
+            cluster2Center = new Double[]{0d, 0d};
+            for (Particle particle : cluster2) {
+                cluster2Center[0] += particle.x;
+                cluster2Center[1] += particle.y;
+            }
+            cluster2Center[0] /= cluster2.size();
+            cluster2Center[1] /= cluster2.size();
+        }
+
+        // Select best cluster according to the particle filter
+        Double cluster1Weight = 0d;
+        Double cluster2Weight = 0d;
+        for (Particle particle : cluster1) {
+            cluster1Weight += particle.probability;
+        }
+        for (Particle particle : cluster2) {
+            cluster2Weight += particle.probability;
+        }
+
+        double clusterSumWeightRatio = cluster1Weight / cluster2Weight;
+        double clusterCentersDist = (Double) ParticleFilterMath.distance(cluster1Center[0], cluster1Center[1],
+                cluster2Center[0],
+                cluster2Center[1]);
+
+        if (clusterCentersDist < MIN_CLUSTER_CENTER_DIST && firstAggregation == false) {
+            firstAggregation = true;
+        }
+
+        double diffWeightRation = 0.3;
+        if ((clusterSumWeightRatio > (1 - diffWeightRation) || (1 + diffWeightRation) > clusterSumWeightRatio) && clusterCentersDist > MIN_CLUSTER_CENTER_DIST) {
+            instantRelocateByBeacon = true;
+        }
+        clusterCenters = new Double[][]{
+                cluster1Center,
+                cluster2Center,
+        };
+
+        if (cluster1Weight > cluster2Weight) {
+            return cluster1Center;
+        } else {
+            return cluster2Center;
+        }
+    }
+
+
+    public void applyLandmarkProximityMeasurements(ArrayList<BLEdevice> importantNearBeacons) {
+        for (Particle particle : this.particles) {
 //            Log.e(TAG, "Prob before update:"+particle.probability);
             particle.updateProbs(importantNearBeacons);
 //            Log.e(TAG, "Prob after update:"+particle.probability);
@@ -361,43 +494,55 @@ public class ParticleFilter {
         // Todo: I didn't research about influence of Neff and its related resampling effects
         double Neff = calc_Neff();
 
-        if (this.numParticles < Neff){
+        if (this.numParticles < Neff) {
             resample();
             particlesHistory = new ArrayList<Particle>();
             particlesHistory.addAll(particles);
         }
     }
 
-    public ArrayList<ArrayList<Double>> getParticles() {
+    public ArrayList<ArrayList<Double>> getParticles(int randomParticleFactor) {
         ArrayList<ArrayList<Double>> particlesData = new ArrayList<ArrayList<Double>>();
-        for (Particle particle : particles) {
-            ArrayList<Double> tempParticleData = new ArrayList<Double>();
-            tempParticleData.add(particle.x);
-            tempParticleData.add(particle.y);
-            tempParticleData.add(particle.h);
-            particlesData.add(tempParticleData);
+
+        for (int i = 0; i < this.numParticles; i++) {
+            if (i % randomParticleFactor == 0) {
+                Particle particle = particles.get(i);
+                ArrayList<Double> tempParticleData = new ArrayList<Double>();
+                tempParticleData.add(particle.x);
+                tempParticleData.add(particle.y);
+                tempParticleData.add(particle.h);
+                particlesData.add(tempParticleData);
+            }
         }
+//
+//        for (Particle particle : particles) {
+//            ArrayList<Double> tempParticleData = new ArrayList<Double>();
+//            tempParticleData.add(particle.x);
+//            tempParticleData.add(particle.y);
+//            tempParticleData.add(particle.h);
+//            particlesData.add(tempParticleData);
+//        }
         return particlesData;
     }
 
-    public void normalizeWeights(){
+    public void normalizeWeights() {
         Double sumWeight = 0d;
-        for(Particle particle: this.particles){
+        for (Particle particle : this.particles) {
             sumWeight += particle.probability;
         }
-        for(Particle particle: this.particles){
+        for (Particle particle : this.particles) {
             particle.probability /= sumWeight;
         }
         particlesHistory = new ArrayList<Particle>();
         particlesHistory.addAll(particles);
     }
 
-    public double calc_Neff(){
+    public double calc_Neff() {
         double sumSqrProb = 0d;
-        for (Particle particle: this.particles){
+        for (Particle particle : this.particles) {
             sumSqrProb += Math.sqrt(particle.probability);
         }
-        return 1.0d/ sumSqrProb;
+        return 1.0d / sumSqrProb;
     }
 
     @Override

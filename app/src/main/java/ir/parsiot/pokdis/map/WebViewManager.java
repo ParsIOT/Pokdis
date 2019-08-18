@@ -40,6 +40,7 @@ public class WebViewManager {
     private ScanModeEnum scanMode;
     private OnWebViewClickListener onWebViewClickListener;
     private String tagToJS;
+    private boolean showParticles = false;
 //    private ParticlesDataInterface particlesDataInterface = new ParticlesDataInterface();
     private String loctionOfMarker = MapConsts.initLocation;
 
@@ -57,6 +58,7 @@ public class WebViewManager {
         public void onLocationUpdate(String locationXY);
         public void onHeadingUpdate(String locationXY);
         public void onUpdateParticles(ArrayList<ArrayList<String>> particles);
+        public void onUpdateClusterCenter(ArrayList<ArrayList<String>> clusterCenters);
 //        public void onDrawRect(String topLeftDot, String bottomRightDot, String topRightDot, String bottomLeftDot);
         public void drawConstLine(String dot1, String dot2);
     }
@@ -223,18 +225,35 @@ public class WebViewManager {
     }
 
 
-
     public void updateParticles(ArrayList<ArrayList<String>> particles){
 //        particlesDataInterface.changeData(particles);
-        final String js_location = String.format("javascript:showParticles(%s)",new JSONArray(particles));
-        //  webView.loadUrl(js_location);
-        if (context != null && webView != null) {
-            ((Activity) context).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    webView.loadUrl(js_location);
-                }
-            });
+        if (showParticles) {
+            final String js_location = String.format("javascript:showParticles(%s)", new JSONArray(particles));
+            //  webView.loadUrl(js_location);
+            if (context != null && webView != null) {
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.loadUrl(js_location);
+                    }
+                });
+            }
+        }
+    }
+
+    public void updateClusterCenters(ArrayList<ArrayList<String>> clusterCenters){
+//        particlesDataInterface.changeData(particles);
+        if (showParticles) {
+            final String js_location = String.format("javascript:showKmeansClusterCenter(%s)", new JSONArray(clusterCenters));
+            //  webView.loadUrl(js_location);
+            if (context != null && webView != null) {
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.loadUrl(js_location);
+                    }
+                });
+            }
         }
     }
 
@@ -337,6 +356,13 @@ public class WebViewManager {
             }
             Toast.makeText(mContext,txtMessage,Toast.LENGTH_SHORT).show();
         }
+
+        @JavascriptInterface
+        public void toggleShowParticles() {
+            showParticles = !showParticles;
+            Toast.makeText(mContext,"تغییر نمایش ذرات",Toast.LENGTH_SHORT).show();
+        }
+
 
         @JavascriptInterface
         public void startMap() {

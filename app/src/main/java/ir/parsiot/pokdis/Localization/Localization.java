@@ -59,7 +59,6 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
 
     private int farFromRouteCnt = 0;
 
-
     // MotionDna:
     MotionDnaApplication motionDnaApplication;
     Hashtable<String, MotionDna> networkUsers = new Hashtable<String, MotionDna>();
@@ -127,8 +126,7 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
     public void InitAndStart() {
         motionDnaServiceIntent = new Intent(getAppContext(), MotionDnaForegroundService.class);
         getAppContext().startService(motionDnaServiceIntent);
-
-
+        startMotionDna();
 
         try {
             beaconDiscovered = new BeaconDiscovered(this.context);
@@ -144,7 +142,6 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
         }
 
         // Start the MotionDna Core
-        startMotionDna();
     }
 
     public void onDestory() {
@@ -226,7 +223,7 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
         //    fast our SDK can provide results, but usually setting a slower update rate improves results.
         //    Setting the rate to 0ms will output estimation results at our maximum rate.
 
-        motionDnaApplication.setCallbackUpdateRateInMs(1);
+        motionDnaApplication.setCallbackUpdateRateInMs(0);
 
         //    When setLocationNavisens is enabled and setBackpropagationEnabled is called, once Navisens
         //    has initialized you will not only get the current position, but also a set of latitude
@@ -239,7 +236,7 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
         //    If the user wants to see everything that happened before Navisens found an initial
         //    position, he can adjust the amount of the trajectory to see before the initial
         //    position was set automatically.
-        motionDnaApplication.setBackpropagationBufferSize(200000); //Todo : It was 2000 by default
+        motionDnaApplication.setBackpropagationBufferSize(2000); //Todo : It was 2000 by default
         motionDnaApplication.setLocalHeadingOffsetInDegrees(MapConsts.initHeading);
         //    Enables AR mode. AR mode publishes h quaternion at a higher rate.
 //        motionDnaApplication.setARModeEnabled(true);
@@ -294,6 +291,7 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
 
         if (this.locationUpdateCallback != null && pfFilter != null) {
             MotionDna.Location location = motionDna.getLocation();
+//            Log.e("heading ", String.valueOf(location.heading));
             ArrayList<Double> newMotionstate = new ArrayList<Double>();
             newMotionstate.add(location.localLocation.y * naviSettings.scale + MapConsts.getInitLocationFloat().get(0));
             newMotionstate.add(location.localLocation.x * naviSettings.scale + MapConsts.getInitLocationFloat().get(1));
@@ -351,14 +349,14 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
 //                HashMap<String, Double> measurements = new HashMap<>();
                 ArrayList<BLEdevice> importantNearBeacons = new ArrayList<>();
                 if (sortedDiscoveredDevices.size()>0) {
-                    if (sortedDiscoveredDevices.get(0).getRssiAvg() >= MIN_VALID_PROXIMITY_RSS) {
+                    if (sortedDiscoveredDevices.get(sortedDiscoveredDevices.size()-1).getRssiAvg() >= MIN_VALID_PROXIMITY_RSS) {
 //                    measurements.put(sortedDiscoveredDevices.get(0).getMac(), PROXIMITY_DISTANCE * MapConsts.scale);
-                        importantNearBeacons.add(sortedDiscoveredDevices.get(0));
+                        importantNearBeacons.add(sortedDiscoveredDevices.get(sortedDiscoveredDevices.size()-1));
                     }
                     if (sortedDiscoveredDevices.size() > 1) {
-                        if (sortedDiscoveredDevices.get(1).getRssiAvg() >= MIN_VALID_PROXIMITY_RSS) {
+                        if (sortedDiscoveredDevices.get(sortedDiscoveredDevices.size()-2).getRssiAvg() >= MIN_VALID_PROXIMITY_RSS) {
 //                    measurements.put(sortedDiscoveredDevices.get(0).getMac(), PROXIMITY_DISTANCE * MapConsts.scale);
-                            importantNearBeacons.add(sortedDiscoveredDevices.get(1));
+                            importantNearBeacons.add(sortedDiscoveredDevices.get(sortedDiscoveredDevices.size()-2));
                         }
                     }
                 }
@@ -370,7 +368,12 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
 ////                }
                 if (pfFilter != null && importantNearBeacons.size()>0){
 //                    pfFilter.onSensedLandmarkData(measurements);
-                    pfFilter.onSensedLandmarkProxmity(importantNearBeacons);
+                    int relocationByProximityCnt = pfFilter.getRelocationByProximityCnt();
+                    if ( relocationByProximityCnt < 5){
+                        pfFilter.onSensedLandmarkProxmity(importantNearBeacons);
+                        relocationByProximityCnt++;
+                        pfFilter.setRelocationByProximityCnt(relocationByProximityCnt);
+                    }
                 }
 
             } catch (Exception e) {
@@ -506,6 +509,19 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
             particlesData.add(particleStrList);
         }
         locationUpdateCallback.onUpdateParticles(particlesData);
+    }
+
+
+    public void onShowParticleClusterCenters(Double[][] clusterCenter) {
+        ArrayList<ArrayList<String>> clusterCenterData = new ArrayList<ArrayList<String>>();
+        for (Double[] dot: clusterCenter) {
+            ArrayList<String> dotStrList = new ArrayList<String>();
+            for (Double dim : dot) {
+                dotStrList.add(dim.toString());
+            }
+            clusterCenterData.add(dotStrList);
+        }
+        locationUpdateCallback.onUpdateClusterCenter(clusterCenterData);
     }
 
     public void drawObstacleWalls(){

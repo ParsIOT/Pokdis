@@ -478,4 +478,10 @@ public class MainActivity extends AppCompatActivity implements WebViewManager.Lo
         webViewManager.updateParticles(particles);
     }
 
+    @Override
+    public void onUpdateClusterCenter(ArrayList<ArrayList<String>> clusterCenters) {
+        webViewManager.updateClusterCenters(clusterCenters);
+    }
+
+
 }
