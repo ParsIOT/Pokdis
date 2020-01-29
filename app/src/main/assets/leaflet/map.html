@@ -89,6 +89,7 @@
     var particlesLayer = L.featureGroup().addTo(map);
 
     latlng = [-320,330];
+
     heading = 0;
 //    latlng = [0,-150];
     map.setView(latlng, -0.5);
@@ -97,7 +98,7 @@
     setTimeout(function () {
         map.setView([0,0], -1.5);
 //        map.flyToBounds(zoomBounds);
-    }, 3000);
+    }, 3000);5
 
     var marker = L.userMarker(latlng, {pulsing: true, accuracy: 100});
     marker.addTo(map);
@@ -268,10 +269,18 @@ mapLayer = 0;
 
             var itemImg = "<img class='item-img' src='"+imgSrc+"' height='100px' width='100px'/>";
             popupTag = "<span dir='rtl' class='item-title'> " + text + "</span> "+itemImg;
-          var popup = arbitraryMarker.bindPopup(
-          "<i id='ic-"+id+"' class='glyphicon glyphicon-plus plus-icon-custom-style' onclick='plusButtonClick(\""+id+"\")'></i>"+popupTag,
-          {maxWidth: "auto"})
-          .openPopup();
+
+         if (id != "-1"){
+              var popup = arbitraryMarker.bindPopup(
+              "<i id='ic-"+id+"' class='glyphicon glyphicon-plus plus-icon-custom-style' onclick='plusButtonClick(\""+id+"\")'></i>"+popupTag,
+              {maxWidth: "auto"})
+              .openPopup();
+            }else{
+                   var popup = arbitraryMarker.bindPopup(
+              "<i id='ic-"+id+"' onclick='plusButtonClick(\""+id+"\")'></i>"+popupTag,
+              {maxWidth: "auto"})
+              .openPopup();
+            }
 
          map.panTo(new L.LatLng(x, y),);
          map.setView([x, y], -0.2);

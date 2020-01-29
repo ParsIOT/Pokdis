@@ -167,7 +167,14 @@ public class WebViewManager {
             ((Activity) context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    webView.loadUrl(js_location);
+//                    webView.loadUrl(js_location);
+                    try {
+                        webView.loadUrl(js_location);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.e("WebViewManager", "updateLocationAndHeading : " + e);
+                    }
                 }
             });
         }
@@ -218,7 +225,13 @@ public class WebViewManager {
             ((Activity) context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    webView.loadUrl(js_location);
+                    try {
+                        webView.loadUrl(js_location);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.e("WebViewManager", "updateLocationAndHeading : " + e);
+                    }
                 }
             });
         }

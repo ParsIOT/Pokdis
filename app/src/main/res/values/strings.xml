@@ -1,5 +1,21 @@
 <resources>
-    <string name="app_name">PokDis</string>
+    <string name="app_name">Parsin</string>
     <!--<string name="appbar_scrolling_view_behavior" translatable="false">android.support.design.widget.AppBarLayout$ScrollingViewBehavior</string>-->
     <string name="title_activity_item_content">ItemContent</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="click_to_set">[click to set]</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_js">JsActivity</string>
+    <string name="title_activity_booth">مغازه ها</string>
+    <string name="title_activity_itrm_booth">ItrmBoothActivity</string>
+    <string name="title_activity_item_booth">مشخصات مغازه</string>
+    <string name="title_activity_about_us">About Us</string>
+    <string name="aboutus_text">اين برنامه براي بازديدکنندگان نمايشگاه ها تهيه شده است به طوري که علاوه بر کارايي هاي برنامه هاي معمول در اين حوزه ، قابليت ها و ويژگي هاي مبتني بر مکان يابي درون ساختمان را هم ارائه کند.</string>
+    <string name="title_activity_news">اخبار</string>
+    <string name="title_activity_booth_list">مغازه ها</string>
+    <string name="title_activity_booth_item">BoothItemActivity</string>
+    <string name="title_activity_product_list">محصولات</string>
+    <string name="title_activity_product_item">ProductItemActivity</string>
 </resources>

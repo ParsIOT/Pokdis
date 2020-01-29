@@ -54,6 +54,10 @@ dependencies {
     implementation group: "com.navisens", name: "motiondnaapi", version: "1.8.7", changing: true
 //    implementation files('libs/android-beacon-library-2.16.3-beta4.aar')
     implementation 'org.altbeacon:android-beacon-library:2.16.2'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
 
     implementation files("vuforia_sdk/build/java/Vuforia/Vuforia.jar")
 

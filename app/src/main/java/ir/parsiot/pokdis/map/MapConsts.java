@@ -15,15 +15,14 @@ import ir.parsiot.pokdis.map.WallGraph.WallGraph;
 
 public class MapConsts {
     public static double scale = 100;
-//    public static int MAP_WIDTH = 909, MAP_HEIGHT = 769;
+    //    public static int MAP_WIDTH = 909, MAP_HEIGHT = 769;
     public static int MAP_WIDTH = 1320, MAP_HEIGHT = 1200;
-
 
     // Note: change init location(latlng variable) in map.html too.
     public static double initHeading = 90.0;
-//    public static String initLocation = "-320,330";
+    //    public static String initLocation = "-320,330";
     public static String initLocation = "-500,490";
-    public static ArrayList<Double> constInitState = new ArrayList<Double>(){{
+    public static ArrayList<Double> constInitState = new ArrayList<Double>() {{
         add(-500d);
         add(490d);
         add(90d);

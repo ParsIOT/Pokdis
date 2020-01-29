@@ -1,10 +1,12 @@
 package ir.parsiot.pokdis.Views;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,7 +39,7 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
         super.onCreate(savedInstanceState);
         cartItems = new CartItems(getApplicationContext());
         setContentView(R.layout.activity_cart);
-        getSupportActionBar().setTitle("سبد خرید");
+//        getSupportActionBar().setTitle("سبد خرید");
         initViews();
 
         items = new ArrayList<>();
@@ -53,6 +55,21 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
         }
         cntButton = findViewById(R.id.continue_button);
 
+        cntButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Intent intent = new Intent(context, ItemContentActivity.class);
+//                intent.putExtra("itemId", item.getId());
+//                context.startActivity(intent);
+                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(CartActivity.this);
+                builder.setMessage("بخش فروش مغازه ها در حال توسعه است ...");
+                builder.setNegativeButton("بله", null);
+                AlertDialog dialog = builder.create();
+                dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+                dialog.show();
+
+            }
+        });
 //        Button button = findViewById(R.id.continue_button);
 //        ((CoordinatorLayout.LayoutParams) button.getLayoutParams()).setBehavior(new StickyBottomBehavior(R.id.anchor, getResources().getDimensionPixelOffset(R.dimen.margins)));
 
@@ -159,11 +176,11 @@ public class CartActivity extends AppCompatActivity implements CartItemsClient {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(CartActivity.this, MainActivity.class);
+//        Intent intent = new Intent(CartActivity.this, MainActivity.class);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//        finish();
-        startActivity(intent);
+        finish();
+//        startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 }

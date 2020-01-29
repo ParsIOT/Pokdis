@@ -33,7 +33,7 @@ public class SalesListActivity extends AppCompatActivity {
         initViews();
         initBottomBar(this, 0);
 
-        getSupportActionBar().setTitle("جستجو محصولات");
+//        getSupportActionBar().setTitle("جستجو محصولات");
         refreshDisplay();
     }
 
@@ -132,10 +132,10 @@ public class SalesListActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(SalesListActivity.this, MainActivity.class);
+//        Intent intent = new Intent(SalesListActivity.this, MainActivity.class);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         finish();
-        startActivity(intent);
+//        startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 }

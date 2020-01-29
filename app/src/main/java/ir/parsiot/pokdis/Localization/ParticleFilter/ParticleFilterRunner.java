@@ -32,8 +32,8 @@ public class ParticleFilterRunner extends Thread {
     double Fnoise = 0.05d, Tnoise = 0.05d, Snoise = 100d;
     ArrayList<Double> initScatterFactor = new ArrayList<Double>() {
         {
-            add(4000d);
-            add(4000d);
+            add(100d);
+            add(100d);
 //            add(100d);
 //            add(100d);
             add(40d);

@@ -319,8 +319,8 @@ public class MainActivity extends AppCompatActivity implements WebViewManager.Lo
 
         MapDetail mapDetail = new MapDetail();
         mapDetail.setMapName("map");
-//        mapDetail.setMapPath("map.png");
         mapDetail.setMapPath("map1.png");
+
         List<Integer> dimensions = new ArrayList<Integer>();
 //        dimensions.add(1206);
 //        dimensions.add(1151);
@@ -405,21 +405,22 @@ public class MainActivity extends AppCompatActivity implements WebViewManager.Lo
     @Override
     public void onBackPressed() {
         if (isMainPage) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("آیا میخواهید از برنامه خارج شوید؟")
-                    .setCancelable(false)
-                    .setPositiveButton("بله",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//            builder.setMessage("آیا میخواهید از بخش فروش خارج شوید؟")
+//                    .setCancelable(false)
+//                    .setPositiveButton("بله",
+//                            new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int id) {
+                                    startActivity(new Intent(MainActivity.this, MainActivityOfficial.class));
                                     finish();
-                                }
-                            })
-                    .setNegativeButton("خیر", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                        }
-                    });
-
-            builder.show();
+//                                }
+//                            })
+//                    .setNegativeButton("خیر", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                        }
+//                    });
+//
+//            builder.show();
         } else {
             isMainPage = true;
             localization.clearBeaconDataHistory();

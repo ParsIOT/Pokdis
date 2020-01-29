@@ -118,7 +118,7 @@ public class Localization implements MotionDnaInterface, ParticleFilterRunner.Pa
             }
         }, 2000);
 
-        drawObstacleWalls();
+//        drawObstacleWalls();
         // Get location from beacon manager
 
     }
