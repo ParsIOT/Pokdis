@@ -16,16 +16,16 @@ import ir.parsiot.pokdis.map.WallGraph.WallGraph;
 public class MapConsts {
     public static double scale = 100;
 //    public static int MAP_WIDTH = 909, MAP_HEIGHT = 769;
-    public static int MAP_WIDTH = 1320, MAP_HEIGHT = 1200;
+    public static int MAP_WIDTH = 720, MAP_HEIGHT = 720;
 
 
     // Note: change init location(latlng variable) in map.html too.
-    public static double initHeading = 90.0;
+    public static double initHeading = 90.0; //the direction
 //    public static String initLocation = "-320,330";
-    public static String initLocation = "-500,490";
+    public static String initLocation = "40,3";
     public static ArrayList<Double> constInitState = new ArrayList<Double>(){{
-        add(-500d);
-        add(490d);
+        add(40d);
+        add(3d);
         add(90d);
     }};
 
@@ -80,10 +80,10 @@ public class MapConsts {
 
         vertexOfGraph = new HashMap<String, String>() {{
             //index as 1
-            put("1", "430,-560");
-            put("2", "430,-200");
-            put("3", "430,140");
-            put("4", "430,490");
+            put("1", "343,-345");
+            put("2", "331,345");
+            put("3", "-345,-344");
+            put("4", "-339,345");
 
             put("5", "-30,-560");
             put("6", "-30,-200");
@@ -101,8 +101,8 @@ public class MapConsts {
 
 //        Double[] leftTopBorderDot = new Double[]{-450d, 340d};
 //        Double[] rightBottomBorderDot = new Double[]{405d, -380d};
-        Double[] leftTopBorderDot = new Double[]{-660d, 535d};
-        Double[] rightBottomBorderDot = new Double[]{595d, -600d};
+        Double[] leftTopBorderDot = new Double[]{354d, -353d}; //set the border so that the particle can pass the wall
+        Double[] rightBottomBorderDot = new Double[]{-357d, 358d};   //set the border so that the particle can pass the wall
 
         mapBorderRect = new RectObstacle(leftTopBorderDot, rightBottomBorderDot);
 
@@ -133,19 +133,24 @@ public class MapConsts {
 //        }};
         obstacleVertexes = new ArrayList<Double[][]>() {{
             add(new Double[][]{
-                    new Double[]{240d, 315d},
-                    new Double[]{385d, -390d},
+                    new Double[]{-355d, 241d},
+                    new Double[]{-27d, 79d},
             });
 
 
             add(new Double[][]{
-                    new Double[]{-105d, 315d},
-                    new Double[]{40d, -390d},
+                    new Double[]{-351d, 4d},
+                    new Double[]{-28d, -318d},
             });
 
             add(new Double[][]{
-                    new Double[]{-450d, 315d},
-                    new Double[]{-305d, -390d},
+                    new Double[]{35d, 242d},
+                    new Double[]{361d, 78d},
+            });
+
+            add(new Double[][]{
+                    new Double[]{34d, 8d},
+                    new Double[]{357d, -311d},
             });
         }};
 

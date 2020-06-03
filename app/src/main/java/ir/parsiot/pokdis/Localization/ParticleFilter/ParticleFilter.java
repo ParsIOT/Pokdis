@@ -1,15 +1,11 @@
 package ir.parsiot.pokdis.Localization.ParticleFilter;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
 import ir.parsiot.pokdis.Localization.Beacon.BLEdevice;
-import ir.parsiot.pokdis.map.GraphBuilder;
 import ir.parsiot.pokdis.map.MapConsts;
-import ir.parsiot.pokdis.map.Objects.Point;
 import ir.parsiot.pokdis.map.WallGraph.RectObstacle;
 
 import static ir.parsiot.pokdis.Constants.Constants.MIN_CLUSTER_CENTER_DIST;
@@ -30,6 +26,8 @@ public class ParticleFilter {
     int numInitParticles = 0;
     int numParticlesThreshold;
     boolean firstAggregation = false;
+    boolean use2ClusterAlgorithm = false;
+
     public int relocationByProximityCnt = 0;
 
     Random gen = new Random();
@@ -252,7 +250,7 @@ public class ParticleFilter {
 
         float[] cumsumWeight = new float[numParticles];
 
-        float convertFactor = ((float) numInitParticles / (float) numParticles); // Manytimes numParticles is lower than numInitParticles. So it causes that sum of particle probabilities not to be 1
+        float convertFactor = ((float) numInitParticles / (float) numParticles); // Many times numParticles is lower than numInitParticles. So it causes that sum of particle probabilities not to be 1
         cumsumWeight[0] = particles.get(0).probability * convertFactor;
         for (int i = 1; i < numParticles; i++) {
             cumsumWeight[i] = cumsumWeight[i - 1] + particles.get(i).probability * convertFactor;
@@ -340,20 +338,23 @@ public class ParticleFilter {
         h /= probSum;
 
 
-        Double[] xy = new Double[]{y, x};
-        Boolean inRectObstacle = false;
-        for (RectObstacle rectObstacle : mapConsts.rectObstacles) {
-            if (rectObstacle.inArea(xy)) {
+        if (use2ClusterAlgorithm) {
+
+            Double[] xy = new Double[]{y, x};
+            Boolean inRectObstacle = false;
+            for (RectObstacle rectObstacle : mapConsts.rectObstacles) {
+                if (rectObstacle.inArea(xy)) {
 //                        Log.d("ParticleFilter", "Particle is in denied areas2");
-                inRectObstacle = true;
-                break;
+                    inRectObstacle = true;
+                    break;
+                }
             }
-        }
 
-        clusterCenters = new Double[][]{};
-        Double[] bestKmeans2Cluster = selectBestKmeans2Cluster();
 
-        if (inRectObstacle) {
+            clusterCenters = new Double[][]{};
+            Double[] bestKmeans2Cluster = selectBestKmeans2Cluster();
+
+            if (inRectObstacle) {
 //            GraphBuilder location = new GraphBuilder();
 //            String dot = String.format("%.2f,%.2f", x, y);
 //            String resDot = location.graph.getNearestDot(dot);
@@ -365,14 +366,15 @@ public class ParticleFilter {
 //            y /= 2;
 
 ////            relocationByProximityCnt = 3;
-            if (instantRelocateByBeacon) {
-                relocationByProximityCnt -= 1;
-                instantRelocateByBeacon = false;
-            }
+                if (instantRelocateByBeacon) {
+                    relocationByProximityCnt -= 1;
+                    instantRelocateByBeacon = false;
+                }
 
-            if (firstAggregation) {
-                x = bestKmeans2Cluster[0];
-                y = bestKmeans2Cluster[1];
+                if (firstAggregation) {
+                    x = bestKmeans2Cluster[0];
+                    y = bestKmeans2Cluster[1];
+                }
             }
         }
 

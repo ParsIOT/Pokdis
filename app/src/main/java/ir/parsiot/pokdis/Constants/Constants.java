@@ -24,8 +24,8 @@ public class Constants {
     public static  final long PERIOD_TIME_BETWEEN_SCAN = 150l;
 //    private static final long PERIOD_TIME_BETWEEN = 150l;
 
-    public static  final String COMMON_UUID_BEACON = "23a01af0-232a-4518-9c0e-323fb773f5ef";
-    public static  final String COMMON_MAJOR_BEACON = "1";
+    public static  final String COMMON_UUID_BEACON = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
+    public static  final String COMMON_MAJOR_BEACON = "1234";
 
     public static final String CART_ITEMS_KEY = "cart_items_key";
 

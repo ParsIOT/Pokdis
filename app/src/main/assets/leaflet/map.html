@@ -115,13 +115,13 @@
     //     console.log(e.latlng.lat + "," + e.latlng.lng);
     // });
 
-   var toggleShowParticles = "ذرات";
+   var toggleShowParticles = "Particles";
     L.easyButton('fa-angle-up fa-2x',function(btn,map){
        Android.toggleShowParticles();
        clearParticlesLayer();
     },toggleShowParticles,"toggle-show-particles-btn").addTo(map);
 
-    var homeBtnTxt = "مکان فعلی";
+    var homeBtnTxt = "Current location";
     L.easyButton('fa-map-marker fa-2x',function(btn,map){
       map.setView(latlng, -0.5);
     },homeBtnTxt,"home-btn").addTo(map);

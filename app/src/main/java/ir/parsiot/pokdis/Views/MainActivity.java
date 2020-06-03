@@ -406,15 +406,15 @@ public class MainActivity extends AppCompatActivity implements WebViewManager.Lo
     public void onBackPressed() {
         if (isMainPage) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("آیا میخواهید از برنامه خارج شوید؟")
+            builder.setMessage("Do You Want To Exit The Program?")
                     .setCancelable(false)
-                    .setPositiveButton("بله",
+                    .setPositiveButton("Yes",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     finish();
                                 }
                             })
-                    .setNegativeButton("خیر", new DialogInterface.OnClickListener() {
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                         }
                     });

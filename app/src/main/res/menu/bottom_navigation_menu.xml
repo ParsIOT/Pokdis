@@ -5,18 +5,18 @@
     <item
         android:id="@+id/ic_search_page"
         android:icon="@drawable/search"
-        android:title="جستجو"
+        android:title="Search"
         />
     <item
         android:id="@+id/ic_map_page"
         android:icon="@drawable/map"
-        android:title="نقشه"
+        android:title="Map"
         />
 
     <item
         android:id="@+id/ic_buy_page"
         android:icon="@drawable/buy"
-        android:title="سبد خرید"
+        android:title="Room"
         />
 
 </menu>

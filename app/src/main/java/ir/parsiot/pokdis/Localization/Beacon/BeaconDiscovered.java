@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -113,7 +114,7 @@ public class BeaconDiscovered implements BeaconConsumer {
 //            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
 //
 //                if (beacons.size() > 0) {
-////                    Log.i("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beacons.size());
+//                    Log.i("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beacons.size());
 //
 //                    //covert collection<beacon> to list<beacon> for access to beacons
 //                    List<Beacon> list = new ArrayList<Beacon>(beacons);
@@ -196,7 +197,7 @@ public class BeaconDiscovered implements BeaconConsumer {
 //                                    Toast.makeText(context,"proposedBeacon Minor"+proposedBeacon.getMinor(),Toast.LENGTH_SHORT);
 //                                }
 //                        }*/
-////                        Log.d("beaconData:",String.valueOf(discoveredDevices.get(0).getRssiAvg()));
+//                        Log.d("beaconData:",String.valueOf(discoveredDevices.get(0).getRssiAvg()));
 //
 //                        if (discoveredDevices.get(0).getRssiAvg() >= MIN_VALID_PROXIMITY_RSS) {
 //                            proposedBeacon = discoveredDevices.get(0);
@@ -215,9 +216,9 @@ public class BeaconDiscovered implements BeaconConsumer {
 //            //set uuid of beacons and their major for better discovering
 //            beaconRegion = new Region("beacon", Identifier.parse(Constants.COMMON_UUID_BEACON), null, null);
 //            beaconManager.startRangingBeaconsInRegion(beaconRegion);
-////            beaconManager.addRangeNotifier(rangeNotifier);
+//            beaconManager.addRangeNotifier(rangeNotifier);
 //            beaconManager.startRangingBeaconsInRegion(beaconRegion);
-////            beaconManager.addRangeNotifier(rangeNotifier);
+//            beaconManager.addRangeNotifier(rangeNotifier);
 //
 //        } catch (RemoteException e) {
 //            Log.e("beacon_manager", e.getMessage());
@@ -225,7 +226,7 @@ public class BeaconDiscovered implements BeaconConsumer {
 //
 //
 //    }
-
+//
     private ArrayList<BLEdevice> getSortedDiscoveredDevices() {
 
         ArrayList<BLEdevice> beaconRssiPairList = new ArrayList<>();
@@ -262,19 +263,19 @@ public class BeaconDiscovered implements BeaconConsumer {
     }
 
 
-//    @Override
-//    public void onBeaconServiceConnect() {
-////        beaconManager.setForegroundBetweenScanPeriod(Constants.PERIOD_TIME_BETWEEN_SCAN);
-//
-//        try {
-//            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-//
-//            beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-//
-//        } catch (RemoteException e) {
-//            Log.e("Error", e.getMessage());
-//        }
-//    }
+    //@Override
+    //public void onBeaconServiceConnect() {
+     //   beaconManager.setForegroundBetweenScanPeriod(Constants.PERIOD_TIME_BETWEEN_SCAN);
+
+     //   try {
+     //       beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+    //
+     //       beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+    //
+     //   } catch (RemoteException e) {
+     //       Log.e("Error", e.getMessage());
+     //   }
+   // }
 
     @Override
     public void onBeaconServiceConnect() {
@@ -324,7 +325,7 @@ public class BeaconDiscovered implements BeaconConsumer {
                     ArrayList<Beacon> validBeacons = new ArrayList<>();
 
                     for (Beacon beacon : beaconList) {
-//                        Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beaconList.toString());
+                        Log.e("beacon", "didRangeBeaconsInRegion called with beacon count:  " + beaconList.toString());
                         final String beaconName = beacon.getBluetoothAddress();
                         HashMap<String, Double[]> beaconCoordinates = beaconLocations.beaconCoordinates;
                         if (beaconCoordinates.containsKey(beaconName)) {

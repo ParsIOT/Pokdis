@@ -45,7 +45,7 @@
         android:id="@+id/continue_button"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="ادامه فرآیند خرید"
+        android:text="Continue the buying process"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:background="@color/green"

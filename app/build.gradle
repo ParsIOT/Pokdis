@@ -30,10 +30,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets.main {
-        jni.srcDirs = []
-        jniLibs.srcDir "vuforia_sdk/build/lib"
-    }
+
 }
 
 dependencies {
@@ -55,6 +52,6 @@ dependencies {
 //    implementation files('libs/android-beacon-library-2.16.3-beta4.aar')
     implementation 'org.altbeacon:android-beacon-library:2.16.2'
 
-    implementation files("vuforia_sdk/build/java/Vuforia/Vuforia.jar")
+
 
 }

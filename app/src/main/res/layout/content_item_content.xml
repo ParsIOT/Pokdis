@@ -29,7 +29,7 @@ tools:showIn="@layout/activity_item_content">
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="برای این محصول تصویری وجود ندارد"
+            android:text="There is no image for this product"
             android:textSize="15sp" />
 
         <ImageView
@@ -90,7 +90,7 @@ tools:showIn="@layout/activity_item_content">
                             android:paddingRight="10dp"
                             android:textSize="20dp"
                             android:textColor="@color/DarkGreen"
-                            android:text="موجود" />
+                            android:text="Available" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/product_availability_switch"
@@ -175,7 +175,7 @@ tools:showIn="@layout/activity_item_content">
             android:layout_toLeftOf="@id/description_expand_btn"
             android:gravity="center_vertical"
             android:paddingRight="8dp"
-            android:text="توضیحات"
+            android:text="Description"
             android:textSize="14sp" />
 
     </RelativeLayout>
@@ -215,7 +215,7 @@ tools:showIn="@layout/activity_item_content">
             android:layout_centerVertical="true"
             android:gravity="center_vertical"
             android:paddingRight="40dp"
-            android:text="مشخصات"
+            android:text="Specifications"
             android:textSize="14sp" />
 
     </RelativeLayout>
@@ -244,7 +244,7 @@ tools:showIn="@layout/activity_item_content">
             <TextView
                 android:gravity="center_vertical|right"
                 android:layout_gravity="center_vertical|right"
-                android:text="ابعاد"
+                android:text="Dimensions"
                 android:layout_weight="1"/>
 
 
@@ -265,7 +265,7 @@ tools:showIn="@layout/activity_item_content">
             <TextView
                 android:gravity="center_vertical|right"
                 android:layout_gravity="center_vertical|right"
-                android:text="وزن"
+                android:text="Weight"
                 android:layout_weight="1"/>
 
         </TableRow>
@@ -285,7 +285,7 @@ tools:showIn="@layout/activity_item_content">
             <TextView
                 android:gravity="center_vertical|right"
                 android:layout_gravity="center_vertical|right"
-                android:text="سازنده"
+                android:text="Manufacturer"
                 android:layout_weight="1"/>
 
         </TableRow>
@@ -327,7 +327,7 @@ tools:showIn="@layout/activity_item_content">
 
             <TextView
                 android:layout_gravity="center_vertical|right"
-                android:text="رنگ"
+                android:text="Color"
                 android:layout_span="1"
                 android:layout_weight="1"/>
 

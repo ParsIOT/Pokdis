@@ -42,8 +42,8 @@ public class ParticleFilterRunner extends Thread {
 
     ArrayList<Double> resampleScatterFactor = new ArrayList<Double>() {
         {
-            add(100d);
-            add(100d);
+            add(30d);
+            add(30d);
             add(10d);
         }
     };

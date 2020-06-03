@@ -350,9 +350,9 @@ public class WebViewManager {
             ItemValues itemValues = new ItemValues();
             ItemClass item = itemValues.get_item(itemId);
             if (cartItems.put_item(item)){
-                txtMessage = "این محصول به لیست خرید اضافه شد.";
+                txtMessage = "This Product Was Added To The Shopping List";
             }else{
-                txtMessage = "این محصول در سبد خرید از قبل وجود داشته است";
+                txtMessage = "This Product Already Exists In The Shopping Cart";
             }
             Toast.makeText(mContext,txtMessage,Toast.LENGTH_SHORT).show();
         }
@@ -360,7 +360,7 @@ public class WebViewManager {
         @JavascriptInterface
         public void toggleShowParticles() {
             showParticles = !showParticles;
-            Toast.makeText(mContext,"تغییر نمایش ذرات",Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext,"Change The Particle Display",Toast.LENGTH_SHORT).show();
         }
 
 

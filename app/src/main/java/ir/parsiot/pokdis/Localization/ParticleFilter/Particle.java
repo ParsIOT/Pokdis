@@ -38,7 +38,7 @@ public class Particle {
         h = initState.get(2);
     }
 
-    public Double get_carteian_heading(){
+    public Double get_cartesian_heading(){
         return Convert2zeroto360(Convert2zeroto360(-1 * 180));
     }
 
